@@ -1,0 +1,7 @@
+nilearn
+monai
+SimpleITK
+--find-links https://download.pytorch.org/whl/torch_stable.html
+torch==2.0.1+cu118
+torchvision 
+torchaudio
