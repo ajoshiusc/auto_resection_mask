@@ -5,10 +5,12 @@ The code is documented in the jupyter notebook main_automask.ipynb
 
 This notebook shows an example workflow to delineate resection on MRI image.
 Inputs: Pre-op MRI image, Post-op MRI image
-Outputs: Post-op MRI image affinely registered to pre-op MRI image, resection mask
+Outputs: Post-op MRI image affinely registered to pre-op MRI image, resection mask (<subject>.resection.mask.nii.gz)
 
 
 To run the code, NVidia GPU is required. 
+
+
 
 # Installation
 A devcontainer is available with the repository. To configure it, you can clone the repo, and open the cloned folder using vscode.
