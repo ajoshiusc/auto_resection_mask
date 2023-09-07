@@ -13,7 +13,9 @@ To run the code, NVidia GPU is required.
 # Installation
 A devcontainer is available with the repository. To configure it, you can clone the repo, and open the cloned folder using vscode.
 This will prompt you to open the repo in a devcontainer. 
+Also, [BrainSuite](HTTP://brainsuite.org) needs to be installed on your system. 
 
+Please contact [Anand A Joshi](ajoshi@usc.edu) if you have any questions.
 
 ![image](https://github.com/ajoshiusc/auto_resection_mask/assets/15238551/09d32830-3ae0-4eaa-935e-22e280905dc6)
 
