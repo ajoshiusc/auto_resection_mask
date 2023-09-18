@@ -2,6 +2,8 @@
 
 This tools Coregisters pre and post-op MRI images and identifies resection.
 
+Here is an [example dataset](https://drive.google.com/drive/folders/1vuI-YwELv8ZMxgxF7ioWN9ceHjArwV91) to run through the module. 
+
 The code is documented in the jupyter notebook main_automask.ipynb
 
 This notebook shows an example workflow to delineate resection on MRI image.
