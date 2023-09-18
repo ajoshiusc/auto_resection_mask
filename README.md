@@ -25,7 +25,7 @@ To run the code, please open main_automask.ipynb as a jupyter notebook, correct 
 
 # Usage
 
-## Demarkating Resection
+## Running the code
 
 * Assume as inpot, you have `preop.nii.gz` (pre-op MRI), and `post-op.nii.gz` (post-op MRI with resection). Open Jupyter notebook `main_automask.ipynb` in vscode.
 * Go to the **Input Cell** and add the paths to `preop.nii.gz` and `post-op.nii.gz`. Add the path to the BrainSuite installation folder.
@@ -33,8 +33,10 @@ To run the code, please open main_automask.ipynb as a jupyter notebook, correct 
   
 ## [Optional] Importing to [BrainStorm](https://neuroimage.usc.edu/brainstorm/Introduction)
 The resection mask created by the tool can be imported into BrainStorm during import anatomy.
-* Open BrainStorm
+* Open BrainStorm, Import anatomy as a (BrainSuite processed folder)[https://neuroimage.usc.edu/brainstorm/Tutorials/SegBrainSuite].
+* You will see `resection` (resection surface), and `resection_mask` (resection volume). You can visualize them in BrainStorm by right clicking and selecting options of your choice. 
 
+![bstm_resection](https://github.com/ajoshiusc/auto_resection_mask/assets/15238551/4b90cf7a-7ed5-4436-b0dc-b2c5fe7128d6)
 
 
 ## [Visualization in BrainSuite]
