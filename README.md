@@ -39,9 +39,17 @@ The resection mask created by the tool can be imported into BrainStorm during im
 ![bstm_resection](https://github.com/ajoshiusc/auto_resection_mask/assets/15238551/4b90cf7a-7ed5-4436-b0dc-b2c5fe7128d6)
 
 
-## [Visualization in BrainSuite]
+## [Optional] Visualization in BrainSuite
 * Open BrainSuite and load *pre-op.nii.gz*
-*  
+* Click on `File->Overlay Volume` and select pre-op.post2pre.nii.gz" and load it. This is the post-op volume coregistred to pre-op volume.
+* Click on `File->Open mask volume` and select resection.mask.nii.gz and load it. This will show outline of the identified resection.
+* Goto `Tools->Mask Tool` and generate a surface.
+
+<!--- ![buite_resection](https://github.com/ajoshiusc/auto_resection_mask/assets/15238551/dc06a0b2-4ed6-4743-a738-48d51f55cf60) --->
+
+<img src="https://github.com/ajoshiusc/auto_resection_mask/assets/15238551/dc06a0b2-4ed6-4743-a738-48d51f55cf60)" alt="drawing" width="700"/>
+
+  
 
 ## Support
 * Please contact [Anand A Joshi](ajoshi@usc.edu) if you have any questions.
