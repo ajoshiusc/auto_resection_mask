@@ -29,7 +29,7 @@ To run the code, please open main_automask.ipynb as a jupyter notebook, correct 
 
 ## Running the code
 
-* Assume as inpot, you have `preop.nii.gz` (pre-op MRI), and `post-op.nii.gz` (post-op MRI with resection). Open Jupyter notebook `main_automask.ipynb` in vscode.
+* Assume as input, you have `preop.nii.gz` (pre-op MRI), and `post-op.nii.gz` (post-op MRI with resection). Open Jupyter notebook `main_automask.ipynb` in vscode.
 * Go to the **Input Cell** and add the paths to `preop.nii.gz` and `post-op.nii.gz`. Add the path to the BrainSuite installation folder.
 * Run the notebook.
 
