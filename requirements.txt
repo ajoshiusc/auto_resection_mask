@@ -5,3 +5,4 @@ SimpleITK
 torch==2.0.1+cu118
 torchvision 
 torchaudio
+torchio
