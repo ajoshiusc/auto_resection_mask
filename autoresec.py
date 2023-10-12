@@ -24,7 +24,7 @@ import matplotlib
 
 from shutil import copyfile
 
-def delineate_resection(pre_mri, post_mri, BrainSuitePATH="/home/ajoshi/software/BrainSuite23a", ERR_THR=80):
+def delineate_resection(pre_mri, post_mri, BrainSuitePATH="/home/ajoshi/Software/BrainSuite23a", ERR_THR=80):
 
     pl.plot_anat(pre_mri,title='pre-mri')
     pl.plot_anat(post_mri,title='post-mri')

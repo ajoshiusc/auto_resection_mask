@@ -53,11 +53,11 @@ class Aligner:
 			
 
 	def loadMoving(self, moving_file):
-		self.moving, self.moving_meta = LoadImage()(moving_file)
+		self.moving = LoadImage(image_only=True)(moving_file)
 		self.moving = EnsureChannelFirst()(self.moving)
 
 	def loadTarget(self, fixed_file):
-		self.target, self.moving_meta = LoadImage()(fixed_file)
+		self.target = LoadImage(image_only=True)(fixed_file)
 		self.target = EnsureChannelFirst()(self.target)
 
 	def performAffine(self):
