@@ -63,18 +63,18 @@ class Warper:
     # 	set_determinism(42)
 
     def loadMoving(self, moving_file):
-        self.moving, self.moving_meta = LoadImage()(moving_file)
+        self.moving, self.moving_meta = LoadImage(image_only=False)(moving_file)
         self.moving = EnsureChannelFirst()(self.moving)
 
     def loadTarget(self, fixed_file):
-        self.target, self.target_meta = LoadImage()(fixed_file)
+        self.target, self.target_meta = LoadImage(image_only=False)(fixed_file)
         self.target = EnsureChannelFirst()(self.target)
 
     def loadTargetMask(self, target_mask):
         if target_mask is None:
             self.target_mask = None
         else:
-            self.target_mask, self.target_mask_meta = LoadImage()(target_mask)
+            self.target_mask, self.target_mask_meta = LoadImage(image_only=False)(target_mask)
             self.target_mask = self.target_mask > 0.5
             self.target_mask.type(torch.DoubleTensor)
             self.target_mask = EnsureChannelFirst()(self.target_mask)
@@ -88,7 +88,7 @@ class Warper:
             + output_label_file
             + dscolors.clear
         )
-        label, meta = LoadImage()(label_file)
+        label, meta = LoadImage(image_only=False)(label_file)
         label = EnsureChannelFirst()(label)
         warped_labels = apply_warp(
             self.ddf[None,], label[None,], self.target[None,], interp_mode="nearest"
@@ -260,7 +260,7 @@ class Warper:
                 + output_label_file
                 + dscolors.clear
             )
-            label, meta = LoadImage()(label_file)
+            label, meta = LoadImage(image_only=False)(label_file)
             label = EnsureChannelFirst()(label)
             warped_labels = apply_warp(
                 self.ddf[None,], label[None,], self.target[None,], interp_mode="nearest"

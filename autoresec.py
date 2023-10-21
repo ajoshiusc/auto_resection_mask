@@ -174,10 +174,10 @@ def delineate_resection(pre_mri, post_mri, BrainSuitePATH="/home/ajoshi/Software
         device="cuda",
     )
 
-    moving, moving_meta = LoadImage()(mov_img_orig)
+    moving = LoadImage(image_only=True)(mov_img_orig)
     moving = EnsureChannelFirst()(moving)
 
-    target, _ = LoadImage()(ref_img)
+    target = LoadImage(image_only=True)(ref_img)
     target = EnsureChannelFirst()(target)
 
     image_movedo = apply_warp(
@@ -234,9 +234,9 @@ def delineate_resection(pre_mri, post_mri, BrainSuitePATH="/home/ajoshi/Software
     # %%
 
     # Load the images and normalize their intensities
-    vref, _ = LoadImage()(ref_img_pvc_frac)
-    vwrp, _ = LoadImage()(affine_reg_img_pvc_frac)
-    msk, _ = LoadImage()(ref_img_mask)
+    vref = LoadImage(image_only=True)(ref_img_pvc_frac)
+    vwrp = LoadImage(image_only=True)(affine_reg_img_pvc_frac)
+    msk = LoadImage(image_only=True)(ref_img_mask)
 
     vwrp = (255.0 / np.max(vwrp[msk > 0])) * vwrp
     vref = (255.0 / np.max(vref[msk > 0])) * vref
@@ -289,7 +289,7 @@ def delineate_resection(pre_mri, post_mri, BrainSuitePATH="/home/ajoshi/Software
 
     ddf = pre_mri_dir + "/ddf_nonlin.nii.gz"
 
-    tar_msk, target_mask_meta = LoadImage()(error_mask_img_rigid)
+    tar_msk, target_mask_meta = LoadImage(image_only=False)(error_mask_img_rigid)
     tar_msk = gaussian_filter(tar_msk, sigma=1)
     tar_msk = np.float32(tar_msk < 1)
 
@@ -320,9 +320,9 @@ def delineate_resection(pre_mri, post_mri, BrainSuitePATH="/home/ajoshi/Software
 
     # %%
 
-    vref, _ = LoadImage()(ref_img_pvc_frac)
-    vwrp, _ = LoadImage()(nonlin_reg_img_pvc_frac)
-    msk, _ = LoadImage()(ref_img_mask)
+    vref = LoadImage(image_only=True)(ref_img_pvc_frac)
+    vwrp = LoadImage(image_only=True)(nonlin_reg_img_pvc_frac)
+    msk = LoadImage(image_only=True)(ref_img_mask)
 
     print(ref_img_pvc_frac)
     print(nonlin_reg_img_pvc_frac)
