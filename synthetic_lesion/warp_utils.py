@@ -90,6 +90,41 @@ def jacobian_determinant_torch(vf):
 
 
 
+def jac_det_div(vector_field):
+    """
+    Given a displacement vector field vector_field, compute the jacobian determinant scalar field.
+    vector_field is assumed to be a vector field of shape (3, height, width, depth),
+    and it is interpreted as the displacement field.
+    So it is defining a discretely sampled map from a subset of 3-space into 3-space,
+    namely the map that sends point (x,y,z) to the point (x,y,z)+vector_field[:,x,y,z].
+    This function computes a jacobian determinant by taking discrete differences in each spatial direction.
+    Returns a numpy array of shape (height-1, width-1, depth-1).
+    """
+
+    _, H, W, D = vector_field.shape
+
+    # Compute discrete spatial derivatives
+    def diff_and_trim(array, axis): return torch.diff(
+        array, axis=axis)[:, :(H-1), :(W-1), :(D-1)]
+
+    dx = diff_and_trim(vector_field, 1)
+    dy = diff_and_trim(vector_field, 2)
+    dz = diff_and_trim(vector_field, 3)
+
+    # Add derivative of identity map
+    dx[0] += 1
+    dy[1] += 1
+    dz[2] += 1
+
+    # Compute determinant at each spatial location
+    j_div = dx[0] + dy[1] + dz[2]
+    # Compute determinant at each spatial location
+    j_det = dx[0]*(dy[1]*dz[2]-dz[1]*dy[2]) - dy[0]*(dx[1]*dz[2] -
+                                                   dz[1]*dx[2]) + dz[0]*(dx[1]*dy[2]-dy[1]*dx[2])
+
+    return j_det, j_div
+
+
 
 def get_grid(moving_shape, target_shape, requires_grad=False):
 

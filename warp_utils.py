@@ -23,6 +23,7 @@ from torch.nn.functional import grid_sample
 
 import numpy as np
 
+
 def jacobian_determinant(vf):
     """
     Given a displacement vector field vf, compute the jacobian determinant scalar field.
@@ -55,8 +56,6 @@ def jacobian_determinant(vf):
     return det
 
 
-
-
 def jacobian_determinant_torch(vf):
     """
     Given a displacement vector field vf, compute the jacobian determinant scalar field.
@@ -87,8 +86,6 @@ def jacobian_determinant_torch(vf):
                                                    dz[1]*dx[2]) + dz[0]*(dx[1]*dy[2]-dy[1]*dx[2])
 
     return det
-
-
 
 
 def get_grid(moving_shape, target_shape, requires_grad=False):
