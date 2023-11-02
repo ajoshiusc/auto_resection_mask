@@ -502,7 +502,7 @@ def delineate_resection(
     copyfile(affine_reg_img, affine_reg_img_out)
 
     ni.resample_to_img(
-        error_mask_img_nonlin, pre_mri, interpolation="nearest"
+        error_mask_img_nonlin, pre_mri_path, interpolation="nearest"
     ).to_filename(output_mask_pre)
 
     # %%
