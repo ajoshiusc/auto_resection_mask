@@ -7,10 +7,10 @@ import os
 import tempfile
 
 import nibabel as nib
-from nilearn.plotting import plot_anat, plot_roi
+#from nilearn.plotting import plot_anat, plot_roi
 from monai.transforms import EnsureChannelFirst, LoadImage
 from aligner import Aligner, center_and_resample_images
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import numpy as np
 
 # third party imports should be placed before standard library imports
@@ -45,7 +45,7 @@ def get_possible_resect_mask(
         cent_bst_atlas = os.path.join(temp_dir, "cent_bst_atlas.nii.gz")
         cent_bst_atlas_labels = os.path.join(temp_dir, "cent_bst_atlas_labels.nii.gz")
 
-        plot_anat(pre_mri_path, title="pre-mri")
+        """plot_anat(pre_mri_path, title="pre-mri")
         plot_roi(
             bst_atlas_labels_path,
             bg_img=bst_atlas_path,
@@ -57,6 +57,7 @@ def get_possible_resect_mask(
             title="bst-atlas-labels on pre-mri",
         )
         plt.show()
+        """
 
         center_and_resample_images(
             pre_mri_path,
@@ -66,12 +67,12 @@ def get_possible_resect_mask(
             centered_atlas_labels=cent_bst_atlas_labels,
         )
 
-        plot_roi(
-            cent_bst_atlas_labels,
-            bg_img=pre_mri_path,
-            alpha=0.25,
-            title="centered bst-atlas",
-        )
+        #plot_roi(
+        #    cent_bst_atlas_labels,
+        #    bg_img=pre_mri_path,
+        #    alpha=0.25,
+        #    title="centered bst-atlas",
+        #)
 
         affine_reg = Aligner()
 
@@ -104,8 +105,8 @@ def get_possible_resect_mask(
             temp_out_labels,
         )
 
-        plot_roi(temp_out_labels, bg_img=pre_mri_path, title="out-labels over pre-mri")
-        plt.show()
+        #plot_roi(temp_out_labels, bg_img=pre_mri_path, title="out-labels over pre-mri")
+        #plt.show()
 
         labels_to_zero = [3, 4, 5, 6]
 
