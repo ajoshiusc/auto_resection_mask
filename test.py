@@ -18,8 +18,11 @@ import numpy as np
 # standard library imports should be placed in alphabetical order
 
 
-def process_images(
-    pre_mri_path, bst_atlas_path, bst_atlas_labels_path, output_possible_resect_mask_path
+def get_possible_resect_mask(
+    pre_mri_path,
+    output_possible_resect_mask_path,
+    bst_atlas_path,
+    bst_atlas_labels_path,
 ):
     """
     Process images to create a resection mask.
@@ -119,7 +122,7 @@ def process_images(
         data[data > 0] = 255
 
         # Create a new NIfTI image with modified data
-        modified_img = nib.Nifti1Image(np.uint16(data), img.affine)
+        modified_img = nib.Nifti1Image(np.uint8(data), img.affine)
 
         # Save the modified NIfTI image to a new file
         nib.save(modified_img, output_possible_resect_mask_path)
@@ -132,4 +135,6 @@ if __name__ == "__main__":
     bst_atlas_labels = "/deneb_disk/auto_resection/bst_atlases/icbm_bst.label.nii.gz"
     output_possible_resect_mask = "/deneb_disk/auto_resection/data_8_4_2023/sub-M1998N33/sMRI/sub-M1998N33-M1998N33_MRI.possible_resect.mask.nii.gz"
 
-    process_images(pre_mri, bst_atlas, bst_atlas_labels, output_possible_resect_mask)
+    get_possible_resect_mask(
+        pre_mri, output_possible_resect_mask, bst_atlas, bst_atlas_labels
+    )
