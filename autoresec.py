@@ -501,7 +501,9 @@ def delineate_resection(
     affine_reg_img_out = pre_mri_base_orig + ".affine.post2pre.nii.gz"
     # copyfile(affine_reg_img, affine_reg_img_out)
 
-    ni.resample_to_img(affine_reg_img, pre_mri_path).to_filename(affine_reg_img_out)
+    ni.resample_to_img(
+        affine_reg_img, pre_mri_path, interpolation="linear"
+    ).to_filename(affine_reg_img_out)
 
     ni.resample_to_img(
         error_mask_img_nonlin, pre_mri_path, interpolation="nearest"
