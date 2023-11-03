@@ -355,7 +355,9 @@ def delineate_resection(
     vref = (255.0 / np.max(vref[msk > 0])) * vref
 
     # compute the error and smooth the error
-    vwrp = np.sqrt((vref - vwrp) ** 2)
+    #vwrp = np.sqrt((vref - vwrp) ** 2)
+    vwrp = vref - vwrp
+
     vwrp = vwrp * (msk > 0)
     vwrp = gaussian_filter(vwrp, sigma=1)
 
@@ -768,7 +770,9 @@ def delineate_resection_post(
     vref = (255.0 / np.max(vref[msk > 0])) * vref
 
     # compute the error and smooth the error
-    vwrp = np.sqrt((vref - vwrp) ** 2)
+    #vwrp = np.sqrt((vref - vwrp) ** 2)
+    vwrp = -(vref - vwrp)
+
     vwrp = vwrp * (msk > 0)
     vwrp = gaussian_filter(vwrp, sigma=1)
 
@@ -864,7 +868,7 @@ def delineate_resection_post(
 
     # %%
 
-    vwrp = vref - vwrp
+    vwrp = -(vref - vwrp)
 
     nib.save(
         nib.Nifti1Image(vwrp.detach().numpy(), nonlin_reg.target.affine), error_img
@@ -935,14 +939,14 @@ def delineate_resection_post(
 if __name__ == "__main__":
     # Example usage:
     pre_mri = (
-        "/deneb_disk/auto_resection/test/sub-0306/preop/sub-0306_preop-t1mri-1.nii.gz"
+        "/deneb_disk/auto_resection/test/sub-0003/preop/sub-0003_preop-t1mri-1.nii.gz"
     )
     post_mri = (
-        "/deneb_disk/auto_resection/test/sub-0306/postop/sub-0306_postop-t1mri-1.nii.gz"
+        "/deneb_disk/auto_resection/test/sub-0003/postop/sub-0003_postop-t1mri-1.nii.gz"
     )
 
-    output_resection_mask = delineate_resection(pre_mri, post_mri)
-    print("Resection mask saved to:", output_resection_mask)
+    #output_resection_mask = delineate_resection(pre_mri, post_mri)
+    #print("Resection mask saved to:", output_resection_mask)
 
     output_resection_mask = delineate_resection_post(pre_mri, post_mri)
     print("Resection mask saved to:", output_resection_mask)
