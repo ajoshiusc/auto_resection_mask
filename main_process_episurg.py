@@ -1,5 +1,5 @@
 import csv
-from autoresec import delineate_resection
+from autoresec import delineate_resection, delineate_resection_post
 import os
 # Specify the file path
 csv_file = '/deneb_disk/EPISURG/subjects.csv'  # Replace with your CSV file path
@@ -28,7 +28,13 @@ with open(csv_file, mode='r') as file:
             if not os.path.isfile('/deneb_disk/EPISURG/subjects/' + row[0] + '/preop/' + row[0] + '_preop-t1mri-1.resection.mask.nii.gz'):
                 delineate_resection(preop_mri, postop_mri)
             else:
-                print(f'Subject {row[0]} already processed, skipping ....')
+                print(f'Subject pre {row[0]} already processed, skipping ....')
+
+
+            if not os.path.isfile('/deneb_disk/EPISURG/subjects/' + row[0] + '/postop/' + row[0] + '_postop-t1mri-1.resection.mask.nii.gz'):
+                delineate_resection_post(preop_mri, postop_mri)
+            else:
+                print(f'Subject post {row[0]} already processed, skipping ....')
 
 
 # Print the list of subjects with preop MRI

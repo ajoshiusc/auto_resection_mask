@@ -935,10 +935,10 @@ def delineate_resection_post(
 if __name__ == "__main__":
     # Example usage:
     pre_mri = (
-        "/deneb_disk/auto_resection/test/sub-0013/preop/sub-0013_preop-t1mri-1.nii.gz"
+        "/deneb_disk/auto_resection/test/sub-0306/preop/sub-0306_preop-t1mri-1.nii.gz"
     )
     post_mri = (
-        "/deneb_disk/auto_resection/test/sub-0013/postop/sub-0013_postop-t1mri-1.nii.gz"
+        "/deneb_disk/auto_resection/test/sub-0306/postop/sub-0306_postop-t1mri-1.nii.gz"
     )
 
     output_resection_mask = delineate_resection(pre_mri, post_mri)
