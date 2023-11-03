@@ -127,7 +127,7 @@ def delineate_resection(
     pre_mri_base_orig = pre_mri_path[:-7]
     post_mri_base_orig = post_mri_path[:-7]
 
-    _, base_pre = os.path.split(pre_mri_base_orig)
+    pth_pre, base_pre = os.path.split(pre_mri_base_orig)
     pth_post, base_post = os.path.split(post_mri_base_orig)
 
     # %% [markdown]
@@ -137,7 +137,7 @@ def delineate_resection(
 
     # %%
 
-    temp_pth = os.path.join(pth_post, "temp_dir_resection")
+    temp_pth = os.path.join(pth_pre, "temp_dir_resection")
 
     print(f"Temporary files will be stored in {temp_pth}")
 
@@ -941,9 +941,8 @@ if __name__ == "__main__":
         "/deneb_disk/auto_resection/test/sub-0013/postop/sub-0013_postop-t1mri-1.nii.gz"
     )
 
-    output_resection_mask = delineate_resection_post(pre_mri, post_mri)
+    output_resection_mask = delineate_resection(pre_mri, post_mri)
     print("Resection mask saved to:", output_resection_mask)
 
-
-#    output_resection_mask = delineate_resection(pre_mri, post_mri)
-#    print("Resection mask saved to:", output_resection_mask)
+    output_resection_mask = delineate_resection_post(pre_mri, post_mri)
+    print("Resection mask saved to:", output_resection_mask)
