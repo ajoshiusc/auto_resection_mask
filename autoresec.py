@@ -485,7 +485,7 @@ def delineate_resection(
     msk = nib.load(possible_resec_mask).get_fdata()
     resection_mask = error_mask * (msk > 0)
 
-    resection_mask = remove_small_objects(resection_mask)
+    #resection_mask = remove_small_objects(resection_mask)
     resection_mask = get_largest_cc(resection_mask)
 
     nib.save(
@@ -861,10 +861,15 @@ def delineate_resection_post(
     # %%
 
     def get_largest_cc(segmentation):
-        labels = label(segmentation)
-        assert labels.max() != 0  # assume at least 1 CC
-        largest_cc = labels == np.argmax(np.bincount(labels.flat)[1:]) + 1
-        return largest_cc
+
+        if np.sum(segmentation) == 0:
+            return segmentation
+        else:
+            labels = label(segmentation)
+            #assert labels.max() != 0  # assume at least 1 CC
+            print(f' size of largest connected component is: {labels.max()}')
+            largest_cc = labels == np.argmax(np.bincount(labels.flat)[1:]) + 1
+            return largest_cc
 
     # %%
 
@@ -900,7 +905,8 @@ def delineate_resection_post(
     msk = nib.load(possible_resec_mask).get_fdata()
     resection_mask = error_mask * (msk > 0)
 
-    resection_mask = remove_small_objects(resection_mask)
+    
+    #resection_mask = remove_small_objects(resection_mask)
     resection_mask = get_largest_cc(resection_mask)
 
     nib.save(
@@ -945,8 +951,8 @@ if __name__ == "__main__":
         "/deneb_disk/auto_resection/test/sub-0003/postop/sub-0003_postop-t1mri-1.nii.gz"
     )
 
-    #output_resection_mask = delineate_resection(pre_mri, post_mri)
-    #print("Resection mask saved to:", output_resection_mask)
+    output_resection_mask = delineate_resection(pre_mri, post_mri)
+    print("Resection mask saved to:", output_resection_mask)
 
     output_resection_mask = delineate_resection_post(pre_mri, post_mri)
     print("Resection mask saved to:", output_resection_mask)

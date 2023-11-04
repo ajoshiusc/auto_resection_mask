@@ -2,7 +2,7 @@ import csv
 from autoresec import delineate_resection, delineate_resection_post
 import os
 # Specify the file path
-csv_file = '/deneb_disk/EPISURG/subjects.csv'  # Replace with your CSV file path
+csv_file = '/deneb_disk/auto_resection/EPISURG/subjects.csv'  # Replace with your CSV file path
 
 # Initialize an empty list to store subject IDs with preop MRI
 subjects_with_mri = []
@@ -20,18 +20,18 @@ with open(csv_file, mode='r') as file:
             # Add the subject ID (1st column) to the list
             subjects_with_mri.append(row[0])
 
-            preop_mri = '/deneb_disk/EPISURG/subjects/' + \
+            preop_mri = '/deneb_disk/auto_resection/EPISURG/subjects/' + \
                 row[0] + '/preop/' + row[0] + '_preop-t1mri-1.nii.gz'
-            postop_mri = '/deneb_disk/EPISURG/subjects/' + \
+            postop_mri = '/deneb_disk/auto_resection/EPISURG/subjects/' + \
                 row[0] + '/postop/' + row[0] + '_postop-t1mri-1.nii.gz'
 
-            if not os.path.isfile('/deneb_disk/EPISURG/subjects/' + row[0] + '/preop/' + row[0] + '_preop-t1mri-1.resection.mask.nii.gz'):
+            if not os.path.isfile('/deneb_disk/auto_resection/EPISURG/subjects/' + row[0] + '/preop/' + row[0] + '_preop-t1mri-1.resection.mask.nii.gz'):
                 delineate_resection(preop_mri, postop_mri)
             else:
                 print(f'Subject pre {row[0]} already processed, skipping ....')
 
 
-            if not os.path.isfile('/deneb_disk/EPISURG/subjects/' + row[0] + '/postop/' + row[0] + '_postop-t1mri-1.resection.mask.nii.gz'):
+            if not os.path.isfile('/deneb_disk/auto_resection/EPISURG/subjects/' + row[0] + '/postop/' + row[0] + '_postop-t1mri-1.resection.mask.nii.gz'):
                 delineate_resection_post(preop_mri, postop_mri)
             else:
                 print(f'Subject post {row[0]} already processed, skipping ....')
