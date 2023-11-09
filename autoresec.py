@@ -6,6 +6,7 @@ from monai.transforms import (
 )
 import nibabel as nib
 import os
+import torch
 import numpy as np
 from scipy.ndimage import gaussian_filter
 from skimage.morphology import remove_small_objects, opening
@@ -943,6 +944,9 @@ def delineate_resection_post(
 
 
 if __name__ == "__main__":
+
+    print(f'is cuda available? {torch.cuda.is_available()}')
+
     # Example usage:
     pre_mri = (
         "/deneb_disk/auto_resection/test/sub-0003/preop/sub-0003_preop-t1mri-1.nii.gz"
