@@ -87,11 +87,12 @@ t1_mask_data = ni.load_img(random_normal_subject_mask).get_fdata()
 pre_lesion_mask = np.uint16((t1_mask_data>0) & (pre<0.5))
 post_lesion_mask = np.uint16((t1_mask_data>0) & (post<0.5))
 
-pre_lesion = ni.new_img_like(random_normal_t1, pre_lesion_mask)
-post_lesion = ni.new_img_like(random_normal_t1, post_lesion_mask)
+pre_lesion = os.path.join(out_dir, sub_name + "_pre_lesion.mask.nii.gz")
+post_lesion = os.path.join(out_dir, sub_name + "_post_lesion.mask.nii.gz")
 
-pre_lesion.to_filename(os.path.join(out_dir, sub_name + "_pre_lesion.mask.nii.gz"))
-post_lesion.to_filename(os.path.join(out_dir, sub_name + "_post_lesion.mask.nii.gz"))
+ni.new_img_like(random_normal_t1, pre_lesion_mask).to_filename(pre_lesion)
+ni.new_img_like(random_normal_t1, post_lesion_mask).to_filename(post_lesion)
+
 
 p = plot_roi(
     roi_img=pre_lesion,
