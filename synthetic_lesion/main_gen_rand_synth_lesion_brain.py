@@ -17,7 +17,8 @@ from nilearn.plotting import plot_roi, show, plot_anat
 
 import random
 
-random.seed(42)
+#42
+random.seed(3)
 
 
 brats_data_directory = "/ImagePTE1/ajoshi/data/BRATS2018/Training/HGG"
@@ -31,13 +32,15 @@ random_normal_t1, random_normal_subject_mask, sub_name = random_normal_subject(
 )
 
 
+# Annotations comprise the GD-enhancing tumor (ET — label 4), the peritumoral edema (ED — label 2), and the necrotic and non-enhancing tumor core (NCR/NET — label 1), 
+
 # Read a random lesion segmentation file from the BRATS dataset
 random_lesion_segmentation, random_lesion_t1 = random_lesion_segmentation(brats_data_directory)
 
 seg_data = np.uint16(ni.load_img(random_lesion_segmentation).get_fdata())
 
 pre_lesion_mask = np.uint16(seg_data == 1)
-post_lesion_mask = np.uint16(seg_data > 0)
+post_lesion_mask = np.uint16((seg_data == 1) | (seg_data == 4)) 
 pre_lesion_nii = ni.new_img_like(random_normal_t1, pre_lesion_mask)
 post_lesion_nii = ni.new_img_like(random_normal_t1, post_lesion_mask)
 
@@ -132,14 +135,14 @@ ddf = os.path.join(out_dir, sub_name + "_pre2post_lesion_ddf.mask.nii.gz")
 jac_file = os.path.join(out_dir, sub_name + "_pre2post_lesion_jac.mask.nii.gz")
 
 
-if not os.path.isfile(pre2post_lesion):
+if 1: #not os.path.isfile(pre2post_lesion):
     nonlin_reg = Warper()
     nonlin_reg.nonlinear_reg(
         target_file=post_lesion,
         moving_file=pre_lesion,
         output_file=pre2post_lesion,
         ddf_file=ddf,
-        reg_penalty=1e-3,
+        reg_penalty=1e-2,
         nn_input_size=64,
         lr=1e-3,
         max_epochs=3000,
@@ -173,6 +176,12 @@ ddf = EnsureChannelFirst()(ddf)[None]
 moved = apply_warp(moving_image=moving, disp_field=ddf, target_image=target)
 
 moved_ti_file = os.path.join(out_dir, sub_name + "_moved_t1.nii.gz")
+
+original_t1 = os.path.join(out_dir, sub_name + "_original_t1.nii.gz")
+
+os.system(f"cp {random_normal_t1} {original_t1}")
+
+
 
 import nibabel as nb
 
