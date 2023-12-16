@@ -175,3 +175,6 @@ p = plot_roi(
     cut_coords=cut_coords,
     title="Random lesion segmentation on random normal subject t1",
 )
+p.savefig(os.path.join(out_dir, sub_name + "_pre2post_lesion_moved.mask.png"))
+p.close()
+
