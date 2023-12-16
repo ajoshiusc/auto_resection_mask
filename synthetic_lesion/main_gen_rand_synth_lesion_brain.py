@@ -1,6 +1,7 @@
 # This code creats a rondom lesion in ranom brain
 
 import os
+from tarfile import tar_filter
 from myutils import (
     smooth_3d_segmentation_mask,
     random_lesion_segmentation,
@@ -62,7 +63,8 @@ smooth_3d_segmentation_mask(post_lesion_smoothed, post_lesion_smoothed, iteratio
 p = plot_roi(
     roi_img=pre_lesion_smoothed,
     bg_img=random_normal_t1,
-    vmax=1,vmin=0,
+    vmax=1,
+    vmin=0,
     title="Random lesion segmentation on random normal subject t1",
 )
 p.savefig(os.path.join(out_dir, sub_name + "_pre_lesion_smoothed.mask.png"))
@@ -73,7 +75,8 @@ p2 = plot_roi(
     roi_img=post_lesion_smoothed,
     bg_img=random_normal_t1,
     cut_coords=cut_coords,
-    vmax=1,vmin=0,
+    vmax=1,
+    vmin=0,
     title="Random lesion segmentation on random normal subject t1",
 )
 p2.savefig(os.path.join(out_dir, sub_name + "_post_lesion_smoothed.mask.png"))
@@ -84,8 +87,8 @@ p2.close()
 pre = ni.load_img(pre_lesion_smoothed).get_fdata()
 post = ni.load_img(post_lesion_smoothed).get_fdata()
 t1_mask_data = ni.load_img(random_normal_subject_mask).get_fdata()
-pre_lesion_mask = np.uint16((t1_mask_data>0) & (pre<0.5))
-post_lesion_mask = np.uint16((t1_mask_data>0) & (post<0.5))
+pre_lesion_mask = np.uint16((t1_mask_data > 0) & (pre < 0.5))
+post_lesion_mask = np.uint16((t1_mask_data > 0) & (post < 0.5))
 
 pre_lesion = os.path.join(out_dir, sub_name + "_pre_lesion.mask.nii.gz")
 post_lesion = os.path.join(out_dir, sub_name + "_post_lesion.mask.nii.gz")
@@ -97,7 +100,8 @@ ni.new_img_like(random_normal_t1, post_lesion_mask).to_filename(post_lesion)
 p = plot_roi(
     roi_img=pre_lesion,
     bg_img=random_normal_t1,
-    vmax=1,vmin=0,
+    vmax=1,
+    vmin=0,
     cut_coords=cut_coords,
     title="Random lesion segmentation on random normal subject t1",
 )
@@ -107,13 +111,13 @@ p.close()
 p2 = plot_roi(
     roi_img=post_lesion,
     bg_img=random_normal_t1,
-    vmax=1,vmin=0,
+    vmax=1,
+    vmin=0,
     cut_coords=cut_coords,
     title="Random lesion segmentation on random normal subject t1",
 )
 p2.savefig(os.path.join(out_dir, sub_name + "_post_lesion.mask.png"))
 p2.close()
-
 
 
 # Do the registration now
@@ -126,15 +130,48 @@ ddf = os.path.join(out_dir, sub_name + "_pre2post_lesion_ddf.mask.nii.gz")
 jac_file = os.path.join(out_dir, sub_name + "_pre2post_lesion_jac.mask.nii.gz")
 
 
-nonlin_reg = Warper()
-nonlin_reg.nonlinear_reg(
-    target_file=post_lesion,
-    moving_file=pre_lesion,
-    output_file=pre2post_lesion,
-    ddf_file=ddf,
-    reg_penalty=1e-3,
-    nn_input_size=64,
-    lr=1e-3,
-    max_epochs=3000,
-    loss="mse",
-    jacobian_determinant_file=jac_file)
+if not os.path.isfile(pre2post_lesion):
+    nonlin_reg = Warper()
+    nonlin_reg.nonlinear_reg(
+        target_file=post_lesion,
+        moving_file=pre_lesion,
+        output_file=pre2post_lesion,
+        ddf_file=ddf,
+        reg_penalty=1e-3,
+        nn_input_size=64,
+        lr=1e-3,
+        max_epochs=3000,
+        loss="mse",
+        jacobian_determinant_file=jac_file,
+    )
+
+
+# apply the ddf to the t1 image
+
+from warp_utils import apply_warp
+from monai.transforms import LoadImage, EnsureChannelFirst
+
+moving = LoadImage(image_only=True)(random_normal_t1)
+moving = EnsureChannelFirst()(moving)[None]
+target = LoadImage(image_only=True)(random_normal_t1)
+target = EnsureChannelFirst()(target)[None]
+ddf = LoadImage(image_only=True)(ddf)
+ddf = EnsureChannelFirst()(ddf)[None]
+
+moved = apply_warp(moving_image=moving, disp_field=ddf, target_image=target)
+
+moved_ti_file = os.path.join(out_dir, sub_name + "_moved_t1.nii.gz")
+
+import nibabel as nb
+
+nb.save(nb.Nifti1Image(moved[0, 0].detach().cpu().numpy(), ni.load_img(random_normal_t1).affine), moved_ti_file)
+
+
+p = plot_roi(
+    roi_img=pre2post_lesion,
+    bg_img=moved_ti_file,
+    vmax=1,
+    vmin=0,
+    cut_coords=cut_coords,
+    title="Random lesion segmentation on random normal subject t1",
+)
