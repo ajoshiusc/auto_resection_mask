@@ -2,6 +2,8 @@
 
 import os
 from tarfile import tar_filter
+
+from param import output
 from myutils import (
     smooth_3d_segmentation_mask,
     random_lesion_segmentation,
@@ -11,7 +13,7 @@ from myutils import (
 import nilearn.image as ni
 import numpy as np
 
-from nilearn.plotting import plot_roi, show
+from nilearn.plotting import plot_roi, show, plot_anat
 
 import random
 
@@ -30,7 +32,7 @@ random_normal_t1, random_normal_subject_mask, sub_name = random_normal_subject(
 
 
 # Read a random lesion segmentation file from the BRATS dataset
-random_lesion_segmentation = random_lesion_segmentation(brats_data_directory)
+random_lesion_segmentation, random_lesion_t1 = random_lesion_segmentation(brats_data_directory)
 
 seg_data = np.uint16(ni.load_img(random_lesion_segmentation).get_fdata())
 
@@ -151,9 +153,19 @@ if not os.path.isfile(pre2post_lesion):
 from warp_utils import apply_warp
 from monai.transforms import LoadImage, EnsureChannelFirst
 
-moving = LoadImage(image_only=True)(random_normal_t1)
+t1 = ni.load_img(random_normal_t1).get_fdata()
+pre_lesion = ni.load_img(pre_lesion).get_fdata()
+pre_lesion = np.uint16(pre > 0.5)
+t1_avg = np.mean(t1[pre > 0.5])
+t1[pre > 0.5] = t1_avg
+t1 = ni.new_img_like(random_normal_t1, t1)
+
+t1_with_pre_lesion = os.path.join(out_dir, sub_name + "_t1_with_pre_lesion.nii.gz")
+t1.to_filename(t1_with_pre_lesion)
+
+moving = LoadImage(image_only=True)(t1_with_pre_lesion)
 moving = EnsureChannelFirst()(moving)[None]
-target = LoadImage(image_only=True)(random_normal_t1)
+target = LoadImage(image_only=True)(t1_with_pre_lesion)
 target = EnsureChannelFirst()(target)[None]
 ddf = LoadImage(image_only=True)(ddf)
 ddf = EnsureChannelFirst()(ddf)[None]
@@ -164,11 +176,16 @@ moved_ti_file = os.path.join(out_dir, sub_name + "_moved_t1.nii.gz")
 
 import nibabel as nb
 
-nb.save(nb.Nifti1Image(moved[0, 0].detach().cpu().numpy(), ni.load_img(random_normal_t1).affine), moved_ti_file)
+nb.save(
+    nb.Nifti1Image(
+        moved[0, 0].detach().cpu().numpy(), ni.load_img(random_normal_t1).affine
+    ),
+    moved_ti_file,
+)
 
 
 p = plot_roi(
-    roi_img=pre2post_lesion,
+    roi_img=post_lesion,
     bg_img=moved_ti_file,
     vmax=1,
     vmin=0,
@@ -177,4 +194,9 @@ p = plot_roi(
 )
 p.savefig(os.path.join(out_dir, sub_name + "_pre2post_lesion_moved.mask.png"))
 p.close()
+
+plot_anat(random_normal_t1, cut_coords=cut_coords, title="Original CAMCAN T1",output_file=os.path.join(out_dir, sub_name + "_original_t1.png"),vmax=t1_avg*2,vmin=0)
+plot_anat(t1_with_pre_lesion, cut_coords=cut_coords, title="CAMCAN T1 with lesion core from BRATS",output_file=os.path.join(out_dir, sub_name + "_t1_with_pre_lesion.png"),vmax=t1_avg*2,vmin=0)
+plot_anat(moved_ti_file, cut_coords=cut_coords, title="CAMCAN T1 with expanded lesion core",output_file=os.path.join(out_dir, sub_name + "_moved_t1.png"),vmax=t1_avg*2,vmin=0)
+plot_anat(random_lesion_t1, cut_coords=cut_coords, title="BRATS T1 with original lesion",output_file=os.path.join(out_dir, sub_name + "_original_lesion_t1.png"),vmax=t1_avg*4,vmin=0)
 

@@ -46,13 +46,17 @@ def random_lesion_segmentation(brats_data_dir):
     random_segmentation_file = os.path.join(
         brats_data_dir, random_subject, random_subject + "_segmni.nii.gz"
     )
+
+    random_t1_file = os.path.join(
+        brats_data_dir, random_subject, random_subject + "_t1mni.nii.gz"
+    )
     # segmentation_files = [f for f in os.listdir(segmentation_dir) if f.endswith('.nii.gz')]
 
     if not random_segmentation_file:
         print(f"No segmentation files found for subject {random_segmentation_file}")
         return None
 
-    return random_segmentation_file
+    return random_segmentation_file, random_t1_file
 
 
 # This function reads a random normal subject t1 file from the camcan dataset
