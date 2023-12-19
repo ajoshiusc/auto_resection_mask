@@ -47,11 +47,11 @@ random_lesion_segmentation_tmp, random_lesion_t1_tmp = random_lesion_segmentatio
 random_lesion_segmentation = os.path.join(out_dir, sub_name + "_lesion_seg.nii.gz")
 random_lesion_t1 = os.path.join(out_dir, sub_name + "_lesion_t1.nii.gz")
 
-conform(nb.load(random_lesion_segmentation_tmp),out_shape=(160, 192, 160)).to_filename(random_lesion_segmentation)
-conform(nb.load(random_lesion_t1_tmp),out_shape=(160, 192, 160)).to_filename(random_lesion_t1)
+conform(nb.load(random_lesion_segmentation_tmp),order=0,out_shape=(160, 192, 160)).to_filename(random_lesion_segmentation)
+conform(nb.load(random_lesion_t1_tmp),order=0,out_shape=(160, 192, 160)).to_filename(random_lesion_t1)
 
 
-seg_data = np.uint16(ni.load_img(random_lesion_segmentation).get_fdata())
+seg_data = np.float64(ni.load_img(random_lesion_segmentation).get_fdata())
 
 pre_lesion_mask = np.uint16(seg_data == 1)
 post_lesion_mask = np.uint16((seg_data == 1) | (seg_data == 4)) 
@@ -106,8 +106,8 @@ p2.close()
 pre = ni.load_img(pre_lesion_smoothed).get_fdata()
 post = ni.load_img(post_lesion_smoothed).get_fdata()
 t1_mask_data = ni.load_img(random_normal_subject_mask).get_fdata()
-pre_lesion_mask = np.uint16((t1_mask_data > 0) & (pre < 0.5))
-post_lesion_mask = np.uint16((t1_mask_data > 0) & (post < 0.5))
+pre_lesion_mask = np.uint16((t1_mask_data > 0.1) & (pre < 0.5))
+post_lesion_mask = np.uint16((t1_mask_data > 0.1) & (post < 0.5))
 
 pre_lesion = os.path.join(out_dir, sub_name + "_pre_lesion.mask.nii.gz")
 post_lesion = os.path.join(out_dir, sub_name + "_post_lesion.mask.nii.gz")
@@ -156,7 +156,7 @@ if 1: #not os.path.isfile(pre2post_lesion):
         moving_file=pre_lesion,
         output_file=pre2post_lesion,
         ddf_file=ddf,
-        reg_penalty=1e-2,
+        reg_penalty=1e-3,
         nn_input_size=64,
         lr=1e-3,
         max_epochs=3000,
@@ -189,7 +189,7 @@ ddf = EnsureChannelFirst()(ddf)[None]
 
 moved = apply_warp(moving_image=moving, disp_field=ddf, target_image=target)
 
-moved_ti_file = os.path.join(out_dir, sub_name + "_moved_t1.nii.gz")
+moved_ti_file = os.path.join(out_dir, sub_name + "_lesion_final_t1.nii.gz")
 
 original_t1 = os.path.join(out_dir, sub_name + "_original_t1.nii.gz")
 

@@ -5,6 +5,8 @@ import nibabel as nib
 from scipy import ndimage
 import glob
 
+import csv
+
 def smooth_3d_segmentation_mask(input_path, output_path, iterations=1):
     # Read the 3D segmentation mask
     img = nib.load(input_path)
@@ -141,18 +143,30 @@ def random_normal_subject_carc(norm_data_dir):
     """
 
     # Get a list of subject directories in the BRATS dataset
-    sub_list = glob.glob(norm_data_dir+'/norm_IXI*_t1.nii.gz')
+    
+    sub_list = []
+
+    with open('/project/ajoshi_27/akrami/3D_lesion_DF/Data/splits/IXI_test.csv', 'r') as rf:
+        
+        reader = csv.reader(rf, delimiter=',')
+        next(reader, None) # ignore the header
+        for row in reader:
+            sub_list.append(row[1])
+            print(row[1])
+
+
+    #sub_list = glob.glob(norm_data_dir+'/IXI*_t1.nii.gz')
 
     # Randomly select a subject directory
-    random_subject_file = random.choice(sub_list)
+    random_subject_file = os.path.join(norm_data_dir, 'Train/ixi/t1', random.choice(sub_list))
 
     if (not os.path.isfile(random_subject_file)):
         print(
-            f"T1 and/or mask file(s) found {random_subject_file}, {random_subject_mask_file}"
+            f"T1 and/or mask file(s) found {random_subject_file}"
         )
         return None
 
     _,base = os.path.split(random_subject_file)
-    random_subject = base[5:-10]
+    random_subject = base[:-10]
 
     return random_subject_file, random_subject
