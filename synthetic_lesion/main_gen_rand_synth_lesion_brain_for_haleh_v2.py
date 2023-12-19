@@ -16,7 +16,8 @@ import numpy as np
 from nilearn.plotting import plot_roi, show, plot_anat
 
 import random
-
+from nibabel.processing import conform
+import nibabel as nb
 #42
 random.seed(3)
 
@@ -27,16 +28,28 @@ norm_data_directory = "/scratch1/akrami/Data_train"
 out_dir = "/scratch1/ajoshi/auto_resection_out"
 
 # Read a random lesion segmentation file from the BRATS dataset
-random_normal_t1, sub_name = random_normal_subject_carc(
+random_normal_t1_tmp, sub_name = random_normal_subject_carc(
     norm_data_directory
 )
+
+random_normal_t1 = os.path.join(out_dir, sub_name + "_norm_rand_t1.nii.gz")
+
+conform(nb.load(random_normal_t1_tmp),out_shape=(160, 192, 160)).to_filename(random_normal_t1)
+
 random_normal_subject_mask = random_normal_t1
 
 
 # Annotations comprise the GD-enhancing tumor (ET — label 4), the peritumoral edema (ED — label 2), and the necrotic and non-enhancing tumor core (NCR/NET — label 1), 
 
 # Read a random lesion segmentation file from the BRATS dataset
-random_lesion_segmentation, random_lesion_t1 = random_lesion_segmentation_carc(brats_data_directory)
+random_lesion_segmentation_tmp, random_lesion_t1_tmp = random_lesion_segmentation_carc(brats_data_directory)
+
+random_lesion_segmentation = os.path.join(out_dir, sub_name + "_lesion_seg.nii.gz")
+random_lesion_t1 = os.path.join(out_dir, sub_name + "_lesion_t1.nii.gz")
+
+conform(nb.load(random_lesion_segmentation_tmp),out_shape=(160, 192, 160)).to_filename(random_lesion_segmentation)
+conform(nb.load(random_lesion_t1_tmp),out_shape=(160, 192, 160)).to_filename(random_lesion_t1)
+
 
 seg_data = np.uint16(ni.load_img(random_lesion_segmentation).get_fdata())
 
