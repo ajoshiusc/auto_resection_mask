@@ -6,6 +6,35 @@ from scipy import ndimage
 import glob
 
 import csv
+import vtk
+from pathlib import Path
+import numpy as np
+
+def read_poly_data(path, flip=False):
+    reader = vtk.vtkXMLPolyDataReader()
+    reader.SetFileName(str(path))
+    reader.Update()
+    poly_data = reader.GetOutput()
+    if flip:
+        from .mesh import flipxy
+        poly_data = flipxy(poly_data)
+    return poly_data
+
+def get_sphere_poly_data():
+    resources_dir = Path(__file__).parent / 'resources'
+    mesh_path = resources_dir / 'geodesic_polyhedron.vtp'
+    if not mesh_path.is_file():
+        raise FileNotFoundError(f'{mesh_path} does not exist')
+    poly_data = read_poly_data(mesh_path)
+    if poly_data.GetNumberOfPoints() == 0:
+        message = (
+            f'Error reading sphere poly data from {mesh_path}. Contents:'
+            f'\n{mesh_path.read_text()}'
+        )
+        raise FileNotFoundError(message)
+    return poly_data
+
+
 
 def smooth_3d_segmentation_mask(input_path, output_path, iterations=1):
     # Read the 3D segmentation mask
