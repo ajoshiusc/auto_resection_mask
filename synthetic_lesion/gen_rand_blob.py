@@ -7,6 +7,36 @@ import random
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.ndimage import binary_fill_holes
+import nibabel as nib
+
+def create_spherical_mask(image_path, center, radius, output_path):
+    # Load the MRI image
+    image = nib.load(image_path)
+    data = image.get_fdata()
+
+    # Get the voxel dimensions
+    voxel_dims = np.array(image.header.get_zooms())
+
+    # Calculate the center and radius in voxel coordinates
+    center_voxel = center / voxel_dims
+    radius_voxel = radius / voxel_dims.min()
+
+    # Create a grid of voxel coordinates
+    grid = np.meshgrid(*[np.arange(dim) for dim in data.shape], indexing='ij')
+
+    # Calculate the distance from each voxel to the center
+    distances = np.sqrt(np.sum((np.array(grid) - center_voxel[:, None, None, None])**2, axis=0))
+
+    # Create a spherical mask
+    mask = distances <= radius_voxel
+
+    # Apply the mask to the original data
+    masked_data = data * mask
+
+    # Save the masked data as a new NIfTI file
+    masked_image = nib.Nifti1Image(masked_data, affine=image.affine)
+    nib.save(masked_image, output_path)
+
 
 
 def mesh_to_mask_3d(vertices, volume_size=(256, 256, 256)):
