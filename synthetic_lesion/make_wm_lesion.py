@@ -34,7 +34,7 @@ from monai.transforms import LoadImage, EnsureChannelFirst
 import nibabel as nb
 
 
-def make_wm_lesion(sub_name, volume_size = (16,16,16),out_dir = '/scratch1/ajoshi/temp_dir'):
+def make_wm_lesion(sub_name, core_modify_factor=0.5, volume_size = (16,16,16), out_dir = '/scratch1/ajoshi/temp_dir'):
 
     
     mri_orig = '/scratch1/akrami/Data_train/Train/ixi/t1/' + sub_name + '_t1.nii.gz'
@@ -340,7 +340,7 @@ def make_wm_lesion(sub_name, volume_size = (16,16,16),out_dir = '/scratch1/ajosh
     pre_lesion = ni.load_img(pre_lesion).get_fdata()
     pre_lesion = np.uint16(pre > 0.5)
     t1_avg = np.mean(t1[pre > 0.5])
-    t1[pre > 0.5] = t1_avg
+    t1[pre > 0.5] = t1_avg * core_modify_factor
     t1 = ni.new_img_like(random_normal_t1, t1)
     
     t1_with_pre_lesion = os.path.join(out_dir, sub_name + "_t1_with_pre_lesion.nii.gz")
