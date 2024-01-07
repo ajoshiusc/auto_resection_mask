@@ -35,14 +35,19 @@ with open(csv_file, mode='r') as file:
         if os.path.isfile(postop_mri):
             print(f'Subject {subid} has postop MRI')
         else:
-            print(f'File {postop_mri} does not exist')
-            
+            print(f'File {postop_mri} does not exist')           
+
 
         # Check if both preop and postop MRI exist
         if os.path.isfile(preop_mri) and os.path.isfile(postop_mri):
 
-            delineate_resection_post(preop_mri, postop_mri)
-            delineate_resection(preop_mri, postop_mri)
+
+            if not os.path.isfile(postop_mri.replace('.nii.gz', '.resection.mask.nii.gz')):
+                delineate_resection_post(preop_mri, postop_mri)
+            
+            if not os.path.isfile(preop_mri.replace('.nii.gz', '.resection.mask.nii.gz')):
+                delineate_resection(preop_mri, postop_mri)
+
             print(f'Subject {subid} processed')
 
 
