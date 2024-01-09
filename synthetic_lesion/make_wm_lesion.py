@@ -38,7 +38,6 @@ def make_wm_lesion(sub_name, core_modify_factor=0.5, volume_size = (16,16,16), o
 
     
     mri_orig = '/scratch1/akrami/Data_train/Train/ixi/t1/' + sub_name + '_t1.nii.gz'
-    out_dir = '/scratch1/ajoshi/temp_dir'
     
     
     mri = os.path.join(out_dir,sub_name + '_t1.nii.gz')
