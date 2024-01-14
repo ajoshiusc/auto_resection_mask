@@ -37,7 +37,7 @@ import nibabel as nb
 def make_wm_lesion(sub_name, core_modify_factor=0.5, volume_size = (16,16,16), out_dir = '/scratch1/ajoshi/temp_dir'):
 
     
-    mri_orig = '/scratch1/akrami/Data_train/Train/ixi/t1/' + sub_name + '_t1.nii.gz'
+    mri_orig = '/home/ajoshi/Desktop/' + sub_name + '_t1.nii.gz'
     
     
     mri = os.path.join(out_dir,sub_name + '_t1.nii.gz')
@@ -47,7 +47,7 @@ def make_wm_lesion(sub_name, core_modify_factor=0.5, volume_size = (16,16,16), o
     print(wm_mask)
     
     shutil.copyfile(mri_orig, mri)
-    cmd = '/project/ajoshi_27/BrainSuite23a/bin/cortical_extraction.sh ' + mri
+    cmd = '/home/ajoshi/Software/BrainSuite23a/bin/cortical_extraction.sh ' + mri
     
     if not os.path.isfile(wm_mask):
         os.system(cmd)
