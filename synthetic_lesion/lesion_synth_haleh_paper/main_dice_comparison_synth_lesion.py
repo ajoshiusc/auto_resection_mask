@@ -57,11 +57,13 @@ def calculate_dice_coefficients(label_file1, label_file2):
     labels1 = np.mod(read_nifti(label_file1), 1000)
     labels2 = np.mod(read_nifti(label_file2), 1000)
 
-    num_labels = max(np.max(labels1), np.max(labels2)) + 1
+    all_labels = np.unique(labels1.flatten())
+    num_labels = len(all_labels)
+
     dice_coefficients = []
 
     print("Label\tDice Coefficient")
-    for label in range(1, num_labels):
+    for label in all_labels:
         pred_label = labels1 == label
         truth_label = labels2 == label
 
@@ -70,7 +72,7 @@ def calculate_dice_coefficients(label_file1, label_file2):
 
         print(f"{label}\t{dice:.4f}")
 
-    return dice_coefficients
+    return dice_coefficients, all_labels
 
 
 
@@ -90,11 +92,12 @@ def find_overlapping_and_neighboring_labels(lesion_mask_path, labels_file_path):
 
 
     # Get data arrays from resampled images
-    lesion_data = lesion_mask_resampled.get_fdata()
+    lesion_data = lesion_mask.get_fdata()
     labels_data = np.mod(labels_img.get_fdata(), 1000)
 
     # Find labels that overlap with the lesion
     overlapping_labels = np.unique(labels_data[lesion_data > 0])
+    overlapping_labels.difference_update(0) # Remove background label
 
     # Get neighboring labels for each overlapping label
     neighboring_labels = set()
@@ -116,6 +119,7 @@ def find_overlapping_and_neighboring_labels(lesion_mask_path, labels_file_path):
 
     # Remove the original overlapping labels from the set
     neighboring_labels.difference_update(overlapping_labels)
+    neighboring_labels.difference_update(0) # Remove background label
 
     return list(overlapping_labels), list(neighboring_labels)
 
@@ -138,5 +142,11 @@ print(f"Neighboring labels for label {label_id_to_find_neighbors}: {neighbors}")
 
 
 
-dice_coefficients = calculate_dice_coefficients(label_file1, label_file2)
+dice_coefficients, all_labels = calculate_dice_coefficients(label_file1, label_file2)
 print(f"Average Dice Coefficient: {np.mean(dice_coefficients):.4f}")
+
+
+
+
+
+
