@@ -123,11 +123,18 @@ def find_overlapping_and_neighboring_labels(lesion_mask_path, labels_file_path):
 
     return list(overlapping_labels), list(neighboring_labels)
 
+overlapping_dice_coefficients_avg=[]
+neighboring_dice_coefficients_avg=[]
+overlapping_dice_coefficients_avg2=[]
+neighboring_dice_coefficients_avg2=[]
 
-for subno in range(3,11):
+for subno in range(0,11):
+    if subno == 2:
+        continue
+
     # Replace 'label_file1.nii' and 'label_file2.nii' with your actual file paths
     label_file1 = f"/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_orig_BrainSuite/Subject_{subno}_orig.svreg.label.nii.gz"
-    #label_file1 = f"/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_moved_BrainSuite/Subject_{subno}_moved.svreg.label.nii.gz"
+    label_file3 = f"/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_moved_BrainSuite/Subject_{subno}_moved.svreg.label.nii.gz"
 
     label_file2 = f"/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_orig_wolesion_BrainSuite/Subject_{subno}_orig_wolesion.svreg.label.nii.gz"
     #label_file2 = "/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_0_inpainted_BrainSuite/Subject_0_inpainted.svreg.label.nii.gz"
@@ -161,31 +168,47 @@ for subno in range(3,11):
     neighboring_dice_coefficients = [dice_coefficients[i] for i in neighboring_label_indices]
 
     # find average dice coefficients for overlapping and neighboring labels
-    overlapping_dice_coefficients_avg = np.mean(overlapping_dice_coefficients)
-    neighboring_dice_coefficients_avg = np.mean(neighboring_dice_coefficients)
+    overlapping_dice_coefficients_avg.append(np.mean(overlapping_dice_coefficients))
+    neighboring_dice_coefficients_avg.append(np.mean(neighboring_dice_coefficients))
 
-    print(f"Average Dice Coefficient for overlapping labels: {overlapping_dice_coefficients_avg:.4f}")
-    print(f"Average Dice Coefficient for neighboring labels: {neighboring_dice_coefficients_avg:.4f}")
+    #print(f"Average Dice Coefficient for overlapping labels: {overlapping_dice_coefficients_avg:.4f}")
+    #print(f"Average Dice Coefficient for neighboring labels: {neighboring_dice_coefficients_avg:.4f}")
+
+    dice_coefficients, all_labels = calculate_dice_coefficients(label_file3, label_file2)
+    #print(f"Average Dice Coefficient: {np.mean(dice_coefficients):.4f}")
 
 
-    """# Plot dice coefficients for overlapping and neighboring labels
-    plt.figure()
-    plt.bar(range(len(overlapping_dice_coefficients)), overlapping_dice_coefficients, align='center', alpha=0.5)
-    plt.xticks(range(len(overlapping_dice_coefficients)), overlapping_labels)
-    plt.xlabel("Label ID")
-    plt.ylabel("Dice Coefficient")
-    plt.title("Dice Coefficients for Overlapping Labels")
-    plt.show()
+    all_labels = list(all_labels)
+    # find indices of overlapping labels in all_labels
+    overlapping_label_indices = [all_labels.index(label_id) for label_id in overlapping_labels]
 
-    plt.figure()
-    plt.bar(range(len(neighboring_dice_coefficients)), neighboring_dice_coefficients, align='center', alpha=0.5)
-    plt.xticks(range(len(neighboring_dice_coefficients)), neighboring_labels)
-    plt.xlabel("Label ID")
-    plt.ylabel("Dice Coefficient")
-    plt.title("Dice Coefficients for Neighboring Labels")
-    plt.show()
-    """
 
+    # find dice coefficients for overlapping labels from these indices
+    overlapping_dice_coefficients = [dice_coefficients[i] for i in overlapping_label_indices]
+
+    # find indices of neighboring labels in all_labels
+    neighboring_label_indices = [all_labels.index(label_id) for label_id in neighboring_labels]
+
+    # find dice coefficients for neighboring labels from these indices
+    neighboring_dice_coefficients = [dice_coefficients[i] for i in neighboring_label_indices]
+
+    # find average dice coefficients for overlapping and neighboring labels
+    overlapping_dice_coefficients_avg2.append(np.mean(overlapping_dice_coefficients))
+    neighboring_dice_coefficients_avg2.append(np.mean(neighboring_dice_coefficients))
+
+    #print(f"Average Dice Coefficient for overlapping labels: {overlapping_dice_coefficients_avg2:.4f}")
+    #print(f"Average Dice Coefficient for neighboring labels: {neighboring_dice_coefficients_avg2:.4f}")
+
+
+    print('**********************************************************************************************')
+
+
+print(f"Average Dice Coefficient for overlapping labels: {np.mean(overlapping_dice_coefficients_avg):.4f}")
+print(f"Average Dice Coefficient for neighboring labels: {np.mean(neighboring_dice_coefficients_avg):.4f}")
+print(f"Average Dice Coefficient for overlapping labels: {np.mean(overlapping_dice_coefficients_avg2):.4f}")
+print(f"Average Dice Coefficient for neighboring labels: {np.mean(neighboring_dice_coefficients_avg2):.4f}")
+
+print('**********************************************************************************************')
 
 
 
