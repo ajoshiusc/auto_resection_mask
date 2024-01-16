@@ -123,12 +123,12 @@ def find_overlapping_and_neighboring_labels(lesion_mask_path, labels_file_path):
 
     return list(overlapping_labels), list(neighboring_labels)
 
-
+subno =1
 # Replace 'label_file1.nii' and 'label_file2.nii' with your actual file paths
-label_file1 = "/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_0_orig_BrainSuite/Subject_0_orig.svreg.label.nii.gz"
-#label_file1 = "/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_0_moved_BrainSuite/Subject_0_moved.svreg.label.nii.gz"
+label_file1 = "/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_orig_BrainSuite/Subject_{subno}_orig.svreg.label.nii.gz"
+#label_file1 = "/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_moved_BrainSuite/Subject_{subno}_moved.svreg.label.nii.gz"
 
-label_file2 = "/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_0_orig_wolesion_BrainSuite/Subject_0_orig_wolesion.svreg.label.nii.gz"
+label_file2 = "/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_orig_wolesion_BrainSuite/Subject_{subno}_orig_wolesion.svreg.label.nii.gz"
 #label_file2 = "/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_0_inpainted_BrainSuite/Subject_0_inpainted.svreg.label.nii.gz"
 
 
@@ -143,7 +143,7 @@ print(f"Neighboring labels: {neighboring_labels}")
 
 
 dice_coefficients, all_labels = calculate_dice_coefficients(label_file1, label_file2)
-print(f"Average Dice Coefficient: {np.mean(dice_coefficients):.4f}")
+#print(f"Average Dice Coefficient: {np.mean(dice_coefficients):.4f}")
 
 
 all_labels = list(all_labels)
