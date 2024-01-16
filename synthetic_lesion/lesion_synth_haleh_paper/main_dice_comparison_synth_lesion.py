@@ -70,7 +70,7 @@ def calculate_dice_coefficients(label_file1, label_file2):
         dice = dice_coefficient(pred_label, truth_label)
         dice_coefficients.append(dice)
 
-        print(f"{label}\t{dice:.4f}")
+        #print(f"{label}\t{dice:.4f}")
 
     return dice_coefficients, all_labels
 
@@ -123,19 +123,19 @@ def find_overlapping_and_neighboring_labels(lesion_mask_path, labels_file_path):
 
     return list(overlapping_labels), list(neighboring_labels)
 
-subno =1
+subno = 5
 # Replace 'label_file1.nii' and 'label_file2.nii' with your actual file paths
-label_file1 = "/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_orig_BrainSuite/Subject_{subno}_orig.svreg.label.nii.gz"
-#label_file1 = "/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_moved_BrainSuite/Subject_{subno}_moved.svreg.label.nii.gz"
+label_file1 = f"/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_orig_BrainSuite/Subject_{subno}_orig.svreg.label.nii.gz"
+#label_file1 = f"/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_moved_BrainSuite/Subject_{subno}_moved.svreg.label.nii.gz"
 
-label_file2 = "/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_orig_wolesion_BrainSuite/Subject_{subno}_orig_wolesion.svreg.label.nii.gz"
+label_file2 = f"/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_orig_wolesion_BrainSuite/Subject_{subno}_orig_wolesion.svreg.label.nii.gz"
 #label_file2 = "/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_0_inpainted_BrainSuite/Subject_0_inpainted.svreg.label.nii.gz"
 
 
-lesion_file = "/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_0_lesion_mask.nii.gz"
+lesion_file = f"/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_lesion_mask.nii.gz"
 
 
-overlapping_labels, neighboring_labels = find_overlapping_and_neighboring_labels(lesion_file, label_file1)
+overlapping_labels, neighboring_labels = find_overlapping_and_neighboring_labels(lesion_file, label_file2)
 
 
 print(f"Overlapping labels: {overlapping_labels}")
