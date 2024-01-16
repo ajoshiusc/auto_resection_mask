@@ -92,12 +92,12 @@ def find_overlapping_and_neighboring_labels(lesion_mask_path, labels_file_path):
 
 
     # Get data arrays from resampled images
-    lesion_data = lesion_mask.get_fdata()
-    labels_data = np.mod(labels_img.get_fdata(), 1000)
+    lesion_data = np.int16(lesion_mask.get_fdata())
+    labels_data = np.mod(np.int16(labels_img.get_fdata()), 1000)
 
     # Find labels that overlap with the lesion
-    overlapping_labels = np.unique(labels_data[lesion_data > 0])
-    overlapping_labels.difference_update(0) # Remove background label
+    overlapping_labels = set(np.unique(labels_data[lesion_data > 0]))
+    overlapping_labels.difference_update(set([0])) # Remove background label
 
     # Get neighboring labels for each overlapping label
     neighboring_labels = set()
@@ -119,14 +119,17 @@ def find_overlapping_and_neighboring_labels(lesion_mask_path, labels_file_path):
 
     # Remove the original overlapping labels from the set
     neighboring_labels.difference_update(overlapping_labels)
-    neighboring_labels.difference_update(0) # Remove background label
+    neighboring_labels.difference_update(set([0])) # Remove background label
 
     return list(overlapping_labels), list(neighboring_labels)
 
 
 # Replace 'label_file1.nii' and 'label_file2.nii' with your actual file paths
 label_file1 = "/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_0_orig_BrainSuite/Subject_0_orig.svreg.label.nii.gz"
-label_file2 = "/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_0_inpainted_BrainSuite/Subject_0_inpainted.svreg.label.nii.gz"
+#label_file1 = "/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_0_moved_BrainSuite/Subject_0_moved.svreg.label.nii.gz"
+
+label_file2 = "/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_0_orig_wolesion_BrainSuite/Subject_0_orig_wolesion.svreg.label.nii.gz"
+#label_file2 = "/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_0_inpainted_BrainSuite/Subject_0_inpainted.svreg.label.nii.gz"
 
 
 lesion_file = "/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_0_lesion_mask.nii.gz"
@@ -135,15 +138,51 @@ lesion_file = "/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/S
 overlapping_labels, neighboring_labels = find_overlapping_and_neighboring_labels(lesion_file, label_file1)
 
 
-label_id_to_find_neighbors = 1
-
-neighbors = find_neighboring_labels(label_file1, label_id_to_find_neighbors)
-print(f"Neighboring labels for label {label_id_to_find_neighbors}: {neighbors}")
-
+print(f"Overlapping labels: {overlapping_labels}")
+print(f"Neighboring labels: {neighboring_labels}")
 
 
 dice_coefficients, all_labels = calculate_dice_coefficients(label_file1, label_file2)
 print(f"Average Dice Coefficient: {np.mean(dice_coefficients):.4f}")
+
+
+all_labels = list(all_labels)
+# find indices of overlapping labels in all_labels
+overlapping_label_indices = [all_labels.index(label_id) for label_id in overlapping_labels]
+
+# find dice coefficients for overlapping labels from these indices
+overlapping_dice_coefficients = [dice_coefficients[i] for i in overlapping_label_indices]
+
+# find indices of neighboring labels in all_labels
+neighboring_label_indices = [all_labels.index(label_id) for label_id in neighboring_labels]
+
+# find dice coefficients for neighboring labels from these indices
+neighboring_dice_coefficients = [dice_coefficients[i] for i in neighboring_label_indices]
+
+# find average dice coefficients for overlapping and neighboring labels
+overlapping_dice_coefficients_avg = np.mean(overlapping_dice_coefficients)
+neighboring_dice_coefficients_avg = np.mean(neighboring_dice_coefficients)
+
+print(f"Average Dice Coefficient for overlapping labels: {overlapping_dice_coefficients_avg:.4f}")
+print(f"Average Dice Coefficient for neighboring labels: {neighboring_dice_coefficients_avg:.4f}")
+
+
+# Plot dice coefficients for overlapping and neighboring labels
+plt.figure()
+plt.bar(range(len(overlapping_dice_coefficients)), overlapping_dice_coefficients, align='center', alpha=0.5)
+plt.xticks(range(len(overlapping_dice_coefficients)), overlapping_labels)
+plt.xlabel("Label ID")
+plt.ylabel("Dice Coefficient")
+plt.title("Dice Coefficients for Overlapping Labels")
+plt.show()
+
+plt.figure()
+plt.bar(range(len(neighboring_dice_coefficients)), neighboring_dice_coefficients, align='center', alpha=0.5)
+plt.xticks(range(len(neighboring_dice_coefficients)), neighboring_labels)
+plt.xlabel("Label ID")
+plt.ylabel("Dice Coefficient")
+plt.title("Dice Coefficients for Neighboring Labels")
+plt.show()
 
 
 
