@@ -210,6 +210,15 @@ print(f"Average Dice Coefficient for neighboring labels: {np.mean(neighboring_di
 
 print('**********************************************************************************************')
 
+# print a table of dice coefficients for each subject
+print("Subject\tOverlapping\tNeighboring \t Overlapping\tNeighboring")
+print("-------\t-----------\t-----------")
+for i in range(len(overlapping_dice_coefficients_avg)):
+    print(f"{i}\t{overlapping_dice_coefficients_avg[i]:.4f}\t\t{neighboring_dice_coefficients_avg[i]:.4f}\t {overlapping_dice_coefficients_avg2[i]:.4f}\t\t{neighboring_dice_coefficients_avg2[i]:.4f}")
+
+print('**********************************************************************************************')
+
+ 
 
 
 
