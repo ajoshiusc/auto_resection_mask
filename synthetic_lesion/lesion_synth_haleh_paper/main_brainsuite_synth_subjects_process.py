@@ -36,11 +36,12 @@ def process_img(img_file):
 
 file_list = []
 
-for subno in range(11):
+for subno in range(11,15):
 
     file_list.append(f'/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_orig.nii.gz')
     file_list.append(f'/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_inpainted.nii.gz')
-    file_list.append(f'/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_moved.nii.gz')
+    #file_list.append(f'/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_moved.nii.gz')
+    file_list.append(f'/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_orig_wolesion.nii.gz')
 
 
 pool = Pool(processes=3)

@@ -9,11 +9,11 @@ import numpy as np
 
 # Load the inpainted and original images
 
-for subno in range(11):
+for subno in range(11,16):
 
     middle_slice_idx = 64
 
-    m = torch.load(f"/deneb_disk/Inpainting_Lesions_Examples/masks/Subject_{subno}_mask.pt")
+    m = torch.load(f"/deneb_disk/Inpainting_Lesions_Examples/synth_subjects/Subject_{subno}/lesion_mask.pt")
     aff = 2 * np.eye(4)
     aff[3, 3] = 1
 
