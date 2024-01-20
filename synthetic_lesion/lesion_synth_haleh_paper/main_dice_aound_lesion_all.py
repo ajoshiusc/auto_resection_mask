@@ -135,28 +135,15 @@ overlapping_dice_coefficients_avg2=[]
 neighboring_dice_coefficients_avg2=[]
 
 for subno in range(27,32):
-    """if subno == 2:
-        continue
-    """
 
     dilation_distance_mm = 10.0
     # Replace 'label_file1.nii' and 'label_file2.nii' with your actual file paths
-    label_file1 = f"/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_orig_BrainSuite/Subject_{subno}_orig.svreg.label.nii.gz"
-    label_file3 = f"/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_moved_labels.nii.gz"
-
-    label_file2 = f"/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_orig_wolesion_BrainSuite/Subject_{subno}_orig_wolesion.svreg.label.nii.gz"
-    #label_file2 = "/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_0_inpainted_BrainSuite/Subject_0_inpainted.svreg.label.nii.gz"
+    label_ground_truth = f"/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_warp.withlesion.label.nii.gz"
+    label_lesion_brain = f"/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_orig_wolesion_BrainSuite/Subject_{subno}_orig.svreg.label.nii.gz"
+    label_inpained_moved = f"/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_moved_labels.nii.gz"
 
     lesion_mask = f"/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_lesion_mask.nii.gz"
-
     lesion_dilated_mask = f"/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_lesion_dilated_{dilation_distance_mm}_mask.nii.gz"
-
-
-
-    #print(f"Overlapping labels: {overlapping_labels}")
-    #print(f"Neighboring labels: {neighboring_labels}")
-
-
 
     lesion = nib.load(lesion_mask).get_fdata()
     dlesion = nib.load(lesion_dilated_mask).get_fdata()

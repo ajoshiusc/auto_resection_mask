@@ -12,12 +12,9 @@ from monai.networks.blocks import Warp, DVF2DDF
 
 # Load the inpainted and original images
 
-for subno in range(0, 21):
+for subno in range(27, 32):
 
     middle_slice_idx = 64
-
-
-
 
     device = "cuda"
 

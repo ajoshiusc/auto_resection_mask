@@ -41,12 +41,12 @@ for subno in range(27, 32):
 
 
     if USE_COMPILED:
-        warp_layer_cubic = Warp(3, padding_mode="zeros",mode="bilinear").to(device)
+        warp_layer_lin = Warp(3, padding_mode="zeros",mode="bilinear").to(device)
     else:
-        warp_layer_cubic = Warp("bilinear", padding_mode="zeros").to(device)
+        warp_layer_lin = Warp("bilinear", padding_mode="zeros").to(device)
 
 
-    m = warp_layer_cubic(x[0].float(), x[3].float())
+    m = warp_layer_lin(x[0].float(), x[3].float())
 
     data = m[0, 0].cpu().numpy()
     data = np.flip(data, axis=1)
