@@ -9,7 +9,7 @@ import numpy as np
 
 # Load the inpainted and original images
 
-for subno in range(11, 16):
+for subno in range(27, 32):
 
     middle_slice_idx = 64
 
@@ -40,7 +40,13 @@ for subno in range(11, 16):
         warp_layer = Warp("nearest", padding_mode="zeros").to(device)
 
 
-    m = warp_layer(x[0].float(), x[3].float())
+    if USE_COMPILED:
+        warp_layer_cubic = Warp(3, padding_mode="zeros",mode="bilinear").to(device)
+    else:
+        warp_layer_cubic = Warp("bilinear", padding_mode="zeros").to(device)
+
+
+    m = warp_layer_cubic(x[0].float(), x[3].float())
 
     data = m[0, 0].cpu().numpy()
     data = np.flip(data, axis=1)
@@ -62,6 +68,17 @@ for subno in range(11, 16):
     #img = conform(img, order=1)
 
     nib.save(img, f"/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_orig.nii.gz")
+
+
+    data = x[2][0, 0].cpu().numpy()
+    data = np.flip(data, axis=1)
+    data = 100*np.maximum(data, 0.0)
+
+    img = nib.Nifti1Image(np.int16(data), aff)
+    #img = conform(img, order=1)
+
+    nib.save(img, f"/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_before_inpainting.nii.gz")
+
 
     im_shape = x[1][0, 0].cpu().numpy().shape
     print(im_shape)

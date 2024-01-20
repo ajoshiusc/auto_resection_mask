@@ -9,7 +9,7 @@ import numpy as np
 
 # Load the inpainted and original images
 
-for subno in range(11,16):
+for subno in range(27,32):
 
     middle_slice_idx = 64
 

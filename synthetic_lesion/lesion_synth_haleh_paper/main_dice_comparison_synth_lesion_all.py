@@ -128,13 +128,14 @@ neighboring_dice_coefficients_avg=[]
 overlapping_dice_coefficients_avg2=[]
 neighboring_dice_coefficients_avg2=[]
 
-for subno in range(0,11):
-    if subno == 2:
+for subno in range(14,21):
+    """if subno == 2:
         continue
+    """
 
     # Replace 'label_file1.nii' and 'label_file2.nii' with your actual file paths
     label_file1 = f"/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_orig_BrainSuite/Subject_{subno}_orig.svreg.label.nii.gz"
-    label_file3 = f"/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_moved_BrainSuite/Subject_{subno}_moved.svreg.label.nii.gz"
+    label_file3 = f"/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_moved_labels.nii.gz"
 
     label_file2 = f"/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_orig_wolesion_BrainSuite/Subject_{subno}_orig_wolesion.svreg.label.nii.gz"
     #label_file2 = "/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_0_inpainted_BrainSuite/Subject_0_inpainted.svreg.label.nii.gz"
