@@ -40,6 +40,9 @@ def dilate_segmentation_mask(input_path, output_path, dilation_mm):
 
 for subno in range(27,32):
 
+    if subno == 30:
+        continue
+    
     middle_slice_idx = 64
 
     m = torch.load(f"/deneb_disk/Inpainting_Lesions_Examples/synth_subjects/Subject_{subno}/lesion_mask.pt")
@@ -58,3 +61,14 @@ for subno in range(27,32):
     output_dilated_mask_path = f"/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_lesion_dilated_{dilation_distance_mm}_mask.nii.gz"
 
     dilate_segmentation_mask(input_mask_path, output_dilated_mask_path, dilation_distance_mm)
+
+    lesion_mask = f"/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_lesion_mask.nii.gz"
+    lesion_dilated_mask = f"/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_lesion_dilated_{dilation_distance_mm}_mask.nii.gz"
+
+    lesion = nib.load(lesion_mask).get_fdata()
+    dlesion = nib.load(lesion_dilated_mask).get_fdata()
+
+    lesion_neighborhood = np.logical_and(dlesion, np.logical_not(lesion))
+
+    lesion_neighborhood_file = lesion_mask.replace('.nii.gz',f'_neighborhood_{dilation_distance_mm}.nii.gz')
+    nib.save(nib.Nifti1Image(np.int16(lesion_neighborhood), nib.load(lesion_mask).affine), lesion_neighborhood_file)
