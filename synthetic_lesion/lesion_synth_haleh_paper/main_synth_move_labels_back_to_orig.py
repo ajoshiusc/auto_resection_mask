@@ -32,6 +32,15 @@ for subno in range(27, 32):
     img = nib.Nifti1Image(np.int16(inpained_lab), aff)
     #img = conform(img, order=1)
 
-    nib.save(img, f"/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_moved_labels.nii.gz")
+    map = nib.load(f"/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_ddf.nii.gz")
+
+    map = torch.tensor(np.transpose(map.get_fdata(),axes=(3,0,1,2))[None]).float().to(device)
+
+    inpained_lab = torch.tensor(inpained_lab[None,None]).float().to(device)
+    moved_lab = warp_layer(inpained_lab, map)[0,0].cpu().numpy()
+
+    moved_lab = nib.Nifti1Image(np.int16(moved_lab), aff)
+
+    nib.save(moved_lab, f"/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_moved_labels.nii.gz")
 
 

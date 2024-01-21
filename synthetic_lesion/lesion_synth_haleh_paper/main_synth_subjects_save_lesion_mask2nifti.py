@@ -56,7 +56,7 @@ for subno in range(27,32):
     #img = conform(img, order=1)
     nib.save(msk, f"/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_lesion_mask.nii.gz")
 
-    dilation_distance_mm = 10.0
+    dilation_distance_mm = 5.0
     input_mask_path = f"/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_lesion_mask.nii.gz"
     output_dilated_mask_path = f"/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_lesion_dilated_{dilation_distance_mm}_mask.nii.gz"
 

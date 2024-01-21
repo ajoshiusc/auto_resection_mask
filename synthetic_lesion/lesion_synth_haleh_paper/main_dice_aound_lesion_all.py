@@ -88,12 +88,12 @@ def calculate_dice_coefficients(label_file1, label_file2, mask_file=None):
 neighboring_dice_coefficients_avg=[]
 neighboring_dice_coefficients_avg2=[]
 
-for subno in range(27,32):
+for subno in range(29,32):
 
     if subno == 30:
         continue
 
-    dilation_distance_mm = 10.0
+    dilation_distance_mm = 5.0
     # Replace 'label_file1.nii' and 'label_file2.nii' with your actual file paths
     label_ground_truth = f"/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_warp.withlesion.label.nii.gz"
     label_lesion_brain = f"/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_orig_BrainSuite/Subject_{subno}_orig.svreg.label.nii.gz"
