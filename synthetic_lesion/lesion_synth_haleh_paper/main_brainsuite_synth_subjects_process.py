@@ -44,10 +44,10 @@ def process_img(img_file):
 
 file_list = []
 
-for subno in range(27,32):
+for subno in range(47,60):
 
-    file_list.append(f'/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_orig.nii.gz')
-    file_list.append(f'/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_inpainted.nii.gz')
+    #file_list.append(f'/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_orig.nii.gz')
+    #file_list.append(f'/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_inpainted.nii.gz')
     #file_list.append(f'/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_moved.nii.gz')
     file_list.append(f'/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_orig_wolesion.nii.gz')
 
@@ -55,11 +55,11 @@ for subno in range(27,32):
 pool = Pool(processes=3)
 
 print('++++++++++++++')
-#pool.map(process_img, file_list)
+pool.map(process_img, file_list)
 print('++++SUBMITTED++++++')
 
-for f in file_list:
-    process_img(f)
+#for f in file_list:
+#    process_img(f)
 
 pool.close()
 pool.join()

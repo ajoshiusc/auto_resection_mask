@@ -70,6 +70,12 @@ def calculate_dice_coefficients(label_file1, label_file2, mask_file=None):
     all_labels = np.unique(labels1[labels1>0].flatten())
     num_labels = len(all_labels)
 
+    # calculate roi volumes
+    roi_volumes = []
+    for label in all_labels:
+        roi_volumes.append(np.sum(labels1 == label))
+
+
 
     print("Label\tDice Coefficient")
     for label in all_labels:
@@ -81,19 +87,19 @@ def calculate_dice_coefficients(label_file1, label_file2, mask_file=None):
 
         #print(f"{label}\t{dice:.4f}")
 
-    return dice_coefficients, all_labels
+    return dice_coefficients, all_labels, roi_volumes
 
 
 
 neighboring_dice_coefficients_avg=[]
 neighboring_dice_coefficients_avg2=[]
 
-for subno in range(29,32):
+for subno in range(27,32):
 
     if subno == 30:
         continue
 
-    dilation_distance_mm = 5.0
+    dilation_distance_mm = 10.0
     # Replace 'label_file1.nii' and 'label_file2.nii' with your actual file paths
     label_ground_truth = f"/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_warp.withlesion.label.nii.gz"
     label_lesion_brain = f"/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_orig_BrainSuite/Subject_{subno}_orig.svreg.label.nii.gz"
@@ -103,10 +109,15 @@ for subno in range(29,32):
 
     lesion_neighborhood_file = lesion_mask.replace('.nii.gz',f'_neighborhood_{dilation_distance_mm}.nii.gz')
 
-    dice_coefficients_neighborhood, all_labels = calculate_dice_coefficients(label_ground_truth, label_lesion_brain, lesion_neighborhood_file)
-    dice_coefficients_neighborhood2, all_labels_neighborhood2 = calculate_dice_coefficients(label_ground_truth, label_inpained_moved, lesion_neighborhood_file)
+    dice_coefficients_neighborhood, all_labels, roi_volumes = calculate_dice_coefficients(label_ground_truth, label_lesion_brain, lesion_neighborhood_file)
+    dice_coefficients_neighborhood2, all_labels_neighborhood2, _ = calculate_dice_coefficients(label_ground_truth, label_inpained_moved, lesion_neighborhood_file)
 
     
+    #tot_roi_volumes = np.sum(roi_volumes)
+    #roi_weight = np.array(roi_volumes)/tot_roi_volumes
+    
+    print('**********************************************************************************************')
+
     all_labels = list(all_labels)
    
     # find average dice coefficients for overlapping and neighboring labels
