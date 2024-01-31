@@ -7,7 +7,6 @@ def main():
     sub_list = glob.glob("/scratch1/ajoshi/temp_4freesurfer/S*")
 
     for sub in sub_list:
-        #print(sub)
         
         mri_file = sub
         subid = mri_file.removesuffix('.nii.gz')
@@ -18,3 +17,5 @@ def main():
         )
         print(cmd)
  
+if __name__ == "__main__":
+    main()
