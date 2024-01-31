@@ -16,7 +16,7 @@ source $FREESURFER_HOME/SetUpFreeSurfer.sh
 echo "Running recon-all " $1
 
 #recon-all -i $1 -s $2 -all -qcache
-recon-all -s $2 -all -qcache
+recon-all -i $1 -s $2 -all 
 
 
 
