@@ -168,3 +168,5 @@ synthetic_lesion/.vscode/settings.json
 .vscode/launch.json
 synthetic_lesion/.vscode/launch.json
 synthetic_lesion/lesion_synth_haleh_paper/.vscode/launch.json
+*.img
+*.hdr
