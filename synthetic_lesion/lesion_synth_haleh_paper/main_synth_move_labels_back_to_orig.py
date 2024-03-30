@@ -12,7 +12,7 @@ from monai.networks.blocks import Warp, DVF2DDF
 
 # Load the inpainted and original images
 
-for subno in range(27, 32):
+for subno in range(47, 60):
 
     middle_slice_idx = 64
 

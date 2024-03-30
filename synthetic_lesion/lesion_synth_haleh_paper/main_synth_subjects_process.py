@@ -107,3 +107,17 @@ for subno in range(47, 60):
     nib.save(img, f"/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_orig_wolesion.nii.gz")
 
 
+
+    x = torch.load(f"/deneb_disk/Inpainting_Lesions_Examples/synth_subjects/Subject_{subno}/IdentifiedMask.pt")
+    aff = 2 * np.eye(4)
+    aff[3, 3] = 1
+
+    data = x[0].cpu().numpy()
+    data = np.flip(data, axis=1)
+    data = 255.0*np.maximum(data, 0.0)
+    img = nib.Nifti1Image(np.int16(data), aff)
+    #img = conform(img, order=1)
+
+    nib.save(img, f"/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_Identified.mask.nii.gz")
+
+

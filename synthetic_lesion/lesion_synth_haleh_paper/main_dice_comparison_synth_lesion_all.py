@@ -134,7 +134,7 @@ neighboring_dice_coefficients_avg=[]
 overlapping_dice_coefficients_avg2=[]
 neighboring_dice_coefficients_avg2=[]
 
-for subno in range(27,32):
+for subno in range(47,60):
     """if subno == 2:
         continue
     """

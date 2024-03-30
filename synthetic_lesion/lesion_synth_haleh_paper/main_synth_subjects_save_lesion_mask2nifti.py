@@ -38,11 +38,9 @@ def dilate_segmentation_mask(input_path, output_path, dilation_mm):
 
 # Load the inpainted and original images
 
-for subno in range(27,32):
+for subno in range(47,60):
 
-    if subno == 30:
-        continue
-    
+
     middle_slice_idx = 64
 
     m = torch.load(f"/deneb_disk/Inpainting_Lesions_Examples/synth_subjects/Subject_{subno}/lesion_mask.pt")
@@ -56,7 +54,7 @@ for subno in range(27,32):
     #img = conform(img, order=1)
     nib.save(msk, f"/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_lesion_mask.nii.gz")
 
-    dilation_distance_mm = 5.0
+    dilation_distance_mm = 10.0
     input_mask_path = f"/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_lesion_mask.nii.gz"
     output_dilated_mask_path = f"/deneb_disk/Inpainting_Lesions_Examples/brainsuite_synth_lesion/Subject_{subno}_lesion_dilated_{dilation_distance_mm}_mask.nii.gz"
 

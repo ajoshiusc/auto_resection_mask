@@ -94,10 +94,7 @@ def calculate_dice_coefficients(label_file1, label_file2, mask_file=None):
 neighboring_dice_coefficients_avg=[]
 neighboring_dice_coefficients_avg2=[]
 
-for subno in range(27,32):
-
-    if subno == 30:
-        continue
+for subno in range(47,60):
 
     dilation_distance_mm = 10.0
     # Replace 'label_file1.nii' and 'label_file2.nii' with your actual file paths
@@ -109,8 +106,8 @@ for subno in range(27,32):
 
     lesion_neighborhood_file = lesion_mask.replace('.nii.gz',f'_neighborhood_{dilation_distance_mm}.nii.gz')
 
-    dice_coefficients_neighborhood, all_labels, roi_volumes = calculate_dice_coefficients(label_ground_truth, label_lesion_brain, lesion_neighborhood_file)
-    dice_coefficients_neighborhood2, all_labels_neighborhood2, _ = calculate_dice_coefficients(label_ground_truth, label_inpained_moved, lesion_neighborhood_file)
+    dice_coefficients_neighborhood, all_labels, roi_volumes = calculate_dice_coefficients(label_ground_truth, label_lesion_brain, lesion_mask)
+    dice_coefficients_neighborhood2, all_labels_neighborhood2, _ = calculate_dice_coefficients(label_ground_truth, label_inpained_moved, lesion_mask)
 
     
     #tot_roi_volumes = np.sum(roi_volumes)

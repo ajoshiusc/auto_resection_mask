@@ -2,7 +2,7 @@ nilearn
 monai
 SimpleITK
 --find-links https://download.pytorch.org/whl/torch_stable.html
-torch==2.1.0+cu121
+torch==2.2.2+cu121
 torchvision 
 torchaudio
 torchio
