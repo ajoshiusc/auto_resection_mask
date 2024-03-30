@@ -1,0 +1,22 @@
+#!/usr/bin/bash
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=4
+#SBATCH --mem=16GB
+#SBATCH --time=23:00:00
+#SBATCH --account=ajoshi_27
+#SBATCH --partition=main
+
+cd /scratch1/ajoshi/projects/disc_mri/low_field_high_field_mprage_comparison
+
+export FREESURFER_HOME=/scratch1/ajoshi/freesurfer
+source $FREESURFER_HOME/SetUpFreeSurfer.sh
+
+
+echo "Running recon-all " $1
+
+#recon-all -i $1 -s $2 -all -qcache
+recon-all -i $1 -s $2 -all 
+
+
+
