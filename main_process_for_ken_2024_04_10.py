@@ -16,11 +16,11 @@ subjects_with_mri = []
 # Open the CSV file for reading
 for fname in sublist:
     subid = os.path.basename(fname)
-    preop_mri = f'/deneb_disk/auto_resection/data_8_4_2023/sub-{subid}/sMRI/sub-{subid}-{subid}_MRI.nii.gz'
-    postop_mri = f'/deneb_disk/auto_resection/data_8_4_2023/sub-{subid}/sMRI/sub-{subid}-{subid}_post_RS_MRI.nii.gz'
+    preop_mri = f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_10_mri_dump/{subid}/sMRI/sub-{subid}-{subid}_MRI.nii.gz'
+    postop_mri = f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_10_mri_dump/{subid}/sMRI/sub-{subid}-{subid}_post_RS_MRI.nii.gz'
 
     if not os.path.isfile(postop_mri):
-        postop_mri = f'/deneb_disk/auto_resection/data_8_4_2023/sub-{subid}/sMRI/sub-{subid}-{subid}_postRS_MRI.nii.gz'
+        postop_mri = f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_10_mri_dump/{subid}/sMRI/sub-{subid}-{subid}_postRS_MRI.nii.gz'
 
     # Check if the subject has preop MRI
     if os.path.isfile(preop_mri):
