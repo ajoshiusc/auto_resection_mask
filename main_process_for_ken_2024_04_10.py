@@ -39,11 +39,18 @@ for fname in sublist:
     if os.path.isfile(preop_mri) and os.path.isfile(postop_mri):
 
 
-        if not os.path.isfile(postop_mri.replace('.nii.gz', '.resection.mask.nii.gz')):
-            delineate_resection_post(preop_mri, postop_mri)
+        #if not os.path.isfile(postop_mri.replace('.nii.gz', '.resection.mask.nii.gz')):
+        #    delineate_resection_post(preop_mri, postop_mri)
         
-        if not os.path.isfile(preop_mri.replace('.nii.gz', '.resection.mask.nii.gz')):
+        #if not os.path.isfile(preop_mri.replace('.nii.gz', '.resection.mask.nii.gz')):
+
+        try:
             delineate_resection(preop_mri, postop_mri)
+        except Exception as e:
+            print(f'Error processing subject {subid}: {e}')
+            continue
+
+        delineate_resection(preop_mri, postop_mri)
 
         print(f'Subject {subid} processed')
 
