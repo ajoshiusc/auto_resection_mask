@@ -8,7 +8,7 @@ from autoresec import delineate_resection, delineate_resection_post
 import os
 
 
-sublist = glob.glob('/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_10_mri_dump/*')
+sublist = glob.glob('/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_12_mri_dump/*')
 
 # Initialize an empty list to store subject IDs with preop MRI
 subjects_with_mri = []
@@ -16,11 +16,11 @@ subjects_with_mri = []
 # Open the CSV file for reading
 for fname in sublist:
     subid = os.path.basename(fname)
-    preop_mri = f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_10_mri_dump/{subid}/sMRI/sub-{subid}-{subid}_MRI.nii.gz'
-    postop_mri = f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_10_mri_dump/{subid}/sMRI/sub-{subid}-{subid}_post_RS_MRI.nii.gz'
+    preop_mri = f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_12_mri_dump/{subid}/sMRI/sub-{subid}-{subid}_MRI.nii.gz'
+    postop_mri = f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_12_mri_dump/{subid}/sMRI/sub-{subid}-{subid}_post_RS_MRI.nii.gz'
 
     if not os.path.isfile(postop_mri):
-        postop_mri = f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_10_mri_dump/{subid}/sMRI/sub-{subid}-{subid}_postRS_MRI.nii.gz'
+        postop_mri = f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_12_mri_dump/{subid}/sMRI/sub-{subid}-{subid}_postRS_MRI.nii.gz'
 
     # Check if the subject has preop MRI
     if os.path.isfile(preop_mri):
@@ -42,15 +42,15 @@ for fname in sublist:
         #if not os.path.isfile(postop_mri.replace('.nii.gz', '.resection.mask.nii.gz')):
         #    delineate_resection_post(preop_mri, postop_mri)
         
-        #if not os.path.isfile(preop_mri.replace('.nii.gz', '.resection.mask.nii.gz')):
+        if not os.path.isfile(preop_mri.replace('.nii.gz', '.resection.mask.nii.gz')):
 
-        try:
-            delineate_resection(preop_mri, postop_mri)
-        except Exception as e:
-            print(f'Error processing subject {subid}: {e}')
-            continue
+            try:
+                delineate_resection(preop_mri, postop_mri)
+            except Exception as e:
+                print(f'Error processing subject {subid}: {e}')
+                continue
 
-        delineate_resection(preop_mri, postop_mri)
+        #delineate_resection(preop_mri, postop_mri)
 
         print(f'Subject {subid} processed')
 
