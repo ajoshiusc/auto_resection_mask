@@ -1,9 +1,5 @@
 
-import csv
 import glob
-
-from cv2 import Subdiv2D
-from requests import post
 from autoresec import delineate_resection, delineate_resection_post
 import os
 
@@ -16,27 +12,27 @@ subjects_with_mri = []
 # Open the CSV file for reading
 for fname in sublist:
     subid = os.path.basename(fname)
-    preop_mri = f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_12_mri_dump/{subid}/sMRI/sub-{subid}-{subid}_MRI.nii.gz'
-    postop_mri = f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_12_mri_dump/{subid}/sMRI/sub-{subid}-{subid}_post_RS_MRI.nii.gz'
+    preop_mri = glob.glob(f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_12_mri_dump/{subid}/sMRI/*{subid}?MRI*') #f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_12_mri_dump/{subid}/sMRI/sub-{subid}-{subid}_MRI.nii.gz'
+    postop_mri = glob.glob(f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_12_mri_dump/{subid}/sMRI/*{subid}*post*') #f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_12_mri_dump/{subid}/sMRI/sub-{subid}-{subid}_post_RS_MRI.nii.gz'
 
-    if not os.path.isfile(postop_mri):
-        postop_mri = f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_12_mri_dump/{subid}/sMRI/sub-{subid}-{subid}_postRS_MRI.nii.gz'
+    if len(postop_mri) == 0:
+        continue
+    else:
+        preop_mri = preop_mri[0]
+        postop_mri = postop_mri[0]
 
-    # Check if the subject has preop MRI
-    if os.path.isfile(preop_mri):
-        print(f'Subject {subid} has preop MRI')
-    else:
-        print(f'****File {preop_mri} does not exist****')
-    
-    # Check if the subject has postop MRI
-    if os.path.isfile(postop_mri):
-        print(f'Subject {subid} has postop MRI')
-    else:
-        print(f'File {postop_mri} does not exist')           
+    # if extension is .nii, compress the file and make it .nii.gz
+    if preop_mri.endswith('.nii'):
+        os.system(f'gzip {preop_mri}')
+        preop_mri = preop_mri + '.gz'
+
+    if postop_mri.endswith('.nii'):
+        os.system(f'gzip {postop_mri}')
+        postop_mri = postop_mri + '.gz'
 
 
     # Check if both preop and postop MRI exist
-    if 0: #os.path.isfile(preop_mri) and os.path.isfile(postop_mri):
+    if os.path.isfile(preop_mri) and os.path.isfile(postop_mri):
 
 
         #if not os.path.isfile(postop_mri.replace('.nii.gz', '.resection.mask.nii.gz')):
