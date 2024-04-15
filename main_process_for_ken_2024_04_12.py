@@ -15,7 +15,7 @@ for fname in sublist:
     preop_mri = glob.glob(f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_12_mri_dump/{subid}/sMRI/*{subid}?MRI*') #f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_12_mri_dump/{subid}/sMRI/sub-{subid}-{subid}_MRI.nii.gz'
     postop_mri = glob.glob(f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_12_mri_dump/{subid}/sMRI/*{subid}*post*') #f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_12_mri_dump/{subid}/sMRI/sub-{subid}-{subid}_post_RS_MRI.nii.gz'
 
-    if len(postop_mri) == 0:
+    if len(postop_mri) == 0 or len(preop_mri) == 0:
         continue
     else:
         preop_mri = preop_mri[0]
@@ -45,10 +45,12 @@ for fname in sublist:
             except Exception as e:
                 print(f'Error processing subject {subid}: {e}')
                 continue
+        else:
+            print(f'Subject {subid} ALREADY processed')
 
         #delineate_resection(preop_mri, postop_mri)
 
-        print(f'Subject {subid} processed')
+        print(f'Subject {subid} processing done!')
 
 
 
