@@ -1,11 +1,6 @@
 
-import csv
 import glob
 
-from cv2 import Subdiv2D
-from requests import post
-from torch import layout
-from autoresec import delineate_resection, delineate_resection_post
 import os
 from nilearn.plotting import plot_anat, find_xyz_cut_coords
 from matplotlib import pyplot as plt
@@ -18,11 +13,15 @@ subjects_with_mri = []
 # Open the CSV file for reading
 for fname in sublist:
     subid = os.path.basename(fname)
-    preop_mri = f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_10_mri_dump/{subid}/sMRI/sub-{subid}-{subid}_MRI.nii.gz'
-    postop_mri = f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_10_mri_dump/{subid}/sMRI/sub-{subid}-{subid}_post_RS_MRI.nii.gz'
+    preop_mri = glob.glob(f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_12_mri_dump/{subid}/sMRI/*{subid}?MRI.nii*') #f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_12_mri_dump/{subid}/sMRI/sub-{subid}-{subid}_MRI.nii.gz'
+    postop_mri = glob.glob(f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_12_mri_dump/{subid}/sMRI/*{subid}*post*.nii*') #f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_12_mri_dump/{subid}/sMRI/sub-{subid}-{subid}_post_RS_MRI.nii.gz'
 
-    if not os.path.isfile(postop_mri):
-        postop_mri = f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_10_mri_dump/{subid}/sMRI/sub-{subid}-{subid}_postRS_MRI.nii.gz'
+    if len(postop_mri) == 0 or len(preop_mri) == 0:
+        continue
+    else:
+        preop_mri = preop_mri[0]
+        postop_mri = postop_mri[0]
+
 
     # Check if the subject has preop MRI
     if os.path.isfile(preop_mri):
@@ -55,9 +54,12 @@ for fname in sublist:
             p = plot_anat(preop_mri, title=f'{subid} preop MRI with resection mask', axes=axes[0], cut_coords=cut_coords, vmax=500)
             p.add_contours(resection_mask, levels=[.5], colors='r')
             # also plot postop MRI in the same figure
-            plot_anat(postop_mri, title=f'{subid} postop MRI', axes=axes[1], cut_coords=cut_coords, vmax=500)
-            fig.savefig(f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_10_mri_dump/{subid}/sMRI/sub-{subid}-{subid}_MRI_resection.png')
+            post2pre_mri = postop_mri.replace('.nii.gz', '.resection.mask.nii.gz')
+            plot_anat(post2pre_mri, title=f'{subid} post2preop MRI', axes=axes[1], cut_coords=cut_coords, vmax=500)
             plt.tight_layout()
+
+            fig.savefig(f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_10_mri_dump/{subid}/sMRI/sub-{subid}-{subid}_MRI_resection.png')
+            fig.savefig(f'sub-{subid}_resection.png')
             #plt.show()
             print(f'Plotted preop MRI with resection mask for {subid}')
             plt.close()
