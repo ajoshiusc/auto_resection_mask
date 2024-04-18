@@ -261,6 +261,8 @@ def delineate_resection(
     mov_img = post_mri_base + ".pvc.frac.nii.gz"
     ref_img = pre_mri_base + ".pvc.frac.nii.gz"
     ref_img_mask = pre_mri_base + ".mask.nii.gz"
+    mov_img_mask = post_mri_base + ".mask.nii.gz"
+
     ref_img_pvc_frac = pre_mri_base + ".pvc.frac.nii.gz"
     error_img = pre_mri_dir + "/error_pre_post.nii.gz"
     error_mask_img = pre_mri_dir + "/error_pre_post.mask.nii.gz"
@@ -352,6 +354,7 @@ def delineate_resection(
     vwrp = LoadImage(image_only=True)(affine_reg_img_pvc_frac)
     msk = LoadImage(image_only=True)(ref_img_mask)
 
+    msk = (msk>0) & (vwrp>0)
     vwrp = (255.0 / np.max(vwrp[msk > 0])) * vwrp
     vref = (255.0 / np.max(vref[msk > 0])) * vref
 
@@ -453,6 +456,8 @@ def delineate_resection(
         return largest_cc
 
     # %%
+
+    msk = (msk>0) & (vwrp>0)
 
     vwrp = vref - vwrp
 
