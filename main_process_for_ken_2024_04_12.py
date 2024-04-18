@@ -9,7 +9,7 @@ sublist = glob.glob('/deneb_disk/auto_resection/seizure_free_patients_from_ken/2
 # Initialize an empty list to store subject IDs with preop MRI
 subjects_with_mri = []
 
-#sublist = ['M1985N39'] #['F2001K75']
+sublist = ['F2009N5N']#['M1985N39'] #['F2001K75']
 # Open the CSV file for reading
 for fname in sublist:
     subid = os.path.basename(fname)

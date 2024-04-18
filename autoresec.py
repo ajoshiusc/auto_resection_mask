@@ -9,7 +9,7 @@ import os
 import torch
 import numpy as np
 from scipy.ndimage import gaussian_filter
-from skimage.morphology import remove_small_objects, opening
+from skimage.morphology import remove_small_objects, opening, erosion, isotropic_erosion
 from warper import Warper
 import nibabel.processing as nibp
 from skimage.measure import label
@@ -100,6 +100,9 @@ def get_possible_resect_mask(
             data[data == label_id] = 0
 
         data[data > 0] = 255
+
+        # erode mask by 3 voxel
+        data = isotropic_erosion(data, 3) # (data, np.ones((9, 9, 9)))
 
         # Create a new NIfTI image with modified data
         modified_img = nib.Nifti1Image(np.uint8(data), img.affine)
