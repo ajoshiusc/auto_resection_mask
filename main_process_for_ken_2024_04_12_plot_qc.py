@@ -4,6 +4,10 @@ import glob
 import os
 from nilearn.plotting import plot_anat, find_xyz_cut_coords
 from matplotlib import pyplot as plt
+import numpy as np
+import nibabel as nb
+
+
 
 sublist = glob.glob('/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_10_mri_dump/*')
 
@@ -55,11 +59,21 @@ for fname in sublist:
 
             #plot the preop mri with resection mask
             cut_coords = find_xyz_cut_coords(resection_mask)
-            p = plot_anat(preop_mri, title=f'{subid} preop MRI with resection mask', axes=axes[0], cut_coords=cut_coords, vmax=500)
+
+            # find 90th percentile of the preop MRI
+            img = nb.load(preop_mri).get_fdata()
+            pctl = np.percentile(img, 90)
+
+
+            p = plot_anat(preop_mri, title=f'{subid} preop MRI with resection mask', axes=axes[0], cut_coords=cut_coords, vmax=pctl)
             p.add_contours(resection_mask, levels=[.5], colors='r')
             # also plot postop MRI in the same figure
+
             post2pre_mri = preop_mri.replace('.nii.gz', '.affine.post2pre.nii.gz')
-            plot_anat(post2pre_mri, title=f'{subid} post2preop MRI', axes=axes[1], cut_coords=cut_coords, vmax=500)
+            # find 90th percentile of the postop MRI
+            img = nb.load(post2pre_mri).get_fdata()
+            pctl = np.percentile(img, 90)
+            plot_anat(post2pre_mri, title=f'{subid} post2preop MRI', axes=axes[1], cut_coords=cut_coords, vmax=pctl)
             plt.tight_layout()
 
             fig.savefig(f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_10_mri_dump/{subid}/sMRI/sub-{subid}-{subid}_MRI_resection.png')
