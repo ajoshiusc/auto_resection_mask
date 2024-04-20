@@ -55,7 +55,7 @@ for fname in sublist:
 
             resection_mask = preop_mri.replace('.nii.gz', '.resection.mask.nii.gz')
             
-            fig, axes = plt.subplots(nrows=2, ncols=1) #, figsize=(14, 20))
+            fig, axes = plt.subplots(nrows=2, ncols=1, figsize=(15, 10))
 
             #plot the preop mri with resection mask
             cut_coords = find_xyz_cut_coords(resection_mask)
