@@ -62,7 +62,7 @@ for fname in sublist:
 
             # find 90th percentile of the preop MRI
             img = nb.load(preop_mri).get_fdata()
-            pctl = np.percentile(img, 90)
+            pctl = np.percentile(img, 99)
 
 
             p = plot_anat(preop_mri, title=f'{subid} preop MRI with resection mask', axes=axes[0], cut_coords=cut_coords, vmax=pctl)
@@ -72,7 +72,7 @@ for fname in sublist:
             post2pre_mri = preop_mri.replace('.nii.gz', '.affine.post2pre.nii.gz')
             # find 90th percentile of the postop MRI
             img = nb.load(post2pre_mri).get_fdata()
-            pctl = np.percentile(img, 90)
+            pctl = np.percentile(img, 99)
             plot_anat(post2pre_mri, title=f'{subid} post2preop MRI', axes=axes[1], cut_coords=cut_coords, vmax=pctl)
             plt.tight_layout()
 
