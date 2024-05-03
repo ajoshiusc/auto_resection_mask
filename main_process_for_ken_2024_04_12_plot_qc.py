@@ -30,20 +30,6 @@ for fname in sublist:
         preop_mri = preop_mri[0]
         postop_mri = postop_mri[0]
 
-
-    # Check if the subject has preop MRI
-    if os.path.isfile(preop_mri):
-        print(f'Subject {subid} has preop MRI')
-    else:
-        print(f'File {preop_mri} does not exist')
-    
-    # Check if the subject has postop MRI
-    if os.path.isfile(postop_mri):
-        print(f'Subject {subid} has postop MRI')
-    else:
-        print(f'File {postop_mri} does not exist')           
-
-
     # Check if both preop and postop MRI exist
     if os.path.isfile(preop_mri) and os.path.isfile(postop_mri):
 
@@ -76,13 +62,16 @@ for fname in sublist:
             plot_anat(post2pre_mri, title=f'{subid} post2preop MRI', axes=axes[1], cut_coords=cut_coords, vmax=pctl)
             plt.tight_layout()
 
-            fig.savefig(f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_10_mri_dump/{subid}/sMRI/sub-{subid}-{subid}_MRI_resection.png')
+            fig.savefig(f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_12_mri_dump/{subid}/sMRI/sub-{subid}-{subid}_MRI_resection.png')
             fig.savefig(f'sub-{subid}_resection.png')
             #plt.show()
             print(f'Plotted preop MRI with resection mask for {subid}')
             plt.close()
+        else:
+            print(f'No resection mask found for {subid}')
 
-        print(f'Subject {subid} processed')
+    else:
+        print(f'Either preop or postop MRI is missing for {subid}')
 
 
 

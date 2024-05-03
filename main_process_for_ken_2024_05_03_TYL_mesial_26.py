@@ -4,12 +4,17 @@ from autoresec import delineate_resection, delineate_resection_post
 import os
 
 
-sublist = glob.glob('/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_12_mri_dump/*')
+outdir = '/deneb_disk/auto_resection/seizure_free_patients_from_ken/TLY_mesial_26_sub'
+os.makedirs(outdir, exist_ok=True)
+#sublist = glob.glob('/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_12_mri_dump/*')
 
+# read the list of subjects from a txt file
+sublist = open('TL_mesial_26.txt', 'r', encoding='utf-8').read().splitlines()
+
+sublist =['F2002K7E']
 # Initialize an empty list to store subject IDs with preop MRI
 subjects_with_mri = []
 
-sublist = ['F1980N5K']#['M1985N39'] #['F2001K75']
 # Open the CSV file for reading
 for fname in sublist:
     subid = os.path.basename(fname)
@@ -35,6 +40,17 @@ for fname in sublist:
     # Check if both preop and postop MRI exist
     if os.path.isfile(preop_mri) and os.path.isfile(postop_mri):
 
+        # make output subject directory
+        outdir_sub = os.path.join(outdir, subid)
+        os.makedirs(outdir_sub, exist_ok=True)
+
+
+        # copy preop and postop MRI to the output subject directory
+        os.system(f'cp {preop_mri} {outdir_sub}')
+        os.system(f'cp {postop_mri} {outdir_sub}')
+
+        preop_mri = os.path.join(outdir_sub, os.path.basename(preop_mri))
+        postop_mri = os.path.join(outdir_sub, os.path.basename(postop_mri))
 
         #if not os.path.isfile(postop_mri.replace('.nii.gz', '.resection.mask.nii.gz')):
         #    delineate_resection_post(preop_mri, postop_mri)
