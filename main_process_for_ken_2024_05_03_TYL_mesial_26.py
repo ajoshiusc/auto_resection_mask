@@ -11,7 +11,7 @@ os.makedirs(outdir, exist_ok=True)
 # read the list of subjects from a txt file
 sublist = open('TL_mesial_26.txt', 'r', encoding='utf-8').read().splitlines()
 
-sublist =['F2002K7E']
+#sublist =['F2002K7E']
 # Initialize an empty list to store subject IDs with preop MRI
 subjects_with_mri = []
 
