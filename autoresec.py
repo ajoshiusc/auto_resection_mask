@@ -17,6 +17,21 @@ import tempfile
 from shutil import copyfile
 from warp_utils import apply_warp
 
+from nilearn import image
+
+def apply_mask(input_file, mask_file, output_file):
+    # Load input image and mask
+    img = image.load_img(input_file)
+    mask = image.load_img(mask_file)
+
+    # Apply mask to image data
+    masked_img = image.math_img("img * mask", img=img, mask=mask)
+
+    # Save masked image to output file
+    masked_img.to_filename(output_file)
+    print(f"Mask applied successfully. Saved to: {output_file}")
+
+
 
 def get_possible_resect_mask(
     pre_mri_path,
@@ -314,17 +329,29 @@ def delineate_resection(
 
     # %%
 
-    cmd = (
-        os.path.join(BrainSuitePATH, "bin", "bse")
-        + " -i "
-        + affine_reg_img
-        + " -o "
-        + affine_reg_img_bse
-        + " --auto --trim --mask "
-        + affine_reg_img_mask
-    )
-    os.system(cmd)
+    print('use common mask for pre and post mri')
 
+    #cmd = (
+    #    os.path.join(BrainSuitePATH, "bin", "bse")
+    #    + " -i "
+    #    + affine_reg_img
+    #    + " -o "
+    #    + affine_reg_img_bse
+    #    + " --auto --trim --mask "
+    #    + affine_reg_img_mask
+    #)
+    #os.system(cmd)
+
+    # apply mask from pre-mri to affine_reg_img
+
+    #copyfile(ref_img_mask,affine_reg_img_mask)
+
+    copyfile(pre_mri_base + ".mask.nii.gz",affine_reg_img_mask)
+
+    # apply affine_reg_img_mask to affine_reg_img using nilearn
+    apply_mask(affine_reg_img, affine_reg_img_mask, affine_reg_img_bse)
+
+    # bfc processing
     cmd = (
         os.path.join(BrainSuitePATH, "bin", "bfc")
         + " -i "
@@ -732,16 +759,22 @@ def delineate_resection_post(
 
     # %%
 
-    cmd = (
-        os.path.join(BrainSuitePATH, "bin", "bse")
-        + " -i "
-        + affine_reg_img
-        + " -o "
-        + affine_reg_img_bse
-        + " --auto --trim --mask "
-        + affine_reg_img_mask
-    )
-    os.system(cmd)
+    # cmd = (
+    #     os.path.join(BrainSuitePATH, "bin", "bse")
+    #     + " -i "
+    #     + affine_reg_img
+    #     + " -o "
+    #     + affine_reg_img_bse
+    #     + " --auto --trim --mask "
+    #     + affine_reg_img_mask
+    # )
+    # os.system(cmd)
+
+    # copy mask
+    copyfile(pre_mri_base + ".mask.nii.gz",affine_reg_img_mask)
+
+    # apply affine_reg_img_mask to affine_reg_img using nilearn
+    apply_mask(affine_reg_img, affine_reg_img_mask, affine_reg_img_bse)
 
     cmd = (
         os.path.join(BrainSuitePATH, "bin", "bfc")

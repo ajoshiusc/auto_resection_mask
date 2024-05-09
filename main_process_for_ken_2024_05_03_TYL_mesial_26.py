@@ -11,7 +11,7 @@ os.makedirs(outdir, exist_ok=True)
 # read the list of subjects from a txt file
 sublist = open('TL_mesial_26.txt', 'r', encoding='utf-8').read().splitlines()
 
-#sublist =['F2002K7E']
+sublist =['M2010M26']
 # Initialize an empty list to store subject IDs with preop MRI
 subjects_with_mri = []
 
@@ -66,6 +66,7 @@ for fname in sublist:
             print(f'Subject {subid} ALREADY processed')
 
         #delineate_resection(preop_mri, postop_mri)
+
 
         print(f'Subject {subid} processing done!')
 
