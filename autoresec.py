@@ -497,7 +497,7 @@ def delineate_resection(
     vwrp = vwrp * (msk > 0)
 
     ST = 3
-    ERR_THR = 0.99
+    ERR_THR = 0.75 #(ERR_THR*3.0)/255.0 #0.99
     error_mask = opening(
         vwrp > ERR_THR,
         footprint=[
@@ -540,11 +540,11 @@ def delineate_resection(
     # copyfile(affine_reg_img, affine_reg_img_out)
 
     ni.resample_to_img(
-        affine_reg_img, pre_mri_path, interpolation="linear"
+        affine_reg_img, pre_mri_path, interpolation="linear",force_resample=True
     ).to_filename(affine_reg_img_out)
 
     ni.resample_to_img(
-        error_mask_img_nonlin, pre_mri_path, interpolation="nearest"
+        error_mask_img_nonlin, pre_mri_path, interpolation="nearest", force_resample=True
     ).to_filename(output_mask_pre)
 
     # %%
@@ -923,7 +923,7 @@ def delineate_resection_post(
     vwrp = vwrp * (msk > 0)
 
     ST = 3
-    ERR_THR = 0.99
+    ERR_THR = (ERR_THR*3.0)/255.0 #0.99
     error_mask = opening(
         vwrp > ERR_THR,
         footprint=[

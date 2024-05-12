@@ -11,30 +11,41 @@ os.makedirs(outdir, exist_ok=True)
 # read the list of subjects from a txt file
 sublist = open('TL_mesial_26.txt', 'r', encoding='utf-8').read().splitlines()
 
-#sublist =['F1987N3S']
+#sublist = ['F1987N3S']
+#['F2003M25'] #['M1954N46'] #
 # Initialize an empty list to store subject IDs with preop MRI
 subjects_with_mri = []
 
 # Open the CSV file for reading
 for fname in sublist:
     subid = os.path.basename(fname)
-    preop_mri = glob.glob(f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_12_mri_dump/{subid}/sMRI/*{subid}?MRI.nii*') #f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_12_mri_dump/{subid}/sMRI/sub-{subid}-{subid}_MRI.nii.gz'
-    postop_mri = glob.glob(f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_12_mri_dump/{subid}/sMRI/*{subid}*post*.nii*') #f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_12_mri_dump/{subid}/sMRI/sub-{subid}-{subid}_post_RS_MRI.nii.gz'
+    preop_mri_orig = glob.glob(f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_12_mri_dump/{subid}/sMRI/*{subid}?MRI.nii*') #f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_12_mri_dump/{subid}/sMRI/sub-{subid}-{subid}_MRI.nii.gz'
+    postop_mri_orig = glob.glob(f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_12_mri_dump/{subid}/sMRI/*{subid}*post*MRI.nii*') #f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_12_mri_dump/{subid}/sMRI/sub-{subid}-{subid}_post_RS_MRI.nii.gz'
 
-    if len(postop_mri) == 0 or len(preop_mri) == 0:
+    if len(postop_mri_orig) == 0 or len(preop_mri_orig) == 0:
         continue
     else:
-        preop_mri = preop_mri[0]
-        postop_mri = postop_mri[0]
+        preop_mri_orig = preop_mri_orig[0]
+        postop_mri_orig = postop_mri_orig[0]
 
     # if extension is .nii, compress the file and make it .nii.gz
-    if preop_mri.endswith('.nii'):
-        os.system(f'gzip {preop_mri}')
-        preop_mri = preop_mri + '.gz'
+    if preop_mri_orig.endswith('.nii'):
+        os.system(f'gzip {preop_mri_orig}')
+        preop_mri_orig = preop_mri_orig + '.gz'
 
-    if postop_mri.endswith('.nii'):
-        os.system(f'gzip {postop_mri}')
-        postop_mri = postop_mri + '.gz'
+    if postop_mri_orig.endswith('.nii'):
+        os.system(f'gzip {postop_mri_orig}')
+        postop_mri_orig = postop_mri_orig + '.gz'
+
+
+    preop_mri = preop_mri_orig.replace('.nii.gz', '_unifize.nii.gz')
+    postop_mri = postop_mri_orig.replace('.nii.gz', '_unifize.nii.gz')
+
+    #preop_mri = glob.glob(f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_12_mri_dump/{subid}/sMRI/*{subid}?MRI_unifize.nii*') #f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_12_mri_dump/{subid}/sMRI/sub-{subid}-{subid}_MRI.nii.gz'
+    #postop_mri = glob.glob(f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_12_mri_dump/{subid}/sMRI/*{subid}*post*_unifize.nii*') #f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_12_mri_dump/{subid}/sMRI/sub-{subid}-{subid}_post_RS_MRI.nii.gz'
+
+    os.system(f'3dUnifize -input {preop_mri_orig} -prefix {preop_mri}')
+    os.system(f'3dUnifize -input {postop_mri_orig} -prefix {postop_mri}')
 
 
     # Check if both preop and postop MRI exist
