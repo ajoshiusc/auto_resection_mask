@@ -1,8 +1,11 @@
 
 import glob
+from pickle import FALSE
+
 from autoresec import delineate_resection, delineate_resection_post
 import os
 
+UNIFIZE = False
 
 outdir = '/deneb_disk/auto_resection/seizure_free_patients_from_ken/TLY_mesial_26_sub'
 os.makedirs(outdir, exist_ok=True)
@@ -38,14 +41,18 @@ for fname in sublist:
         postop_mri_orig = postop_mri_orig + '.gz'
 
 
-    preop_mri = preop_mri_orig.replace('.nii.gz', '_unifize.nii.gz')
-    postop_mri = postop_mri_orig.replace('.nii.gz', '_unifize.nii.gz')
 
     #preop_mri = glob.glob(f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_12_mri_dump/{subid}/sMRI/*{subid}?MRI_unifize.nii*') #f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_12_mri_dump/{subid}/sMRI/sub-{subid}-{subid}_MRI.nii.gz'
     #postop_mri = glob.glob(f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_12_mri_dump/{subid}/sMRI/*{subid}*post*_unifize.nii*') #f'/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_12_mri_dump/{subid}/sMRI/sub-{subid}-{subid}_post_RS_MRI.nii.gz'
 
-    os.system(f'3dUnifize -input {preop_mri_orig} -prefix {preop_mri}')
-    os.system(f'3dUnifize -input {postop_mri_orig} -prefix {postop_mri}')
+    if UNIFIZE == True:
+        preop_mri = preop_mri_orig.replace('.nii.gz', '_unifize.nii.gz')
+        postop_mri = postop_mri_orig.replace('.nii.gz', '_unifize.nii.gz')
+        os.system(f'3dUnifize -input {preop_mri_orig} -prefix {preop_mri}')
+        os.system(f'3dUnifize -input {postop_mri_orig} -prefix {postop_mri}')
+    else:
+        preop_mri = preop_mri_orig
+        postop_mri = postop_mri_orig
 
 
     # Check if both preop and postop MRI exist
