@@ -9,7 +9,7 @@ import os
 import torch
 import numpy as np
 from scipy.ndimage import gaussian_filter
-from skimage.morphology import remove_small_objects, opening, erosion, isotropic_erosion
+from skimage.morphology import remove_small_objects, opening,closing, erosion, isotropic_erosion, dilation
 from warper import Warper
 import nibabel.processing as nibp
 from skimage.measure import label
@@ -498,14 +498,16 @@ def delineate_resection(
 
     ST = 3
     ERR_THR = 0.75 #(ERR_THR*3.0)/255.0 #0.99
-    error_mask = opening(
-        vwrp > ERR_THR,
-        footprint=[
-            (np.ones((ST, 1, 1)), 1),
-            (np.ones((1, ST, 1)), 1),
-            (np.ones((1, 1, ST)), 1),
-        ],
-    )
+    error_mask = opening(opening(closing(dilation(np.array(vwrp)))) > ERR_THR, footprint=[(np.ones((ST, 1, 1)), 1), (np.ones((1, ST, 1)), 1), (np.ones((1, 1, ST)), 1),],)
+                         #opening(
+        #vwrp > ERR_THR) #,
+        #footprint=[
+        #    (np.ones((ST, 1, 1)), 1),
+        #    (np.ones((1, ST, 1)), 1),
+        #    (np.ones((1, 1, ST)), 1),
+        #],
+    #)
+    
     nib.save(
         nib.Nifti1Image(255 * np.uint8(error_mask), nonlin_reg.target.affine),
         error_init_mask_img,
