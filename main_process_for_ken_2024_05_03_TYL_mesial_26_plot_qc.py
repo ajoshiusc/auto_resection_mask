@@ -8,7 +8,7 @@ import numpy as np
 import nibabel as nb
 
 
-outdir = '/deneb_disk/auto_resection/seizure_free_patients_from_ken/TLY_mesial_26_sub'
+outdir = '/deneb_disk/auto_resection/seizure_free_patients_from_ken/TLY_mesial_26_sub_5_25_2024'
 os.makedirs(outdir, exist_ok=True)
 #sublist = glob.glob('/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_12_mri_dump/*')
 

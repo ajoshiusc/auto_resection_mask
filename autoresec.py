@@ -498,16 +498,13 @@ def delineate_resection(
 
     ST = 3
     ERR_THR = 0.75 #(ERR_THR*3.0)/255.0 #0.99
-    error_mask = opening(opening(closing(dilation(np.array(vwrp)))) > ERR_THR, footprint=[(np.ones((ST, 1, 1)), 1), (np.ones((1, ST, 1)), 1), (np.ones((1, 1, ST)), 1),],)
-                         #opening(
-        #vwrp > ERR_THR) #,
-        #footprint=[
-        #    (np.ones((ST, 1, 1)), 1),
-        #    (np.ones((1, ST, 1)), 1),
-        #    (np.ones((1, 1, ST)), 1),
-        #],
-    #)
+    #error_mask = opening(opening(closing(dilation(np.array(vwrp)))) > ERR_THR, footprint=[(np.ones((ST, 1, 1)), 1), (np.ones((1, ST, 1)), 1), (np.ones((1, 1, ST)), 1),],)
+    error_mask_core = opening(vwrp > ERR_THR, footprint=[(np.ones((ST, 1, 1)), 1), (np.ones((1, ST, 1)), 1), (np.ones((1, 1, ST)), 1)])
     
+    error_mask_dilated = dilation(error_mask_core, np.ones((7, 7, 7)))
+
+    error_mask = opening(closing((dilation(vwrp) > ERR_THR))*(error_mask_dilated>0))
+
     nib.save(
         nib.Nifti1Image(255 * np.uint8(error_mask), nonlin_reg.target.affine),
         error_init_mask_img,
