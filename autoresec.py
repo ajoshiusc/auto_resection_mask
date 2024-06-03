@@ -460,7 +460,7 @@ def delineate_resection(
         moving_file=affine_reg_img_pvc_frac,
         output_file=nonlin_reg_img_pvc_frac,
         ddf_file=ddf,
-        reg_penalty=3,
+        reg_penalty=.01,
         nn_input_size=64,
         lr=1e-3,
         max_epochs=1000,
