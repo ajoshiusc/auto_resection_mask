@@ -8,7 +8,7 @@ import numpy as np
 import nibabel as nb
 
 
-outdir = '/deneb_disk/auto_resection/seizure_free_patients_from_ken/TLY_mesial_26_sub_5_25_2024'
+outdir = '/deneb_disk/auto_resection/seizure_free_patients_from_ken/TLY_mesial_26_sub_6_01_2024'
 os.makedirs(outdir, exist_ok=True)
 #sublist = glob.glob('/deneb_disk/auto_resection/seizure_free_patients_from_ken/2024_04_12_mri_dump/*')
 
@@ -45,7 +45,7 @@ for fname in sublist:
 
             resection_mask = preop_mri.replace('.nii.gz', '.resection.mask.nii.gz')
             
-            fig, axes = plt.subplots(nrows=2, ncols=1, figsize=(15, 10))
+            fig, axes = plt.subplots(nrows=3, ncols=1, figsize=(15, 15))
 
             #plot the preop mri with resection mask
             cut_coords = find_xyz_cut_coords(resection_mask)
@@ -56,15 +56,31 @@ for fname in sublist:
 
 
             p = plot_anat(preop_mri, title=f'{subid} preop MRI with resection mask', axes=axes[0], cut_coords=cut_coords, vmax=pctl)
+            #p = plot_anat(preop_mri, title=f'pre-op MRI with resection mask', axes=axes[0], cut_coords=cut_coords, vmax=pctl)
+
             p.add_contours(resection_mask, levels=[.5], colors='r')
+            #plt.tight_layout()
             # also plot postop MRI in the same figure
 
             post2pre_mri = preop_mri.replace('.nii.gz', '.affine.post2pre.nii.gz')
+            post2pre_mri_nonlin = preop_mri.replace('.nii.gz', '.nonlin.post2pre.nii.gz')
+
             # find 90th percentile of the postop MRI
             img = nb.load(post2pre_mri).get_fdata()
             pctl = np.percentile(img, 99)
-            plot_anat(post2pre_mri, title=f'{subid} post2preop MRI', axes=axes[1], cut_coords=cut_coords, vmax=pctl)
-            plt.tight_layout()
+            plot_anat(post2pre_mri, title=f'{subid} post2preop MRI (affine)', axes=axes[1], cut_coords=cut_coords, vmax=pctl)
+            #plot_anat(post2pre_mri, title=f' post-op MRI affinely coregistered to pre-op', axes=axes[1], cut_coords=cut_coords, vmax=pctl)
+
+            #plt.tight_layout()
+
+            # find 90th percentile of the postop MRI
+            img = nb.load(post2pre_mri_nonlin).get_fdata()
+            pctl = np.percentile(img, 99)
+            plot_anat(post2pre_mri_nonlin, title=f'{subid} post2preop MRI (nonlinear)', axes=axes[2], cut_coords=cut_coords, vmax=pctl)
+            #plot_anat(post2pre_mri_nonlin, title=f' post-op MRI nonlinearly coregistered to pre-op', axes=axes[2], cut_coords=cut_coords, vmax=pctl)
+
+            #plt.tight_layout()
+
 
             fig.savefig(f'{outdir}/{subid}/sub-{subid}-{subid}_MRI_resection.png')
             fig.savefig(f'sub-{subid}_resection.png')
