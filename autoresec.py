@@ -797,7 +797,7 @@ def delineate_resection_post(
     # os.system(cmd)
 
     # copy mask
-    copyfile(pre_mri_base + ".mask.nii.gz",affine_reg_img_mask)
+    copyfile(ref_img_mask,affine_reg_img_mask)
 
     # apply affine_reg_img_mask to affine_reg_img using nilearn
     apply_mask(affine_reg_img, affine_reg_img_mask, affine_reg_img_bse)
