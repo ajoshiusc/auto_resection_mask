@@ -562,15 +562,15 @@ def delineate_resection(
     # copyfile(affine_reg_img, affine_reg_img_out)
 
     ni.resample_to_img(
-        affine_reg_img, pre_mri_path, interpolation="linear",force_resample=True
+        affine_reg_img, pre_mri_path, interpolation="linear",force_resample=True, copy_header=True
     ).to_filename(affine_reg_img_out)
 
     ni.resample_to_img(
-        nonlin_reg_img, pre_mri_path, interpolation="linear",force_resample=True
+        nonlin_reg_img, pre_mri_path, interpolation="linear",force_resample=True, copy_header=True
     ).to_filename(nonlin_reg_img_out)
 
     ni.resample_to_img(
-        error_mask_img_nonlin, pre_mri_path, interpolation="nearest", force_resample=True
+        error_mask_img_nonlin, pre_mri_path, interpolation="nearest", force_resample=True, copy_header=True
     ).to_filename(output_mask_pre)
 
     # %%
@@ -1020,16 +1020,16 @@ def delineate_resection_post(
     # copyfile(affine_reg_img, affine_reg_img_out)
 
     ni.resample_to_img(
-        affine_reg_img, post_mri_path, interpolation="linear"
+        affine_reg_img, post_mri_path, interpolation="linear", force_resample=True, copy_header=True
     ).to_filename(affine_reg_img_out)
 
     ni.resample_to_img(
-        nonlin_reg_img, pre_mri_path, interpolation="linear",force_resample=True
+        nonlin_reg_img, pre_mri_path, interpolation="linear",force_resample=True, copy_header=True
     ).to_filename(nonlin_reg_img_out)
 
 
     ni.resample_to_img(
-        error_mask_img_nonlin, post_mri_path, interpolation="nearest"
+        error_mask_img_nonlin, post_mri_path, interpolation="nearest", force_resample=True, copy_header=True
     ).to_filename(output_mask_post)
 
     # %%
