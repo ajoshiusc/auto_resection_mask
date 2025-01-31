@@ -399,7 +399,7 @@ def delineate_resection(
 
     nib.save(nib.Nifti1Image(vwrp, affine_reg.target.affine), error_img)
 
-    error_mask = opening(vwrp > ERR_THR)
+    error_mask = opening((vwrp > ERR_THR) | (vwrp < -ERR_THR))
     nib.save(
         nib.Nifti1Image(255 * np.uint8(error_mask), affine_reg.target.affine),
         error_init_mask_img,
@@ -537,8 +537,8 @@ def delineate_resection(
     output_mask_pre = pre_mri_base_orig + ".resection.mask.nii.gz"
     output_mask_post = post_mri_base_orig + ".resection.mask.nii.gz"
 
-    affine_reg_img_out = pre_mri_base_orig + ".affine.post2pre.nii.gz"
-    nonlin_reg_img_out = pre_mri_base_orig + ".nonlin.post2pre.nii.gz"
+    affine_reg_img_out = post_mri_base_orig + ".affine.post2pre.nii.gz"
+    nonlin_reg_img_out = post_mri_base_orig + ".nonlin.post2pre.nii.gz"
 
     # apply nonlinear warp to post-mri
     moving = LoadImage(image_only=True)(affine_reg_img)
@@ -750,6 +750,8 @@ def delineate_resection_post(
     affine_reg_img_pvc_label = post_mri_dir + "/pre2post.pvc.label.nii.gz"
     affine_reg_img_pvc_frac = post_mri_dir + "/pre2post.pvc.frac.nii.gz"
 
+    nonlin_reg_img = post_mri_dir + "/post2pre.nonlin.nii.gz"
+
     ddf = pre_mri_dir + "/ddf.nii.gz"
 
     affine_reg.affine_reg(
@@ -846,7 +848,7 @@ def delineate_resection_post(
 
     nib.save(nib.Nifti1Image(vwrp, affine_reg.target.affine), error_img)
 
-    error_mask = opening(vwrp > ERR_THR)
+    error_mask = opening((vwrp > ERR_THR) | (vwrp < -ERR_THR), footprint=[(np.ones((3, 1, 1)), 1), (np.ones((1, 3, 1)), 1), (np.ones((1, 1, 3)), 1)]) 
     nib.save(
         nib.Nifti1Image(255 * np.uint8(error_mask), affine_reg.target.affine),
         error_init_mask_img,
@@ -951,7 +953,7 @@ def delineate_resection_post(
     ST = 3
     ERR_THR = (ERR_THR*3.0)/255.0 #0.99
     error_mask = opening(
-        vwrp > ERR_THR,
+        (vwrp > ERR_THR) | (vwrp < -ERR_THR),
         footprint=[
             (np.ones((ST, 1, 1)), 1),
             (np.ones((1, ST, 1)), 1),
@@ -985,16 +987,46 @@ def delineate_resection_post(
     # %% [markdown]
     # Write Mask to pre_image space
 
+
+    # apply nonlinear warp to post-mri
+    moving = LoadImage(image_only=True)(affine_reg_img)
+    moving = EnsureChannelFirst()(moving)
+
+    target = LoadImage(image_only=True)(ref_img)
+    target = EnsureChannelFirst()(target)
+
+    image_movedo = apply_warp(nonlin_reg.ddf[None,], moving[None,], target[None,])
+
+    nib.save(
+        nib.Nifti1Image(
+            image_movedo[0, 0].detach().cpu().numpy(), affine_reg.target.affine
+        ),
+        nonlin_reg_img,
+    )
+
+
+
     # %%
+
+
+
+
     output_mask_pre = pre_mri_base_orig + ".resection.mask.nii.gz"
     output_mask_post = post_mri_base_orig + ".resection.mask.nii.gz"
 
-    affine_reg_img_out = post_mri_base_orig + ".affine.pre2post.nii.gz"
+    affine_reg_img_out = pre_mri_base_orig + ".affine.pre2post.nii.gz"
+    nonlin_reg_img_out = pre_mri_base_orig + ".nonlin.pre2post.nii.gz"
+
     # copyfile(affine_reg_img, affine_reg_img_out)
 
     ni.resample_to_img(
         affine_reg_img, post_mri_path, interpolation="linear"
     ).to_filename(affine_reg_img_out)
+
+    ni.resample_to_img(
+        nonlin_reg_img, pre_mri_path, interpolation="linear",force_resample=True
+    ).to_filename(nonlin_reg_img_out)
+
 
     ni.resample_to_img(
         error_mask_img_nonlin, post_mri_path, interpolation="nearest"
