@@ -1024,7 +1024,7 @@ def delineate_resection_post(
     ).to_filename(affine_reg_img_out)
 
     ni.resample_to_img(
-        nonlin_reg_img, pre_mri_path, interpolation="linear",force_resample=True, copy_header=True
+        nonlin_reg_img, post_mri_path, interpolation="linear",force_resample=True, copy_header=True
     ).to_filename(nonlin_reg_img_out)
 
 
