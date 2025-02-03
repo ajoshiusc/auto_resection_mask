@@ -25,4 +25,3 @@ for subid in sublist:
     generate_resection_overlay_plots(preop_mri, postop_mri)
 
 print('Done')
-
