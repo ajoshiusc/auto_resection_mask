@@ -76,6 +76,7 @@ for fname in sublist:
 
             try:
                 delineate_resection(preop_mri, postop_mri)
+                delineate_resection_post(preop_mri, postop_mri)
             except Exception as e:
                 print(f"Error processing subject {subid}: {e}")
                 continue

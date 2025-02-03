@@ -126,7 +126,7 @@ def get_possible_resect_mask(
         nib.save(modified_img, output_possible_resect_mask_path)
 
 
-def delineate_resection(
+def delineate_resection_pre(
     pre_mri_path,
     post_mri_path,
     BrainSuitePATH="/home/ajoshi/Software/BrainSuite23a",
@@ -325,13 +325,18 @@ def delineate_resection(
         affine_reg_img,
     )
 
+    
+
     # plotting.plot_anat(affine_reg_img, title="affine registered post-mri",cut_coords=(0,0,0))
     # plotting.plot_anat(pre_mri, title="Pre MRI",cut_coords=(0,0,0))
     # plotting.show()
 
     # %%
 
+
     print('use common mask for pre and post mri')
+
+    
 
     #cmd = (
     #    os.path.join(BrainSuitePATH, "bin", "bse")

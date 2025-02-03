@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 
-from monai.utils import set_determinism
-from monai.networks.nets import GlobalNet
-from monai.config import USE_COMPILED
+from monai.utils.misc import set_determinism
+from monai.networks.nets.regunet import GlobalNet
+from monai.config.deviceconfig import USE_COMPILED
 from monai.networks.blocks import Warp
 from torch.nn import MSELoss
 from monai.transforms import LoadImage, Resize, EnsureChannelFirst, ScaleIntensityRangePercentiles
-from monai.losses import GlobalMutualInformationLoss, LocalNormalizedCrossCorrelationLoss
+from monai.losses.image_dissimilarity import LocalNormalizedCrossCorrelationLoss
+from monai.losses.image_dissimilarity import GlobalMutualInformationLoss
 from warp_utils import apply_warp
 import argparse
 import torch
