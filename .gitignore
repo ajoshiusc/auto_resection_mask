@@ -171,3 +171,5 @@ synthetic_lesion/lesion_synth_haleh_paper/.vscode/launch.json
 *.img
 *.hdr
 log1.txt
+*.pdf
+TL_mesial_26.txt
