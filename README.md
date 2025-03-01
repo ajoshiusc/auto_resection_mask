@@ -29,8 +29,8 @@ To run the code, please open main_automask.ipynb as a jupyter notebook, correct 
 
 ## Running the code
 
-* Assume as input, you have `preop.nii.gz` (pre-op MRI), and `post-op.nii.gz` (post-op MRI with resection). Open Jupyter notebook `main_automask.ipynb` in vscode.
-* Go to the **Input Cell** and add the paths to `preop.nii.gz` and `post-op.nii.gz`. Add the path to the BrainSuite installation folder.
+* Assume as input, you have `preop.nii.gz` (pre-op MRI), and `post-op.nii.gz` (post-op MRI with resection). Open Python code `main_auto_resection_mask.py` in vscode.
+* Correct the paths of the `auto_resection_module`, as well as paths to `preop.nii.gz` and `post-op.nii.gz`. Add the path to the BrainSuite installation folder.
 * Run the notebook.
 
 ## Manually editing the resection mask
