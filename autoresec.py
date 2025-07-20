@@ -593,8 +593,8 @@ def delineate_resection_post(
     post_mri_path,
     BrainSuitePATH="/home/ajoshi/Software/BrainSuite23a",
     ERR_THR=80,
-    bst_atlas_path="/deneb_disk/auto_resection/bst_atlases/icbm_bst.nii.gz",
-    bst_atlas_labels_path="/deneb_disk/auto_resection/bst_atlases/icbm_bst.label.nii.gz",
+    bst_atlas_path="bst_atlases/icbm_bst.nii.gz",
+    bst_atlas_labels_path="bst_atlases/icbm_bst.label.nii.gz",
 ):
     # pl.plot_anat(pre_mri,title='pre-mri')
     # pl.plot_anat(post_mri,title='post-mri')
