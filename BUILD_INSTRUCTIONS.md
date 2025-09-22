@@ -1,6 +1,6 @@
-# Building on Windows
+# Building on Windows and Mac (Apple Silicon)
 
-To build the `auto_resection_mask` project on Windows, ensure the following files are present in your project directory.
+To build the `auto_resection_mask` project, ensure the following files are present in your project directory.
 
 ## Directory Structure
 
@@ -10,6 +10,7 @@ auto_resection_mask-main/
 ├── auto_resection_mask.py
 ├── requirements_autoresec.txt
 ├── build_windows.bat
+├── build_mac.sh
 ├── icbm_bst.nii.gz
 ├── icbm_bst.label.nii.gz
 ├── autoresec.py
@@ -42,6 +43,7 @@ auto_resection_mask-main/
 
 ### Build Script
 - `build_windows.bat` — Windows build script
+- `build_mac.sh` — Mac build script
 
 ## Build Instructions
 
@@ -54,23 +56,32 @@ auto_resection_mask-main/
 3. **Build the executable:**  
    Execute the build script:
    ```bash
+   # Windows
    build_windows.bat
+
+   # Mac
+   chmod +x build_mac.sh
+   ./build_mac.sh
    ```
    This process will bundle all files and dependencies into a single executable under the folder ```dist``` in the same directory.
 
 4. **Test the build:**
    Execute:
    ```bash
+   # Windows
    dist\auto_resection_mask_win.exe
+
+   # Mac
+   ./dist/auto_resection_mask_mac
    ```
    If you get the response as under then the binary was successsully built
    ```bash
-   Usage: auto_resection_mask preop_mri postop_mri brainsuite_path
+   Usage: auto_resection_mask_xxx preop_mri postop_mri brainsuite_path
      preop_mri: Path to pre-operative MRI file
      postop_mri: Path to post-operative MRI file
      brainsuite_path: Path to BrainSuite installation
    ```
 ---
 **Note:**  
-- If you encounter permission errors, double-check the executable permissions for `build_windows.bat`.
+- If you encounter permission errors, double-check the executable permissions for `build_xxx` files.
 - For troubleshooting Conda installation, refer to the [official documentation](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html).
