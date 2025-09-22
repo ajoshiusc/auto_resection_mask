@@ -6,7 +6,7 @@ To build the `auto_resection_mask` project on Windows, ensure the following file
 
 ```
 auto_resection_mask-main/
-├── wrapper.py
+├── standalone_wrapper.py
 ├── auto_resection_mask.py
 ├── requirements_autoresec.txt
 ├── build_linux.sh
@@ -24,7 +24,7 @@ auto_resection_mask-main/
 ## File Description
 
 ### Core Files
-- `wrapper.py` — Entry point wrapper script
+- `standalone_wrapper.py` — Entry point wrapper script
 - `auto_resection_mask.py` — Main application code
 - `requirements_autoresec.txt` — Package dependencies
 
