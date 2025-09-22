@@ -1,6 +1,6 @@
 # Building on Windows
 
-To build the `auto_resection_mask` project on Linux, ensure the following files are present in your project directory.
+To build the `auto_resection_mask` project on Windows, ensure the following files are present in your project directory.
 
 ## Directory Structure
 
