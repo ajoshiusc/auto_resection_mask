@@ -19,7 +19,7 @@ if ! conda env list | grep -q "autoresec"; then
     conda create -n autoresec python=3.10 -y || exit 1
     source activate autoresec || exit 1
     echo "Installing requirements..."
-    pip install -r requirements_autoresec.txt || exit 1
+    pip install -r requirements_autoresec_mac.txt || exit 1
 else
     echo "Activating existing environment 'autoresec'..."
     source activate autoresec || exit 1
@@ -43,30 +43,34 @@ mkdir -p dist build
 
 # Create spec file
 echo "Creating PyInstaller spec file..."
-cat << 'EOF' > auto_resection_mask.spec
+cat << 'EOF' > auto_resection_mask_mac.spec
 # -*- mode: python -*-
 # -*- coding: utf-8 -*-
 
 import os
-import sklearn
 from pathlib import Path
 
-# Get sklearn binary files
-sklearn_path = os.path.dirname(sklearn.__file__)
+# Try to import sklearn and get binary files
 sklearn_binaries = []
-
-# Add all shared libraries from sklearn
-for root, dirs, files in os.walk(sklearn_path):
-    for file in files:
-        if file.endswith('.dylib'):  # .dylib files for macOS
-            full_path = os.path.join(root, file)
-            rel_path = os.path.relpath(full_path, sklearn_path)
-            target_dir = os.path.dirname(rel_path)
-            if target_dir == '.':
-                target_dir = 'sklearn'
-            else:
-                target_dir = os.path.join('sklearn', target_dir)
-            sklearn_binaries.append((full_path, target_dir))
+try:
+    import sklearn
+    sklearn_path = os.path.dirname(sklearn.__file__)
+    
+    # Add all shared libraries from sklearn
+    for root, dirs, files in os.walk(sklearn_path):
+        for file in files:
+            if file.endswith('.dylib'):  # .dylib files for macOS
+                full_path = os.path.join(root, file)
+                rel_path = os.path.relpath(full_path, sklearn_path)
+                target_dir = os.path.dirname(rel_path)
+                if target_dir == '.':
+                    target_dir = 'sklearn'
+                else:
+                    target_dir = os.path.join('sklearn', target_dir)
+                sklearn_binaries.append((full_path, target_dir))
+except ImportError:
+    print("Warning: sklearn not found, continuing without sklearn binaries")
+    sklearn_binaries = []
 
 block_cipher = None
 
@@ -81,6 +85,18 @@ a = Analysis(
     hiddenimports=[
         'numpy', 'scipy', 'torch', 'monai', 'torchio',
         'SimpleITK', 'nilearn', 'matplotlib', 'sklearn', 'PIL',
+        'matplotlib.pyplot', 'matplotlib.backends', 'matplotlib.backends.backend_tkagg',
+        'matplotlib.backends.backend_agg', 'matplotlib.figure', 'matplotlib.axes',
+        'skimage', 'skimage.morphology', 'skimage.measure',
+        'skimage.segmentation', 'skimage.filters', 'skimage.feature',
+        'httpx', 'requests', 'urllib3', 'certifi',
+        'monai.utils', 'monai.utils.misc', 'monai.transforms',
+        'monai.data', 'monai.networks', 'monai.losses',
+        'monai.metrics', 'monai.inferers', 'monai.engines',
+        'monai.config', 'monai.config.deviceconfig',
+        'torchio.transforms', 'torchio.data', 'torchio.datasets',
+        'nilearn.image', 'nilearn.plotting', 'nilearn.masking',
+        'nilearn.datasets', 'nilearn._utils', 'nilearn.surface',
         'sklearn.utils', 'sklearn.utils._param_validation',
         'sklearn.utils.validation', 'sklearn.utils._array_api',
         'sklearn.externals', 'sklearn.externals.array_api_compat',
@@ -128,6 +144,30 @@ EOF
 
 # Install PyInstaller if needed
 check_and_install_package "pyinstaller"
+
+# Check if scikit-learn is installed
+check_and_install_package "scikit-learn"
+
+# Check if nilearn is installed
+check_and_install_package "nilearn"
+
+# Check if monai is installed
+check_and_install_package "monai"
+
+# Check if torchio is installed
+check_and_install_package "torchio"
+
+# Check if scikit-image is installed
+check_and_install_package "scikit-image"
+
+# Check if httpx is installed
+check_and_install_package "httpx"
+
+# Check if requests is installed
+check_and_install_package "requests"
+
+# Check if matplotlib is installed
+check_and_install_package "matplotlib"
 
 # Build executable
 echo "Building executable with PyInstaller..."
