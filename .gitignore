@@ -1,4 +1,7 @@
 *.nii.gz
+# Re-include only ICBM template NIFTI files
+!icbm_bst.label.nii.gz
+!icbm_bst.nii.gz
 *.png
 
 
