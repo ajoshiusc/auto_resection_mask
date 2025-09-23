@@ -49,10 +49,10 @@ auto_resection_mask-main/
 ## Build Instructions
 
 1. **Place all files in the same directory:**  
-   Ensure all listed files are located directly within the `auto_resection_mask-main` directory.
+   Ensure all listed files are located directly within the `auto_resection_mask-brainstorm-plugin` directory.
 
 2. **Install Conda:**  
-   Make sure Conda is installed on your system before proceeding.
+   Make sure Conda is installed on your system before proceeding. Install from: https://www.anaconda.com/download
 
 3. **Build the executable:**  
    Execute the build script:
