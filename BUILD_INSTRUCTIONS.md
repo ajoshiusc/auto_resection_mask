@@ -9,6 +9,7 @@ auto_resection_mask-main/
 ├── standalone_wrapper.py
 ├── auto_resection_mask.py
 ├── requirements_autoresec.txt
+├── requirements_autoresec_mac.txt
 ├── build_windows.bat
 ├── build_mac.sh
 ├── icbm_bst.nii.gz
