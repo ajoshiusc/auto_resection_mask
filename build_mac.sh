@@ -8,6 +8,8 @@
 # Created with Claude Sonnet 4 in Visual Studio Code
 # Modified by Chinmay Chinara, 2025
 # =============================================================================
+# Note: Tested on Apple Silicon only
+# =============================================================================
 
 #!/bin/bash
 
