@@ -1,72 +1,72 @@
-altgraph @ file:///C:/b/abs_f2edualeyv/croot/altgraph_1670426107695/work
-anyio @ file:///C:/b/abs_5c8w79vk0u/croot/anyio_1745334672105/work
-Brotli @ file:///C:/b/abs_c415aux9ra/croot/brotli-split_1736182803933/work
-brotlicffi @ file:///C:/b/abs_f4lixvzmxt/croot/brotlicffi_1736183286104/work
-certifi @ file:///C:/b/abs_2bz30lzohz/croot/certifi_1754570654565/work/certifi
-cffi @ file:///C:/b/abs_29_b57if3f/croot/cffi_1736184144340/work
-charset-normalizer @ file:///croot/charset-normalizer_1721748349566/work
-contourpy @ file:///C:/b/abs_f2u2o_8s9g/croot/contourpy_1732540071787/work
-cycler @ file:///tmp/build/80754af9/cycler_1637851556182/work
-exceptiongroup @ file:///C:/b/abs_c5h1o1_b5b/croot/exceptiongroup_1706031441653/work
-filelock @ file:///C:/b/abs_758187j281/croot/filelock_1744281404850/work
-fonttools @ file:///C:/b/abs_4crkswws2h/croot/fonttools_1737040078745/work
-gmpy2 @ file:///C:/b/abs_d8ki0o0h97/croot/gmpy2_1738085498525/work
-h11 @ file:///C:/b/abs_224rqu7kel/croot/h11_1748442031959/work
-httpcore @ file:///C:/b/abs_25m7_xthp6/croot/httpcore_1748526065845/work
-httpx @ file:///C:/b/abs_9fclaf1b46/croot/httpx_1746747856672/work
-idna @ file:///C:/b/abs_aad84bnnw5/croot/idna_1714398896795/work
-imageio @ file:///C:/b/abs_4cup9zfkvm/croot/imageio_1738160462075/work
-importlib_resources @ file:///home/conda/feedstock_root/build_artifacts/importlib_resources_1736252299705/work
-Jinja2 @ file:///C:/b/abs_920kup4e6u/croot/jinja2_1741711580669/work
-joblib @ file:///home/conda/feedstock_root/build_artifacts/joblib_1748019130050/work
-kiwisolver @ file:///C:/b/abs_faf90xet7a/croot/kiwisolver_1737040915779/work
-lazy_loader @ file:///C:/b/abs_3fs2i5w5p3/croot/lazy_loader_1718176758844/work
-lxml @ file:///D:/bld/lxml_1656759504292/work
-MarkupSafe @ file:///C:/b/abs_a0ma7ge0jc/croot/markupsafe_1738584052792/work
+altgraph
+anyio
+Brotli
+brotlicffi
+certifi
+cffi
+charset-normalizer
+contourpy
+cycler
+exceptiongroup
+filelock
+fonttools
+gmpy2
+h11
+httpcore
+httpx
+idna
+imageio
+importlib_resources
+Jinja2
+joblib
+kiwisolver
+lazy_loader
+lxml
+MarkupSafe
 matplotlib==3.10.0
 mkl-service==2.4.0
-mkl_fft @ file:///C:/Users/dev-admin/mkl/mkl_fft_1730823082242/work
-mkl_random @ file:///C:/Users/dev-admin/mkl/mkl_random_1730822522280/work
-monai @ file:///home/conda/feedstock_root/build_artifacts/monai_1749879222186/work
-mpmath @ file:///C:/b/abs_7833jrbiox/croot/mpmath_1690848321154/work
-networkx @ file:///C:/b/abs_b054htfn9t/croot/networkx_1737043671910/work
-nibabel @ file:///home/conda/feedstock_root/build_artifacts/nibabel_1734022767841/work
-nilearn @ file:///home/conda/feedstock_root/build_artifacts/nilearn_1750519980357/work
-numpy @ file:///C:/b/abs_0123vcxhf8/croot/numpy_and_numpy_base_1725470331966/work/dist/numpy-2.0.1-cp310-cp310-win_amd64.whl#sha256=e824ec3b279f4c5207736c83ac2f2dc79b489e08501a4ea9e3fc178c45db289b
-packaging @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_packaging_1745345660/work
-pandas @ file:///D:/bld/pandas_1726878561601/work
-pefile @ file:///C:/b/abs_68oy9ka6fm/croot/pefile_1720651782540/work
-pillow @ file:///C:/b/abs_2cm0qc1vxk/croot/pillow_1731594717982/work
-pycparser @ file:///tmp/build/80754af9/pycparser_1636541352034/work
-pyinstaller @ file:///C:/b/abs_93ytjkbl4r/croot/pyinstaller_1740594245129/work
-pyinstaller-hooks-contrib @ file:///C:/b/abs_8bplnfue26/croot/pyinstaller-hooks-contrib_1740582676657/work
-pyparsing @ file:///C:/b/abs_40z8gyj9wi/croot/pyparsing_1731445739241/work
+mkl_fft
+mkl_random
+monai
+mpmath
+networkx
+nibabel
+nilearn
+numpy
+packaging
+pandas
+pefile
+pillow
+pycparser
+pyinstaller
+pyinstaller-hooks-contrib
+pyparsing
 PyQt6==6.7.1
-PyQt6_sip @ file:///C:/b/abs_25j3xlesmj/croot/pyqt-split_1753427295085/work/pyqt_sip
-PySocks @ file:///C:/ci_310/pysocks_1642089375450/work
-python-dateutil @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_python-dateutil_1751104122/work
-pytz @ file:///home/conda/feedstock_root/build_artifacts/pytz_1706886791323/work
-pywin32-ctypes @ file:///C:/b/abs_2cfx5l4nvi/croot/pywin32-ctypes_1709340246092/work
-PyYAML @ file:///C:/b/abs_14xkfs39bx/croot/pyyaml_1728657968772/work
-requests @ file:///C:/b/abs_0b3h9d_724/croot/requests_1750426345668/work
-scikit-image @ file:///C:/b/abs_10rg9ps1jh/croot/scikit-image_1750419495144/work
-scikit-learn @ file:///D:/bld/scikit-learn_1752825740524/work/dist/scikit_learn-1.7.1-cp310-cp310-win_amd64.whl#sha256=28bb07b1515c61de1724f2af3d2aaeea9ca20ce0e8f69b2556b5d15a8dd4137f
-scipy @ file:///C:/bld/scipy-split_1739790833536/work/dist/scipy-1.15.2-cp310-cp310-win_amd64.whl#sha256=4748853a0c723cda1fa2bdead847ba7c2443bde9cec3436e3e7243cfa54b55ff
+PyQt6_sip
+PySocks
+python-dateutil
+pytz
+pywin32-ctypes
+PyYAML
+requests
+scikit-image
+scikit-learn
+scipy
 SimpleITK==2.1.1.1
-sip @ file:///C:/b/abs_5cto136kse/croot/sip_1738856220313/work
-six @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_six_1753199211/work
-sniffio @ file:///C:/b/abs_3akdewudo_/croot/sniffio_1705431337396/work
-sympy @ file:///C:/b/abs_b4u17p23yg/croot/sympy_1738108511395/work
-threadpoolctl @ file:///home/conda/feedstock_root/build_artifacts/threadpoolctl_1741878222898/work
-tifffile @ file:///C:/b/abs_8aikas7x_4/croot/tifffile_1741164551582/work
-tomli @ file:///C:/b/abs_88e598m6o8/croot/tomli_1753774604115/work
+sip
+six
+sniffio
+sympy
+threadpoolctl
+tifffile
+tomli
 torch==2.5.1
 torchaudio==2.5.1
 torchvision==0.20.1
-tornado @ file:///C:/b/abs_7dzpc171lf/croot/tornado_1748956950306/work
-typing_extensions @ file:///C:/b/abs_0ffjxtihug/croot/typing_extensions_1734714875646/work
-tzdata @ file:///home/conda/feedstock_root/build_artifacts/python-tzdata_1742745135198/work
-unicodedata2 @ file:///C:/b/abs_dfnftvxi4k/croot/unicodedata2_1736543771112/work
-urllib3 @ file:///C:/b/abs_393g1ayee_/croot/urllib3_1750775481226/work
-win-inet-pton @ file:///C:/ci_310/win_inet_pton_1642658466512/work
-zipp @ file:///home/conda/feedstock_root/build_artifacts/zipp_1749421620841/work
+tornado
+typing_extensions
+tzdata
+unicodedata2
+urllib3
+win-inet-pton
+zipp
