@@ -1,6 +1,6 @@
 # Building on Windows and Mac (Apple Silicon)
 
-To build the `auto_resection_mask` project, ensure the following files are present in your project directory.
+To build the `auto_resection_mask` project, ensure the following files are present in your project directory. Also make sure you clone the `brainstorm-plugin` branch to work on.
 
 ## Directory Structure
 
