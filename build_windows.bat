@@ -1,17 +1,20 @@
-REM =============================================================================
-REM Auto Resection Mask Windows Build Script
-REM =============================================================================
-REM This script creates a Windows executable for the auto resection mask tool
-REM using PyInstaller. It handles conda environment setup, dependency management,
-REM and PyTorch CUDA installation for optimal performance.
-REM =============================================================================
+:: =============================================================================
+:: Auto Resection Mask Windows Build Script
+:: =============================================================================
+:: This script creates a Windows executable for the auto resection mask tool
+:: using PyInstaller. It handles conda environment setup, dependency management,
+:: and PyTorch CUDA installation for optimal performance.
+:: =============================================================================
+:: Created with Claude Sonnet 4 in Visual Studio Code
+:: Modified by Chinmay Chinara, 2025
+:: =============================================================================
 
 @echo off
 setlocal enabledelayedexpansion
 
-REM =============================================================================
-REM CONDA ENVIRONMENT SETUP
-REM =============================================================================
+:: =============================================================================
+:: CONDA ENVIRONMENT SETUP
+:: =============================================================================
 
 REM Create conda environment from requirements file if it doesn't exist
 echo Checking conda environment...
@@ -71,9 +74,9 @@ if errorlevel 1 (
     )
 )
 
-REM =============================================================================
-REM FILE VALIDATION
-REM =============================================================================
+:: =============================================================================
+:: FILE VALIDATION
+:: =============================================================================
 REM Check for required ICBM brain atlas files
 if not exist "icbm_bst.nii.gz" (
     echo Error: icbm_bst.nii.gz not found!
@@ -84,9 +87,9 @@ if not exist "icbm_bst.label.nii.gz" (
     exit /b 1
 )
 
-REM =============================================================================
-REM BUILD PREPARATION
-REM =============================================================================
+:: =============================================================================
+:: BUILD PREPARATION
+:: =============================================================================
 REM Clean up previous build files to ensure fresh build
 echo Cleaning up previous build files...
 if exist "dist" rmdir /s /q dist
@@ -102,9 +105,9 @@ echo Copying ICBM template files...
 copy /Y "icbm_bst.nii.gz" "build\" >nul
 copy /Y "icbm_bst.label.nii.gz" "build\" >nul
 
-REM =============================================================================
-REM DEPENDENCY VERIFICATION
-REM =============================================================================
+:: =============================================================================
+:: DEPENDENCY VERIFICATION
+:: =============================================================================
 REM Verify pandas is available for data processing
 echo Verifying pandas installation...
 python -c "import pandas; print('pandas version:', pandas.__version__)"
@@ -125,9 +128,9 @@ if errorlevel 1 (
     echo Warning: Could not verify PyTorch installation!
 )
 
-REM =============================================================================
-REM PYINSTALLER SPEC FILE GENERATION
-REM =============================================================================
+:: =============================================================================
+:: PYINSTALLER SPEC FILE GENERATION
+:: =============================================================================
 REM Create PyInstaller spec file with comprehensive dependency collection
 echo Creating PyInstaller spec file...
 (
@@ -276,9 +279,9 @@ echo     entitlements_file=None              # No entitlements
 echo ^)
 ) > auto_resection_mask_win.spec
 
-REM =============================================================================
-REM PYINSTALLER INSTALLATION AND EXECUTION
-REM =============================================================================
+:: =============================================================================
+:: PYINSTALLER INSTALLATION AND EXECUTION
+:: =============================================================================
 REM Install PyInstaller if not already available
 pip show pyinstaller >nul 2>&1
 if errorlevel 1 (
@@ -298,9 +301,9 @@ if errorlevel 1 (
     exit /b 1
 )
 
-REM =============================================================================
-REM BUILD VERIFICATION AND COMPLETION
-REM =============================================================================
+:: =============================================================================
+:: BUILD VERIFICATION AND COMPLETION
+:: =============================================================================
 REM Verify the executable was successfully created
 if not exist "dist\auto_resection_mask_win.exe" (
     echo Error: Executable was not created!
@@ -310,9 +313,9 @@ if not exist "dist\auto_resection_mask_win.exe" (
 REM Additional verification step
 echo Verifying ICBM files are bundled correctly...
 
-REM =============================================================================
-REM BUILD COMPLETION SUMMARY
-REM =============================================================================
+:: =============================================================================
+:: BUILD COMPLETION SUMMARY
+:: =============================================================================
 echo.
 echo Build completed successfully!
 echo The executable is available at: dist\auto_resection_mask_win.exe
