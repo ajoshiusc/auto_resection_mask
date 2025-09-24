@@ -65,7 +65,6 @@ auto_resection_mask-main/
    # Mac
    chmod +x build_mac.sh
    ./build_mac.sh
-   ```
    
    # Linux
    chmod +x build_linux.sh
@@ -81,7 +80,6 @@ auto_resection_mask-main/
 
    # Mac
    ./dist/auto_resection_mask_mac
-   ```
 
    # Linux
    ./dist/auto_resection_mask_linux
