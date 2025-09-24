@@ -1,4 +1,4 @@
-# Building on Windows and Mac (Apple Silicon)
+# Building on Windows, Linux and Mac (Apple Silicon)
 
 To build the `auto_resection_mask` project, ensure the following files are present in your project directory. Also make sure you clone the `brainstorm-plugin` branch to work on.
 
@@ -12,6 +12,7 @@ auto_resection_mask-main/
 ├── requirements_autoresec_mac.txt
 ├── build_windows.bat
 ├── build_mac.sh
+├── build_linux.sh
 ├── icbm_bst.nii.gz
 ├── icbm_bst.label.nii.gz
 ├── autoresec.py
@@ -45,6 +46,7 @@ auto_resection_mask-main/
 ### Build Script
 - `build_windows.bat` — Windows build script
 - `build_mac.sh` — Mac build script
+- `build_linux.sh` — Linux build script
 
 ## Build Instructions
 
@@ -64,6 +66,11 @@ auto_resection_mask-main/
    chmod +x build_mac.sh
    ./build_mac.sh
    ```
+   
+   # Linux
+   chmod +x build_linux.sh
+   ./build_linux.sh
+   ```
    This process will bundle all files and dependencies into a single executable under the folder ```dist``` in the same directory.
 
 4. **Test the build:**
@@ -74,6 +81,10 @@ auto_resection_mask-main/
 
    # Mac
    ./dist/auto_resection_mask_mac
+   ```
+
+   # Linux
+   ./dist/auto_resection_mask_linux
    ```
    If you get the response as under then the binary was successsully built
    ```bash
