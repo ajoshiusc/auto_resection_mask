@@ -1,4 +1,7 @@
 *.nii.gz
+# Re-include only ICBM template NIFTI files
+!icbm_bst.label.nii.gz
+!icbm_bst.nii.gz
 *.png
 
 
@@ -173,3 +176,4 @@ synthetic_lesion/lesion_synth_haleh_paper/.vscode/launch.json
 log1.txt
 *.pdf
 TL_mesial_26.txt
+.DS_Store

@@ -1,5 +1,5 @@
 import nilearn.image as ni
-from aligner import Aligner, center_and_resample_images
+from aligner import Aligner, center_and_resample_images, get_best_device
 from monai.transforms import (
     LoadImage,
     EnsureChannelFirst,
@@ -79,7 +79,7 @@ def get_possible_resect_mask(
             nn_input_size=64,
             lr=1e-6,
             max_epochs=3000,
-            device="cuda",
+            device=get_best_device(),
         )
 
         moving = LoadImage(image_only=True)(cent_bst_atlas_labels)
@@ -307,7 +307,7 @@ def delineate_resection_pre(
         nn_input_size=64,
         lr=1e-6,
         max_epochs=1500,
-        device="cuda",
+        device=get_best_device(),
     )
 
     moving = LoadImage(image_only=True)(mov_img_orig)
@@ -768,7 +768,7 @@ def delineate_resection_post(
         nn_input_size=64,
         lr=1e-6,
         max_epochs=1500,
-        device="cuda",
+        device=get_best_device(),
     )
 
     moving = LoadImage(image_only=True)(mov_img_orig)

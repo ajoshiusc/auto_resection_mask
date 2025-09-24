@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import torch
 from monai.utils.misc import set_determinism
 from monai.networks.nets.regunet import GlobalNet
 from monai.config.deviceconfig import USE_COMPILED
@@ -8,6 +9,14 @@ from torch.nn import MSELoss
 from monai.transforms import LoadImage, Resize, EnsureChannelFirst, ScaleIntensityRangePercentiles
 from monai.losses.image_dissimilarity import LocalNormalizedCrossCorrelationLoss
 from monai.losses.image_dissimilarity import GlobalMutualInformationLoss
+
+
+def get_best_device():
+    """Get the best available device for computation."""
+    if torch.cuda.is_available():
+        return 'cuda'
+    else:
+        return 'cpu'
 from warp_utils import apply_warp
 import argparse
 import torch
@@ -32,10 +41,11 @@ class Aligner:
     nn_input_size = 64
     lr = 1e-6
     max_epochs = 5000
-    device = 'cuda'
+    device = get_best_device()
 
     def __init__(self):
         set_determinism(42)
+        print(f"Using device: {self.device}")  # Debug info
 
     def setLoss(self, loss):
         self.loss = loss
@@ -117,12 +127,15 @@ class Aligner:
         nib.save(nib.Nifti1Image(image_movedo[0, 0].detach(
         ).cpu().numpy(), self.target.affine), output_file)
 
-    def affine_reg(self, fixed_file, moving_file, output_file, ddf_file, loss='mse', nn_input_size=64, lr=1e-6, max_epochs=5000, device='cuda'):
+    def affine_reg(self, fixed_file, moving_file, output_file, ddf_file, loss='mse', nn_input_size=64, lr=1e-6, max_epochs=5000, device=None):
+        if device is None:
+            device = get_best_device()
         self.setLoss(loss)
         self.nn_input_size = nn_input_size
         self.lr = lr,
         self.max_epochs = max_epochs
         self.device = device
+        print(f"Using device for affine registration: {self.device}")  # Debug info
         self.loadMoving(moving_file)
         self.loadTarget(fixed_file)
         self.performAffine()
