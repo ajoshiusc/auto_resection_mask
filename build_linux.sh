@@ -347,12 +347,11 @@ echo "=========================================="
 echo "The executable is available at: dist/auto_resection_mask_linux"
 echo
 echo "Usage:"
-echo "  ./auto_resection_mask_linux preop_mri postop_mri brainsuite_path"
+echo "  ./auto_resection_mask_linux preop_mri postop_mri"
 echo
 echo "Parameters:"
 echo "  - preop_mri: Path to pre-operative MRI file"
 echo "  - postop_mri: Path to post-operative MRI file"
-echo "  - brainsuite_path: Path to BrainSuite installation"
 echo
 echo "=========================================="
 echo "Build process completed successfully!"
