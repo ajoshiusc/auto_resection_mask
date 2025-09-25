@@ -3,16 +3,14 @@ import os
 from auto_resection_mask import auto_resection_mask
 
 def main():
-    if len(sys.argv) != 4:
-        print("Usage: auto_resection_mask preop_mri postop_mri brainsuite_path")
+    if len(sys.argv) != 3:
+        print("Usage: auto_resection_mask preop_mri postop_mri")
         print("  preop_mri: Path to pre-operative MRI file")
         print("  postop_mri: Path to post-operative MRI file")
-        print("  brainsuite_path: Path to BrainSuite installation")
         sys.exit(1)
 
     preop_mri = sys.argv[1]
     postop_mri = sys.argv[2]
-    brainsuite_path = sys.argv[3]
     
     # Get the directory where the bundled files are located
     if getattr(sys, 'frozen', False):
@@ -30,11 +28,7 @@ def main():
     if not all(os.path.exists(f) for f in [preop_mri, postop_mri]):
         print("Error: Input MRI files not found")
         sys.exit(1)
-    
-    if not os.path.exists(brainsuite_path):
-        print("Error: BrainSuite path not found")
-        sys.exit(1)
-        
+            
     if not all(os.path.exists(f) for f in [icbm_template, icbm_label]):
         print("Error: ICBM template files not found")
         sys.exit(1)
@@ -43,7 +37,6 @@ def main():
     result = auto_resection_mask(
         preop_mri,
         postop_mri,
-        brainsuite_path,
         icbm_template,
         icbm_label
     )

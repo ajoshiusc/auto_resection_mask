@@ -129,7 +129,6 @@ def get_possible_resect_mask(
 def delineate_resection_pre(
     pre_mri_path,
     post_mri_path,
-    BrainSuitePATH="/home/ajoshi/Software/BrainSuite23a",
     ERR_THR=80,
     bst_atlas_path="/deneb_disk/auto_resection/bst_atlases/icbm_bst.nii.gz",
     bst_atlas_labels_path="/deneb_disk/auto_resection/bst_atlases/icbm_bst.label.nii.gz",
@@ -184,7 +183,7 @@ def delineate_resection_pre(
     # %%
 
     cmd = (
-        os.path.join(BrainSuitePATH, "bin", "bse")
+        os.path.join("BrainSuite", "bin", "bse")
         + " -i "
         + pre_mri_base
         + ".nii.gz"
@@ -198,7 +197,7 @@ def delineate_resection_pre(
     os.system(cmd)
 
     cmd = (
-        os.path.join(BrainSuitePATH, "bin", "bfc")
+        os.path.join("BrainSuite", "bin", "bfc")
         + " -i "
         + pre_mri_base
         + ".bse.nii.gz"
@@ -212,7 +211,7 @@ def delineate_resection_pre(
     os.system(cmd)
 
     cmd = (
-        os.path.join(BrainSuitePATH, "bin", "pvc")
+        os.path.join("BrainSuite", "bin", "pvc")
         + " -i "
         + pre_mri_base
         + ".bfc.nii.gz"
@@ -228,7 +227,7 @@ def delineate_resection_pre(
     # Post MRI pre processing
 
     cmd = (
-        os.path.join(BrainSuitePATH, "bin", "bse")
+        os.path.join("BrainSuite", "bin", "bse")
         + " -i "
         + post_mri_base
         + ".nii.gz"
@@ -242,7 +241,7 @@ def delineate_resection_pre(
     os.system(cmd)
 
     cmd = (
-        os.path.join(BrainSuitePATH, "bin", "bfc")
+        os.path.join("BrainSuite", "bin", "bfc")
         + " -i "
         + post_mri_base
         + ".bse.nii.gz"
@@ -256,7 +255,7 @@ def delineate_resection_pre(
     os.system(cmd)
 
     cmd = (
-        os.path.join(BrainSuitePATH, "bin", "pvc")
+        os.path.join("BrainSuite", "bin", "pvc")
         + " -i "
         + post_mri_base
         + ".bfc.nii.gz"
@@ -339,7 +338,7 @@ def delineate_resection_pre(
     
 
     #cmd = (
-    #    os.path.join(BrainSuitePATH, "bin", "bse")
+    #    os.path.join("BrainSuite", "bin", "bse")
     #    + " -i "
     #    + affine_reg_img
     #    + " -o "
@@ -360,7 +359,7 @@ def delineate_resection_pre(
 
     # bfc processing
     cmd = (
-        os.path.join(BrainSuitePATH, "bin", "bfc")
+        os.path.join("BrainSuite", "bin", "bfc")
         + " -i "
         + affine_reg_img_bse
         + " -o "
@@ -371,7 +370,7 @@ def delineate_resection_pre(
     os.system(cmd)
 
     cmd = (
-        os.path.join(BrainSuitePATH, "bin", "pvc")
+        os.path.join("BrainSuite", "bin", "pvc")
         + " -i "
         + affine_reg_img_bfc
         + " -o "
@@ -591,7 +590,6 @@ def delineate_resection_pre(
 def delineate_resection_post(
     pre_mri_path,
     post_mri_path,
-    BrainSuitePATH="/home/ajoshi/Software/BrainSuite23a",
     ERR_THR=80,
     bst_atlas_path="bst_atlases/icbm_bst.nii.gz",
     bst_atlas_labels_path="bst_atlases/icbm_bst.label.nii.gz",
@@ -647,7 +645,7 @@ def delineate_resection_post(
     # %%
 
     cmd = (
-        os.path.join(BrainSuitePATH, "bin", "bse")
+        os.path.join("BrainSuite", "bin", "bse")
         + " -i "
         + pre_mri_base
         + ".nii.gz"
@@ -661,7 +659,7 @@ def delineate_resection_post(
     os.system(cmd)
 
     cmd = (
-        os.path.join(BrainSuitePATH, "bin", "bfc")
+        os.path.join("BrainSuite", "bin", "bfc")
         + " -i "
         + pre_mri_base
         + ".bse.nii.gz"
@@ -675,7 +673,7 @@ def delineate_resection_post(
     os.system(cmd)
 
     cmd = (
-        os.path.join(BrainSuitePATH, "bin", "pvc")
+        os.path.join("BrainSuite", "bin", "pvc")
         + " -i "
         + pre_mri_base
         + ".bfc.nii.gz"
@@ -691,7 +689,7 @@ def delineate_resection_post(
     # Post MRI pre processing
 
     cmd = (
-        os.path.join(BrainSuitePATH, "bin", "bse")
+        os.path.join("BrainSuite", "bin", "bse")
         + " -i "
         + post_mri_base
         + ".nii.gz"
@@ -705,7 +703,7 @@ def delineate_resection_post(
     os.system(cmd)
 
     cmd = (
-        os.path.join(BrainSuitePATH, "bin", "bfc")
+        os.path.join("BrainSuite", "bin", "bfc")
         + " -i "
         + post_mri_base
         + ".bse.nii.gz"
@@ -719,7 +717,7 @@ def delineate_resection_post(
     os.system(cmd)
 
     cmd = (
-        os.path.join(BrainSuitePATH, "bin", "pvc")
+        os.path.join("BrainSuite", "bin", "pvc")
         + " -i "
         + post_mri_base
         + ".bfc.nii.gz"
@@ -793,7 +791,7 @@ def delineate_resection_post(
     # %%
 
     # cmd = (
-    #     os.path.join(BrainSuitePATH, "bin", "bse")
+    #     os.path.join("BrainSuite", "bin", "bse")
     #     + " -i "
     #     + affine_reg_img
     #     + " -o "
@@ -810,7 +808,7 @@ def delineate_resection_post(
     apply_mask(affine_reg_img, affine_reg_img_mask, affine_reg_img_bse)
 
     cmd = (
-        os.path.join(BrainSuitePATH, "bin", "bfc")
+        os.path.join("BrainSuite", "bin", "bfc")
         + " -i "
         + affine_reg_img_bse
         + " -o "
@@ -821,7 +819,7 @@ def delineate_resection_post(
     os.system(cmd)
 
     cmd = (
-        os.path.join(BrainSuitePATH, "bin", "pvc")
+        os.path.join("BrainSuite", "bin", "pvc")
         + " -i "
         + affine_reg_img_bfc
         + " -o "
