@@ -320,10 +320,9 @@ echo.
 echo Build completed successfully!
 echo The executable is available at: dist\auto_resection_mask_win.exe
 echo.
-echo Usage: auto_resection_mask_win.exe preop_mri postop_mri brainsuite_path
+echo Usage: auto_resection_mask_win.exe preop_mri postop_mri
 echo - preop_mri: Path to pre-operative MRI file
 echo - postop_mri: Path to post-operative MRI file
-echo - brainsuite_path: Path to BrainSuite installation
 echo.
 echo Note: ICBM files are bundled with the executable
 echo.
