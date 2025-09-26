@@ -66,6 +66,13 @@ for file in "icbm_bst.nii.gz" "icbm_bst.label.nii.gz"; do
 done
 echo "ICBM brain atlas files found successfully."
 
+# Verify BrainSuite folder exists
+if [ -d "BrainSuite" ]; then
+    echo "BrainSuite folder found - will be included in build."
+else
+    echo "Warning: BrainSuite folder not found - will be skipped in build."
+fi
+
 # =============================================================================
 # BUILD PREPARATION
 # =============================================================================
@@ -125,6 +132,23 @@ except ImportError:
 # No encryption for the executable
 block_cipher = None
 
+# Verify ICBM brain atlas files exist before proceeding
+icbm_files = [
+    Path('icbm_bst.nii.gz'),
+    Path('icbm_bst.label.nii.gz')
+]
+
+# Verify BrainSuite binaries exist
+brainsuite_path = Path('BrainSuite')
+if not brainsuite_path.exists():
+    print('Warning: BrainSuite folder not found - BrainSuite binaries will not be bundled')
+else:
+    print('Found BrainSuite folder - will bundle BrainSuite binaries')
+
+for icbm_file in icbm_files:
+    if not icbm_file.exists():
+        raise FileNotFoundError(f'Required file {icbm_file} not found')
+
 # =============================================================================
 # MAIN ANALYSIS CONFIGURATION
 # =============================================================================
@@ -135,7 +159,7 @@ a = Analysis(
     datas=[                            # Data files to bundle
         ('icbm_bst.nii.gz', '.'),           # Brain atlas template
         ('icbm_bst.label.nii.gz', '.')      # Brain atlas labels
-    ],
+    ] + ([('BrainSuite', 'BrainSuite')] if brainsuite_path.exists() else []),  # BrainSuite binaries if available
     hiddenimports=[                    # Modules to import at runtime
         # Core scientific computing libraries
         'numpy', 'scipy', 'torch',
@@ -286,6 +310,7 @@ echo
 echo "Features included in this build:"
 echo "  - All required Python dependencies bundled"
 echo "  - ICBM brain atlas files embedded"
+echo "  - BrainSuite binaries included"
 echo "  - PyTorch for deep learning capabilities"
 echo "  - Comprehensive error handling"
 echo
