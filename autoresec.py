@@ -21,14 +21,38 @@ from warp_utils import apply_warp
 from nilearn import image
 
 def BrainSuiteBinPath():
+    """Get the path to BrainSuite binaries, handling both development and PyInstaller environments."""
+    import sys
+    
+    # Detect if running as PyInstaller executable
+    if hasattr(sys, '_MEIPASS'):
+        # Running as PyInstaller bundle - use bundled path
+        base_path = sys._MEIPASS
+        print(f"Running as PyInstaller bundle, using base path: {base_path}")
+    else:
+        # Running in development mode - use current directory
+        base_path = os.getcwd()
+        print(f"Running in development mode, using base path: {base_path}")
+    
     os_name = platform.system()
     if os_name == "Windows":
-        return os.path.join("BrainSuite", "bin", "windows")
+        brainsuite_path = os.path.join(base_path, "BrainSuite", "bin", "windows")
     elif os_name == "Linux":
-        return os.path.join("BrainSuite", "bin", "linux")
+        brainsuite_path = os.path.join(base_path, "BrainSuite", "bin", "linux")
     else:
-        return os.path.join("BrainSuite", "bin", "mac")
-    end
+        brainsuite_path = os.path.join(base_path, "BrainSuite", "bin", "mac")
+    
+    # Verify the path exists
+    if os.path.exists(brainsuite_path):
+        print(f"BrainSuite binaries found at: {brainsuite_path}")
+    else:
+        print(f"Warning: BrainSuite binaries not found at: {brainsuite_path}")
+        # List what's actually available
+        parent_dir = os.path.dirname(brainsuite_path)
+        if os.path.exists(parent_dir):
+            print(f"Available directories in {parent_dir}: {os.listdir(parent_dir)}")
+    
+    return brainsuite_path
 
 def apply_mask(input_file, mask_file, output_file):
     # Load input image and mask

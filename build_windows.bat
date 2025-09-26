@@ -226,6 +226,13 @@ echo     Path('icbm_bst.nii.gz'^),
 echo     Path('icbm_bst.label.nii.gz'^)
 echo ]
 echo.
+echo # Verify BrainSuite binaries exist
+echo brainsuite_path = Path('BrainSuite'^)
+echo if not brainsuite_path.exists(^):
+echo     print('Warning: BrainSuite folder not found - BrainSuite binaries will not be bundled'^)
+echo else:
+echo     print('Found BrainSuite folder - will bundle BrainSuite binaries'^)
+echo.
 echo for icbm_file in icbm_files:
 echo     if not icbm_file.exists(^):
 echo         raise FileNotFoundError(f'Required file {icbm_file} not found'^)
@@ -240,7 +247,8 @@ echo     pathex=['.'],                       # Additional paths to search
 echo     binaries=all_binaries,              # Collected binary files
 echo     datas=[                            # Data files to bundle
 echo         ('icbm_bst.nii.gz', '.'^),           # Brain atlas template
-echo         ('icbm_bst.label.nii.gz', '.'^)      # Brain atlas labels
+echo         ('icbm_bst.label.nii.gz', '.'^),     # Brain atlas labels
+echo         ('BrainSuite', 'BrainSuite'^)        # BrainSuite binaries folder
 echo     ] + all_datas,                     # Plus automatically collected data
 echo     hiddenimports=all_hiddenimports,    # Modules to import at runtime
 echo     hookspath=[],                       # No custom hooks directory
@@ -331,5 +339,6 @@ echo Build process completed. The executable includes:
 echo - PyTorch with CUDA support for GPU acceleration
 echo - All required Python dependencies
 echo - ICBM brain atlas files
+echo - BrainSuite binaries for Windows
 echo - Comprehensive error handling
 echo =============================================================================
