@@ -86,10 +86,9 @@ auto_resection_mask-main/
    ```
    If you get the response as under then the binary was successsully built
    ```bash
-   Usage: auto_resection_mask_xxx preop_mri postop_mri brainsuite_path
+   Usage: auto_resection_mask_xxx preop_mri postop_mri
      preop_mri: Path to pre-operative MRI file
      postop_mri: Path to post-operative MRI file
-     brainsuite_path: Path to BrainSuite installation
    ```
 ---
 **Note:**  

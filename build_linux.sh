@@ -235,6 +235,13 @@ icbm_files = [
     Path('icbm_bst.label.nii.gz')
 ]
 
+# Verify BrainSuite binaries exist
+brainsuite_path = Path('BrainSuite')
+if not brainsuite_path.exists():
+    print('Warning: BrainSuite folder not found - BrainSuite binaries will not be bundled')
+else:
+    print('Found BrainSuite folder - will bundle BrainSuite binaries')
+
 for icbm_file in icbm_files:
     if not icbm_file.exists():
         raise FileNotFoundError(f'Required file {icbm_file} not found')
@@ -249,7 +256,8 @@ a = Analysis(
     binaries=all_binaries,              # Collected binary files
     datas=[                            # Data files to bundle
         ('icbm_bst.nii.gz', '.'),           # Brain atlas template
-        ('icbm_bst.label.nii.gz', '.')      # Brain atlas labels
+        ('icbm_bst.label.nii.gz', '.'),     # Brain atlas labels
+        ('BrainSuite', 'BrainSuite')        # BrainSuite binaries folder
     ] + all_datas,                     # Plus automatically collected data
     hiddenimports=all_hiddenimports,    # Modules to import at runtime
     hookspath=[],                       # No custom hooks directory
@@ -347,18 +355,19 @@ echo "=========================================="
 echo "The executable is available at: dist/auto_resection_mask_linux"
 echo
 echo "Usage:"
-echo "  ./auto_resection_mask_linux preop_mri postop_mri brainsuite_path"
+echo "  ./auto_resection_mask_linux preop_mri postop_mri"
 echo
 echo "Parameters:"
 echo "  - preop_mri: Path to pre-operative MRI file"
 echo "  - postop_mri: Path to post-operative MRI file"
-echo "  - brainsuite_path: Path to BrainSuite installation"
 echo
 echo "=========================================="
 echo "Build process completed successfully!"
 echo "The executable includes comprehensive Linux support with:"
 echo "- CUDA GPU acceleration (when available)"
 echo "- All dependencies statically linked"
+echo "- ICBM brain atlas files"
+echo "- BrainSuite binaries for Linux"
 echo "- Optimized for Linux distributions"
 echo "- No external Python installation required"
 echo "=========================================="
