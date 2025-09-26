@@ -11,11 +11,6 @@ This notebook shows an example workflow to delineate resection on MRI image.
 **Inputs**: Pre-op MRI image, Post-op MRI image  
 **Outputs**: Post-op MRI image affinely registered to pre-op MRI image, resection mask (\<subject\>.resection.mask.nii.gz)
 
-To run the code, NVidia GPU is required. 
-
-To run the code, please open main_automask.ipynb as a jupyter notebook, correct paths of our input pre-op and post-op MRIs and run the code.
-
-
 # Installation
 * Make sure you have [BrainSuite](https://brainsuite.org) installed. 
 * A devcontainer is available with the repository. Open `.devcontainer.json` file and set the data and code paths.
@@ -24,11 +19,18 @@ To run the code, please open main_automask.ipynb as a jupyter notebook, correct 
 
 ![image](https://github.com/ajoshiusc/auto_resection_mask/assets/15238551/09d32830-3ae0-4eaa-935e-22e280905dc6)
 
+# Standalone binary (Windows, Linux and Mac)
+ - Standalone binaries for this module are available for this module: [Windows](https://neuroimage.usc.edu/bst/getupdate.php?d=bst_resection_labeling_win.zip), [Linux](https://neuroimage.usc.edu/bst/getupdate.php?d=bst_resection_labeling_linux.zip), [Mac](https://neuroimage.usc.edu/bst/getupdate.php?d=bst_resection_labeling_mac.zip).
+ - Unzip the binary file and download data from the exapmple dataset link above (or use your own data). <br>
+   Usage: `./resection_labeling "preop_mri" "postop_mri"`
+ - You can also build the binaries in your system from scratch. Please refer to the `BUILD_INSTRUCTIONS.md` for the detailed process.
+
 
 # Usage
 
 ## Running the code
-
+* NVIDIA GPU (for CUDA) is recommended however it can run on CPU as well.
+* Please open `main_automask.ipynb` as a jupyter notebook, correct paths of our input pre-op and post-op MRIs and run the code.
 * Assume as input, you have `preop.nii.gz` (pre-op MRI), and `post-op.nii.gz` (post-op MRI with resection). Open Python code `main_auto_resection_mask.py` in vscode.
 * Correct the paths of the `auto_resection_module`, as well as paths to `preop.nii.gz` and `post-op.nii.gz`. Add the path to the BrainSuite installation folder.
 * Run the notebook.
