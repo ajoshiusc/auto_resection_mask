@@ -4,15 +4,24 @@ from resection_overlay_plots import generate_resection_overlay_plots
 
 
 
-def auto_resection_mask(preop_mri, postop_mri, BrainSuitePATH):
-    delineate_resection_post(preop_mri, postop_mri, BrainSuitePATH=BrainSuitePATH)
-    delineate_resection_pre(preop_mri, postop_mri, BrainSuitePATH=BrainSuitePATH)
+def auto_resection_mask(preop_mri, postop_mri, BrainSuitePATH,
+                        bst_atlas_path="bst_atlases/icbm_bst.nii.gz",
+                        bst_atlas_labels_path="bst_atlases/icbm_bst.label.nii.gz" ):
+    
+    delineate_resection_post(preop_mri, postop_mri, BrainSuitePATH=BrainSuitePATH,
+                            bst_atlas_path=bst_atlas_path,bst_atlas_labels_path=bst_atlas_labels_path)
+    delineate_resection_pre(preop_mri, postop_mri, BrainSuitePATH=BrainSuitePATH,
+                           bst_atlas_path=bst_atlas_path,bst_atlas_labels_path=bst_atlas_labels_path)
     generate_resection_overlay_plots(preop_mri, postop_mri)
 
 if __name__ == "__main__":
-    mypreop_mri = '/home/ajoshi/Downloads/example_dataset_resection/preop.nii.gz'
-    mypostop_mri = '/home/ajoshi/Downloads/example_dataset_resection/postop.nii.gz'
-    my_brainsuite = "/home/ajoshi/Software/BrainSuite23a"
+    preop_mri = "/home1/ajoshi/Downloads/example_dataset_resection/preop.nii.gz"
+    postop_mri = "/home1/ajoshi/Downloads/example_dataset_resection/postop.nii.gz"
+    my_brainsuite = "/project/ajoshi_27/BrainSuite23a"
+    bst_atlas_path="/home1/ajoshi/Downloads/bst_atlases/icbm_bst.nii.gz"
+    bst_atlas_labels_path="/home1/ajoshi/Downloads/bst_atlases/icbm_bst.label.nii.gz"
+    
+    auto_resection_mask(preop_mri, postop_mri, BrainSuitePATH=my_brainsuite,
+                        bst_atlas_path=bst_atlas_path,bst_atlas_labels_path=bst_atlas_labels_path)
 
-    auto_resection_mask(mypreop_mri, mypostop_mri, BrainSuitePATH=my_brainsuite)
     print('Done')
