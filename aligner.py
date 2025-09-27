@@ -148,6 +148,11 @@ def center_and_resample_images(sub_img, atlas_img, centered_atlas, atlas_labels=
     
     fixed_image = sitk.ReadImage(sub_img, sitk.sitkFloat32)
     moving_image = sitk.ReadImage(atlas_img, sitk.sitkFloat32)
+
+    # print types and sizes of images
+    print(f"Fixed image type: {type(fixed_image)}, size: {fixed_image.GetSize()}")
+    print(f"Moving image type: {type(moving_image)}, size: {moving_image.GetSize()}")
+    
     initial_transform = sitk.CenteredTransformInitializer(
         fixed_image,
         moving_image,

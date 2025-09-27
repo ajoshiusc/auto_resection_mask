@@ -1,5 +1,4 @@
 import os
-from httpx import post
 import numpy as np
 import nibabel as nb
 from nilearn.plotting import plot_anat, find_xyz_cut_coords
