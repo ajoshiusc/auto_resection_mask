@@ -133,11 +133,23 @@ def delineate_resection_pre(
     ERR_THR=80,
     bst_atlas_path="/deneb_disk/auto_resection/bst_atlases/icbm_bst.nii.gz",
     bst_atlas_labels_path="/deneb_disk/auto_resection/bst_atlases/icbm_bst.label.nii.gz",
+    ST=None,  # Structuring element size for morphological operations
 ):
     # pl.plot_anat(pre_mri,title='pre-mri')
     # pl.plot_anat(post_mri,title='post-mri')
 
     # pl.show()
+
+    # Determine ST based on whether pre-op MRI is surrogate
+    if ST is None:
+        # Check if pre-op MRI is a surrogate (contains 'surrogate' in filename or is BrainSuite atlas)
+        is_surrogate = ('surrogate' in pre_mri_path.lower() or 
+                       'BrainSuiteAtlas1' in pre_mri_path or
+                       'atlas' in pre_mri_path.lower())
+        ST = 7 if is_surrogate else 3
+        print(f"Auto-detected ST={ST} ({'surrogate' if is_surrogate else 'actual'} pre-op MRI)")
+    else:
+        print(f"Using provided ST={ST}")
 
     # %%
 
@@ -465,7 +477,7 @@ def delineate_resection_pre(
         moving_file=affine_reg_img_pvc_frac,
         output_file=nonlin_reg_img_pvc_frac,
         ddf_file=ddf,
-        reg_penalty=1,
+        reg_penalty=3,
         nn_input_size=64,
         lr=1e-3,
         max_epochs=1000,
@@ -503,7 +515,7 @@ def delineate_resection_pre(
     )
     vwrp = vwrp * (msk > 0)
 
-    ST = 3
+    # ST is already determined at function start based on surrogate detection
     ERR_THR = 0.75 #(ERR_THR*3.0)/255.0 #0.99
     #error_mask = opening(opening(closing(dilation(np.array(vwrp)))) > ERR_THR, footprint=[(np.ones((ST, 1, 1)), 1), (np.ones((1, ST, 1)), 1), (np.ones((1, 1, ST)), 1),],)
     error_mask_core = opening(vwrp > ERR_THR, footprint=[(np.ones((ST, 1, 1)), 1), (np.ones((1, ST, 1)), 1), (np.ones((1, 1, ST)), 1)])
@@ -595,11 +607,23 @@ def delineate_resection_post(
     ERR_THR=80,
     bst_atlas_path="bst_atlases/icbm_bst.nii.gz",
     bst_atlas_labels_path="bst_atlases/icbm_bst.label.nii.gz",
+    ST=None,  # Structuring element size for morphological operations
 ):
     # pl.plot_anat(pre_mri,title='pre-mri')
     # pl.plot_anat(post_mri,title='post-mri')
 
     # pl.show()
+
+    # Determine ST based on whether pre-op MRI is surrogate
+    if ST is None:
+        # Check if pre-op MRI is a surrogate (contains 'surrogate' in filename or is BrainSuite atlas)
+        is_surrogate = ('surrogate' in pre_mri_path.lower() or 
+                       'BrainSuiteAtlas1' in pre_mri_path or
+                       'atlas' in pre_mri_path.lower())
+        ST = 7 if is_surrogate else 3
+        print(f"Auto-detected ST={ST} ({'surrogate' if is_surrogate else 'actual'} pre-op MRI)")
+    else:
+        print(f"Using provided ST={ST}")
 
     # %%
 
@@ -932,7 +956,7 @@ def delineate_resection_post(
         moving_file=affine_reg_img_pvc_frac,
         output_file=nonlin_reg_img_pvc_frac,
         ddf_file=ddf,
-        reg_penalty=1,
+        reg_penalty=3,
         nn_input_size=64,
         lr=1e-3,
         max_epochs=1000,
@@ -970,7 +994,7 @@ def delineate_resection_post(
     vwrp = -(vref - vwrp)
 
 
-    ST = 3
+    # ST is already determined at function start based on surrogate detection
     ERR_THR = 0.75 #(ERR_THR*3.0)/255.0 #0.99
     #error_mask = opening(opening(closing(dilation(np.array(vwrp)))) > ERR_THR, footprint=[(np.ones((ST, 1, 1)), 1), (np.ones((1, ST, 1)), 1), (np.ones((1, 1, ST)), 1),],)
     error_mask_core = opening(vwrp > ERR_THR, footprint=[(np.ones((ST, 1, 1)), 1), (np.ones((1, ST, 1)), 1), (np.ones((1, 1, ST)), 1)])
@@ -987,7 +1011,7 @@ def delineate_resection_post(
     )
     vwrp = vwrp * (msk > 0)
 
-    ST = 3
+    # ST is already determined at function start based on surrogate detection
     ERR_THR = (ERR_THR*3.0)/255.0 #0.99
     error_mask = opening(
         (vwrp > ERR_THR) | (vwrp < -ERR_THR),
