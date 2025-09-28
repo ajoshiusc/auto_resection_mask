@@ -391,7 +391,7 @@ def delineate_resection_pre(
     vwrp = LoadImage(image_only=True)(affine_reg_img_pvc_frac)
     msk = LoadImage(image_only=True)(ref_img_mask)
 
-    msk = (msk>0) & (vwrp>0)
+    # msk = (msk>0) & (vwrp>0)
     vwrp = (255.0 / np.max(vwrp[msk > 0])) * vwrp
     vref = (255.0 / np.max(vref[msk > 0])) * vref
 
@@ -480,9 +480,9 @@ def delineate_resection_pre(
     vwrp = LoadImage(image_only=True)(nonlin_reg_img_pvc_frac)
     msk = LoadImage(image_only=True)(ref_img_mask)
 
-    print(ref_img_pvc_frac)
-    print(nonlin_reg_img_pvc_frac)
-    print(ref_img_mask)
+    # print(ref_img_pvc_frac)
+    # print(nonlin_reg_img_pvc_frac)
+    # print(ref_img_mask)
 
     # %%
 
@@ -803,8 +803,23 @@ def delineate_resection_post(
     # )
     # os.system(cmd)
 
-    # copy mask
-    copyfile(ref_img_mask,affine_reg_img_mask)
+    # Apply affine transformation to the mask of preop MRI
+    moving_mask = LoadImage(image_only=True)(pre_mri_base + ".mask.nii.gz")
+    moving_mask = EnsureChannelFirst()(moving_mask)
+    
+    target = LoadImage(image_only=True)(ref_img)
+    target = EnsureChannelFirst()(target)
+    
+    mask_movedo = apply_warp(
+        affine_reg.ddf[None,], moving_mask[None,], target[None,], interp_mode="nearest"
+    )
+    
+    nib.save(
+        nib.Nifti1Image(
+            mask_movedo[0, 0].detach().cpu().numpy().astype(np.uint8), affine_reg.target.affine
+        ),
+        affine_reg_img_mask,
+    )
 
     # apply affine_reg_img_mask to affine_reg_img using nilearn
     apply_mask(affine_reg_img, affine_reg_img_mask, affine_reg_img_bse)
@@ -840,6 +855,9 @@ def delineate_resection_post(
     vref = LoadImage(image_only=True)(ref_img_pvc_frac)
     vwrp = LoadImage(image_only=True)(affine_reg_img_pvc_frac)
     msk = LoadImage(image_only=True)(ref_img_mask)
+
+    # Use the transformed pre-op mask:
+    msk = LoadImage(image_only=True)(affine_reg_img_mask)  # Transformed PRE-op mask (CORRECT)
 
     vwrp = (255.0 / np.max(vwrp[msk > 0])) * vwrp
     vref = (255.0 / np.max(vref[msk > 0])) * vref
@@ -929,9 +947,9 @@ def delineate_resection_post(
     vwrp = LoadImage(image_only=True)(nonlin_reg_img_pvc_frac)
     msk = LoadImage(image_only=True)(ref_img_mask)
 
-    print(ref_img_pvc_frac)
-    print(nonlin_reg_img_pvc_frac)
-    print(ref_img_mask)
+    # print(ref_img_pvc_frac)
+    # print(nonlin_reg_img_pvc_frac)
+    # print(ref_img_mask)
 
     # %%
 

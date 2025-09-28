@@ -8,7 +8,7 @@ csv_file = '/deneb_disk/auto_resection/EPISURG/subjects.csv'
 brainsuite_path = "/home/ajoshi/Software/BrainSuite23a"
 bst_atlas_path = "bst_atlases/icbm_bst.nii.gz"
 bst_atlas_labels_path = "bst_atlases/icbm_bst.label.nii.gz"
-surrogate_preop = "/home/ajoshi/Software/BrainSuite23a/BrainSuiteAtlas1/mri.nii.gz"  # Surrogate pre-op scan
+surrogate_preop = "/home/ajoshi/Software/BrainSuite23a/svreg/BrainSuiteAtlas1/mri.nii.gz"  # Surrogate pre-op scan
 
 # Initialize an empty list to store processed subjects
 processed_subjects = []
