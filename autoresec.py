@@ -465,7 +465,7 @@ def delineate_resection_pre(
         moving_file=affine_reg_img_pvc_frac,
         output_file=nonlin_reg_img_pvc_frac,
         ddf_file=ddf,
-        reg_penalty=.01,
+        reg_penalty=1,
         nn_input_size=64,
         lr=1e-3,
         max_epochs=1000,
@@ -932,7 +932,7 @@ def delineate_resection_post(
         moving_file=affine_reg_img_pvc_frac,
         output_file=nonlin_reg_img_pvc_frac,
         ddf_file=ddf,
-        reg_penalty=3,
+        reg_penalty=1,
         nn_input_size=64,
         lr=1e-3,
         max_epochs=1000,
@@ -945,7 +945,8 @@ def delineate_resection_post(
 
     vref = LoadImage(image_only=True)(ref_img_pvc_frac)
     vwrp = LoadImage(image_only=True)(nonlin_reg_img_pvc_frac)
-    msk = LoadImage(image_only=True)(ref_img_mask)
+    # Use the transformed pre-op mask for consistency
+    msk = LoadImage(image_only=True)(affine_reg_img_mask)
 
     # print(ref_img_pvc_frac)
     # print(nonlin_reg_img_pvc_frac)
@@ -968,7 +969,20 @@ def delineate_resection_post(
 
     vwrp = -(vref - vwrp)
 
-    nib.save(
+
+    ST = 3
+    ERR_THR = 0.75 #(ERR_THR*3.0)/255.0 #0.99
+    #error_mask = opening(opening(closing(dilation(np.array(vwrp)))) > ERR_THR, footprint=[(np.ones((ST, 1, 1)), 1), (np.ones((1, ST, 1)), 1), (np.ones((1, 1, ST)), 1),],)
+    error_mask_core = opening(vwrp > ERR_THR, footprint=[(np.ones((ST, 1, 1)), 1), (np.ones((1, ST, 1)), 1), (np.ones((1, 1, ST)), 1)])
+    
+    error_mask_dilated = dilation(error_mask_core, np.ones((7, 7, 7)))
+
+    error_mask = opening(closing((dilation(vwrp) > ERR_THR))*(error_mask_dilated>0))
+
+
+
+
+    '''nib.save(
         nib.Nifti1Image(vwrp.detach().numpy(), nonlin_reg.target.affine), error_img
     )
     vwrp = vwrp * (msk > 0)
@@ -983,6 +997,8 @@ def delineate_resection_post(
             (np.ones((1, 1, ST)), 1),
         ],
     )
+    '''
+    
     nib.save(
         nib.Nifti1Image(255 * np.uint8(error_mask), nonlin_reg.target.affine),
         error_init_mask_img,
