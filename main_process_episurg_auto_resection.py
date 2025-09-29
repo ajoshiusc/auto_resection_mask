@@ -71,7 +71,9 @@ with open(csv_file, mode='r', encoding='utf-8') as file:
                 continue
             
             # Check if already processed (look for resection mask files)
-            preop_mask = f'/deneb_disk/auto_resection/EPISURG/subjects/{subject_id}/preop/{subject_id}_preop-t1mri-1.resection.mask.nii.gz'
+            # Generate mask filename based on the actual preop file being used
+            preop_base = os.path.splitext(os.path.splitext(os.path.basename(preop_mri))[0])[0]  # Remove .nii.gz
+            preop_mask = f'/deneb_disk/auto_resection/EPISURG/subjects/{subject_id}/preop/{preop_base}.resection.mask.nii.gz'
             postop_mask = f'/deneb_disk/auto_resection/EPISURG/subjects/{subject_id}/postop/{subject_id}_postop-t1mri-1.resection.mask.nii.gz'
             
             if os.path.isfile(preop_mask) and os.path.isfile(postop_mask):
