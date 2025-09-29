@@ -3,12 +3,13 @@ import os
 import shutil
 from auto_resection_mask import auto_resection_mask
 
-# Specify the file path
-csv_file = '/deneb_disk/auto_resection/EPISURG/subjects.csv'
+# Configuration paths
+episurg_dir = '/deneb_disk/auto_resection/EPISURG'
+csv_file = os.path.join(episurg_dir, 'subjects.csv')
 brainsuite_path = "/home/ajoshi/Software/BrainSuite23a"
 bst_atlas_path = "bst_atlases/icbm_bst.nii.gz"
 bst_atlas_labels_path = "bst_atlases/icbm_bst.label.nii.gz"
-surrogate_preop = "/home/ajoshi/Software/BrainSuite23a/svreg/BrainSuiteAtlas1/mri.nii.gz"  # Surrogate pre-op scan
+surrogate_preop = os.path.join(brainsuite_path, "svreg/BrainSuiteAtlas1/mri.nii.gz")  # Surrogate pre-op scan
 
 # Initialize an empty list to store processed subjects
 processed_subjects = []
@@ -25,33 +26,44 @@ with open(csv_file, mode='r', encoding='utf-8') as file:
 
     # Iterate through the rows in the CSV file
     for row in csv_reader:
+        # Skip header row if it exists
+        if row[0] == 'Subject':
+            continue
+            
         subject_id = row[0]
-        has_preop = row[3] == 'True'
-        has_postop = row[4] == 'True' or row[5] == 'True' or row[6] == 'True'
+        # More robust boolean parsing for preop availability
+        has_preop = str(row[3]).strip().lower() in ['true', '1', 'yes']
+        
+        # Check if postop scan actually exists on disk (not relying on CSV rater columns)
+        subject_dir = os.path.join(episurg_dir, 'subjects', subject_id)
+        subject_postop_dir = os.path.join(subject_dir, 'postop')
+        postop_mri = os.path.join(subject_postop_dir, f'{subject_id}_postop-t1mri-1.nii.gz')
+        has_postop = os.path.isfile(postop_mri)
+        
+        print(f"Subject {subject_id}: preop_csv={row[3]}, has_preop={has_preop}, has_postop={has_postop}")
         
         # Only process if postop is available
         if has_postop:
             print(f"Processing subject {subject_id}...")
             
-            # Determine preop MRI path
+            subject_preop_dir = os.path.join(subject_dir, 'preop')
+            
             if has_preop:
-                preop_mri = f'/deneb_disk/auto_resection/EPISURG/subjects/{subject_id}/preop/{subject_id}_preop-t1mri-1.nii.gz'
+                preop_mri = os.path.join(subject_preop_dir, f'{subject_id}_preop-t1mri-1.nii.gz')
                 if os.path.isfile(preop_mri):
                     print(f"  Using actual preop scan for {subject_id}")
                 else:
                     print(f"  Preop scan not found for {subject_id}, using surrogate")
                     # Copy surrogate to subject directory
-                    subject_preop_dir = f'/deneb_disk/auto_resection/EPISURG/subjects/{subject_id}/preop'
                     os.makedirs(subject_preop_dir, exist_ok=True)
-                    surrogate_copy = f'{subject_preop_dir}/{subject_id}_surrogate_preop.nii.gz'
+                    surrogate_copy = os.path.join(subject_preop_dir, f'{subject_id}_surrogate_preop.nii.gz')
                     shutil.copy2(surrogate_preop, surrogate_copy)
                     preop_mri = surrogate_copy
                     print(f"  Copied surrogate preop to {surrogate_copy}")
             else:
                 # Copy surrogate to subject directory
-                subject_preop_dir = f'/deneb_disk/auto_resection/EPISURG/subjects/{subject_id}/preop'
                 os.makedirs(subject_preop_dir, exist_ok=True)
-                surrogate_copy = f'{subject_preop_dir}/{subject_id}_surrogate_preop.nii.gz'
+                surrogate_copy = os.path.join(subject_preop_dir, f'{subject_id}_surrogate_preop.nii.gz')
                 
                 # Only copy if it doesn't already exist
                 if not os.path.isfile(surrogate_copy):
@@ -61,20 +73,11 @@ with open(csv_file, mode='r', encoding='utf-8') as file:
                     print(f"  Using existing surrogate preop at {surrogate_copy}")
                 preop_mri = surrogate_copy
             
-            # Postop MRI path
-            postop_mri = f'/deneb_disk/auto_resection/EPISURG/subjects/{subject_id}/postop/{subject_id}_postop-t1mri-1.nii.gz'
-            
-            # Check if postop file exists
-            if not os.path.isfile(postop_mri):
-                print(f"  Warning: Postop MRI not found for {subject_id}, skipping...")
-                failed_subjects.append((subject_id, "Postop MRI not found"))
-                continue
-            
             # Check if already processed (look for resection mask files)
             # Generate mask filename based on the actual preop file being used
             preop_base = os.path.splitext(os.path.splitext(os.path.basename(preop_mri))[0])[0]  # Remove .nii.gz
-            preop_mask = f'/deneb_disk/auto_resection/EPISURG/subjects/{subject_id}/preop/{preop_base}.resection.mask.nii.gz'
-            postop_mask = f'/deneb_disk/auto_resection/EPISURG/subjects/{subject_id}/postop/{subject_id}_postop-t1mri-1.resection.mask.nii.gz'
+            preop_mask = os.path.join(subject_preop_dir, f'{preop_base}.resection.mask.nii.gz')
+            postop_mask = os.path.join(subject_postop_dir, f'{subject_id}_postop-t1mri-1.resection.mask.nii.gz')
             
             if os.path.isfile(preop_mask) and os.path.isfile(postop_mask):
                 print(f'  Subject {subject_id} already processed, skipping....')
@@ -91,6 +94,7 @@ with open(csv_file, mode='r', encoding='utf-8') as file:
                     bst_atlas_path=bst_atlas_path,
                     bst_atlas_labels_path=bst_atlas_labels_path
                 )
+                
                 processed_subjects.append(subject_id)
                 print(f"  ✓ Successfully processed subject {subject_id}")
                 
