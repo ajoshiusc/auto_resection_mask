@@ -518,7 +518,7 @@ def delineate_resection_pre(
     
     error_mask_dilated = dilation(error_mask_core, np.ones((7, 7, 7)))
 
-    error_mask = opening(closing(((vwrp) > ERR_THR))*(error_mask_dilated>0))
+    error_mask = opening(closing(dilation((vwrp) > ERR_THR))*(error_mask_dilated>0))
 
     nib.save(
         nib.Nifti1Image(255 * np.uint8(error_mask), nonlin_reg.target.affine),
