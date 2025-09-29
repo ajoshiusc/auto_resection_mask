@@ -140,14 +140,10 @@ def delineate_resection_pre(
 
     # pl.show()
 
-    # Determine ST based on whether pre-op MRI is surrogate
+    # Determine ST parameter - default to 7 if not provided
     if ST is None:
-        # Check if pre-op MRI is a surrogate (contains 'surrogate' in filename or is BrainSuite atlas)
-        is_surrogate = ('surrogate' in pre_mri_path.lower() or 
-                       'BrainSuiteAtlas1' in pre_mri_path or
-                       'atlas' in pre_mri_path.lower())
-        ST = 7 if is_surrogate else 3
-        print(f"Auto-detected ST={ST} ({'surrogate' if is_surrogate else 'actual'} pre-op MRI)")
+        ST = 7
+        print(f"Using default ST={ST}")
     else:
         print(f"Using provided ST={ST}")
 
@@ -522,7 +518,7 @@ def delineate_resection_pre(
     
     error_mask_dilated = dilation(error_mask_core, np.ones((7, 7, 7)))
 
-    error_mask = opening(closing((dilation(vwrp) > ERR_THR))*(error_mask_dilated>0))
+    error_mask = opening(closing(((vwrp) > ERR_THR))*(error_mask_dilated>0))
 
     nib.save(
         nib.Nifti1Image(255 * np.uint8(error_mask), nonlin_reg.target.affine),
@@ -614,14 +610,10 @@ def delineate_resection_post(
 
     # pl.show()
 
-    # Determine ST based on whether pre-op MRI is surrogate
+    # Determine ST parameter - default to 7 if not provided
     if ST is None:
-        # Check if pre-op MRI is a surrogate (contains 'surrogate' in filename or is BrainSuite atlas)
-        is_surrogate = ('surrogate' in pre_mri_path.lower() or 
-                       'BrainSuiteAtlas1' in pre_mri_path or
-                       'atlas' in pre_mri_path.lower())
-        ST = 7 if is_surrogate else 3
-        print(f"Auto-detected ST={ST} ({'surrogate' if is_surrogate else 'actual'} pre-op MRI)")
+        ST = 7
+        print(f"Using default ST={ST}")
     else:
         print(f"Using provided ST={ST}")
 
@@ -1001,7 +993,7 @@ def delineate_resection_post(
     
     error_mask_dilated = dilation(error_mask_core, np.ones((7, 7, 7)))
 
-    error_mask = opening(closing((dilation(vwrp) > ERR_THR))*(error_mask_dilated>0))
+    error_mask = opening(closing(((vwrp) > ERR_THR))*(error_mask_dilated>0))
 
 
 
