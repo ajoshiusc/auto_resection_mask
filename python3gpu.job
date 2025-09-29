@@ -1,0 +1,35 @@
+#!/usr/bin/bash
+#SBATCH --gres=gpu:1
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=16
+#SBATCH --mem=64GB
+#SBATCH --time=47:00:00
+#SBATCH --account=ajoshi_27
+#SBATCH --partition=gpu 
+
+
+module python/3.12.8 git
+
+source /home/ajoshi/Projects/auto_resection_mask/.venv/bin/activate
+
+ulimit -n 2880
+
+echo "Checking Cuda, GPU USED?"
+python -c 'import torch; print(torch.cuda.is_available()); print(torch.cuda.current_device()); print(torch.cuda.get_device_name(0))'
+nvidia-smi
+
+echo "Running: " $1
+
+# Check if the argument is a shell script or Python script and execute accordingly
+if [[ $1 == *.sh ]]; then
+    echo "Executing shell script: $1"
+    bash $1
+elif [[ $1 == *.py ]]; then
+    echo "Executing Python script: $1"
+    python $1
+else
+    echo "Executing as shell command: $1"
+    $1
+fi
+
