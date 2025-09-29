@@ -5,15 +5,15 @@ import subprocess
 from pathlib import Path
 
 # Configuration paths
-episurg_dir = '/deneb_disk/auto_resection/EPISURG'
+episurg_dir = '/project2/ajoshi_27/data/EPISURG'
 csv_file = os.path.join(episurg_dir, 'subjects.csv')
-brainsuite_path = "/home/ajoshi/Software/BrainSuite23a"
+brainsuite_path = "/project2/ajoshi_27/BrainSuite23a"
 bst_atlas_path = "bst_atlases/icbm_bst.nii.gz"
 bst_atlas_labels_path = "bst_atlases/icbm_bst.label.nii.gz"
 surrogate_preop = os.path.join(brainsuite_path, "svreg/BrainSuiteAtlas1/mri.nii.gz")  # Surrogate pre-op scan
 
 # SBATCH configuration
-project_dir = "/home/ajoshi/Projects/auto_resection_mask"
+project_dir = "/project2/ajoshi_27/GitHub/auto_resection_mask"
 python3gpu_job_script = os.path.join(project_dir, "python3gpu.job")
 main_script = os.path.join(project_dir, "auto_resection_mask.py")
 job_output_dir = os.path.join(episurg_dir, 'sbatch_logs')

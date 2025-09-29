@@ -9,9 +9,9 @@
 #SBATCH --partition=gpu 
 
 
-module python/3.12.8 git
+module python/3.13.5 git
 
-source /home/ajoshi/Projects/auto_resection_mask/.venv/bin/activate
+source /project2/ajoshi_27/GitHub/auto_resection_mask/.venv/bin/activate
 
 ulimit -n 2880
 
