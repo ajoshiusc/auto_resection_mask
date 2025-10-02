@@ -35,7 +35,7 @@ def get_dice(seg1_path, seg2_path):
 # %%
 
 # Specify the file path
-csv_file = '/deneb_disk/auto_resection/EPISURG/subjects.csv'  # Replace with your CSV file path
+csv_file = '/home/ajoshi/project2_ajoshi_27/data/EPISURG/subjects.csv'  # Replace with your CSV file path
 
 # Initialize an empty list to store subject IDs with preop MRI
 subjects_with_mri = []
@@ -57,16 +57,16 @@ with open(csv_file, mode='r') as file:
             # Add the subject ID (1st column) to the list
             subjects_with_mri.append(row[0])
 
-            preop_mri = '/deneb_disk/auto_resection/EPISURG/subjects/' + \
+            preop_mri = '/home/ajoshi/project2_ajoshi_27/data/EPISURG/subjects/' + \
                 row[0] + '/preop/' + row[0] + '_preop-t1mri-1.nii.gz'
-            postop_mri = '/deneb_disk/auto_resection/EPISURG/subjects/' + \
+            postop_mri = '/home/ajoshi/project2_ajoshi_27/data/EPISURG/subjects/' + \
                 row[0] + '/postop/' + row[0] + '_postop-t1mri-1.nii.gz'
             
-            resection_preop_file = '/deneb_disk/auto_resection/EPISURG/subjects/' + row[0] + '/preop/' + row[0] + '_preop-t1mri-1.resection.mask.nii.gz'
-            resection_postop_file = '/deneb_disk/auto_resection/EPISURG/subjects/' + row[0] + '/postop/' + row[0] + '_postop-t1mri-1.resection.mask.nii.gz'
+            resection_preop_file = '/home/ajoshi/project2_ajoshi_27/data/EPISURG/subjects/' + row[0] + '/preop/' + row[0] + '_preop-t1mri-1.resection.mask.nii.gz'
+            resection_postop_file = '/home/ajoshi/project2_ajoshi_27/data/EPISURG/subjects/' + row[0] + '/postop/' + row[0] + '_postop-t1mri-1.resection.mask.nii.gz'
 
             if row[4] == 'True':
-                manual1_resection_file = '/deneb_disk/auto_resection/EPISURG/subjects/' + row[0] + '/postop/' + row[0] + '_postop-seg-1.nii.gz'
+                manual1_resection_file = '/home/ajoshi/project2_ajoshi_27/data/EPISURG/subjects/' + row[0] + '/postop/' + row[0] + '_postop-seg-1.nii.gz'
                 d = get_dice(manual1_resection_file,resection_postop_file)
                 if d > 0.1:
                     dice_manual1.append(d)
@@ -76,13 +76,13 @@ with open(csv_file, mode='r') as file:
 
 
             if row[5] == 'True':
-                manual2_resection_file = '/deneb_disk/auto_resection/EPISURG/subjects/' + row[0] + '/postop/' + row[0] + '_postop-seg-2.nii.gz'
+                manual2_resection_file = '/home/ajoshi/project2_ajoshi_27/data/EPISURG/subjects/' + row[0] + '/postop/' + row[0] + '_postop-seg-2.nii.gz'
                 d = get_dice(manual2_resection_file,resection_postop_file)
                 if d > 0.1:
                     dice_manual2.append(d)
 
             if row[6] == 'True':
-                manual3_resection_file = '/deneb_disk/auto_resection/EPISURG/subjects/' + row[0] + '/postop/' + row[0] + '_postop-seg-3.nii.gz'
+                manual3_resection_file = '/home/ajoshi/project2_ajoshi_27/data/EPISURG/subjects/' + row[0] + '/postop/' + row[0] + '_postop-seg-3.nii.gz'
                 d = get_dice(manual3_resection_file,resection_postop_file)
                 if d > 0.15:
                     dice_manual3.append(d)            
@@ -137,7 +137,7 @@ axes[2].set(xlabel='Value')
 axes[2].set(ylabel='Frequency')
 axes[2].set_yticks(np.arange(max(dice_manual3)+2))
 plt.draw_all()
-plt.savefig('dice_manual.png',dpi=300,bbox_inches='tight')
+plt.savefig('dice_manual_full.png',dpi=300,bbox_inches='tight')
 plt.show()
 
 
