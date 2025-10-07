@@ -249,6 +249,20 @@ for icbm_file in icbm_files:
 # No encryption for the executable
 block_cipher = None
 
+# Create runtime hook to configure matplotlib for headless operation
+runtime_hook_content = '''
+import os
+import matplotlib
+# Set matplotlib to use Agg backend (non-GUI) before any other matplotlib imports
+matplotlib.use('Agg')
+# Ensure headless operation 
+os.environ['MPLBACKEND'] = 'Agg'
+'''
+
+# Write runtime hook to temporary file
+with open('pyi_rth_matplotlib_headless.py', 'w') as f:
+    f.write(runtime_hook_content)
+
 # Main Analysis configuration
 a = Analysis(
     ['standalone_wrapper.py'],          # Entry point script
@@ -262,8 +276,16 @@ a = Analysis(
     hiddenimports=all_hiddenimports,    # Modules to import at runtime
     hookspath=[],                       # No custom hooks directory
     hooksconfig={},                     # No hook configuration
-    runtime_hooks=[],                   # No runtime hooks
-    excludes=[],                        # No modules to exclude
+    runtime_hooks=['pyi_rth_matplotlib_headless.py'],  # Configure matplotlib for headless operation
+    excludes=[                         # Exclude GUI components not needed for headless operation
+        'tkinter', 'tkinter.*',        # Tkinter GUI framework
+        'PyQt5', 'PyQt5.*',           # PyQt5 GUI framework  
+        'PyQt6', 'PyQt6.*',           # PyQt6 GUI framework
+        'PySide2', 'PySide2.*',       # PySide2 GUI framework
+        'PySide6', 'PySide6.*',       # PySide6 GUI framework
+        'matplotlib.backends.backend_qt*',  # Qt backends for matplotlib
+        'matplotlib.backends.backend_tk*',  # Tkinter backends
+    ],
     win_no_prefer_redirects=False,      # Windows-specific (ignored on Linux)
     win_private_assemblies=False,       # Windows-specific (ignored on Linux)
     cipher=block_cipher,                # No encryption
@@ -345,6 +367,13 @@ chmod +x "dist/auto_resection_mask_linux"
 # Additional verification step
 echo "Verifying ICBM files are bundled correctly..."
 
+# Cleanup temporary files
+echo "Cleaning up temporary files..."
+if [ -f "pyi_rth_matplotlib_headless.py" ]; then
+    rm -f "pyi_rth_matplotlib_headless.py"
+    echo "Removed temporary runtime hook file"
+fi
+
 # =============================================================================
 # BUILD COMPLETION SUMMARY
 # =============================================================================
@@ -368,6 +397,8 @@ echo "- CUDA GPU acceleration (when available)"
 echo "- All dependencies statically linked"
 echo "- ICBM brain atlas files"
 echo "- BrainSuite binaries for Linux"
+echo "- Headless operation (no GUI/X11 required)"
+echo "- Non-interactive matplotlib plotting"
 echo "- Optimized for Linux distributions"
 echo "- No external Python installation required"
 echo "=========================================="
