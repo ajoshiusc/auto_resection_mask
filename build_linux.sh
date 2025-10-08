@@ -303,7 +303,7 @@ exe = EXE(
     a.zipfiles,                         # ZIP files
     a.datas,                            # Data files
     [],                                 # Additional files
-    name='auto_resection_mask_linux',   # Executable name
+    name='auto_resection_mask_core',    # Core executable name
     debug=False,                        # No debug mode
     bootloader_ignore_signals=False,    # Handle signals normally
     strip=False,                        # Don't strip symbols for better debugging
@@ -355,14 +355,14 @@ fi
 # BUILD VERIFICATION AND COMPLETION
 # =============================================================================
 # Verify the executable was successfully created
-if [ ! -f "dist/auto_resection_mask_linux" ]; then
-    echo "Error: Executable was not created!"
+if [ ! -f "dist/auto_resection_mask_core" ]; then
+    echo "Error: Core executable was not created!"
     echo "Please check the build output above for errors."
     exit 1
 fi
 
 # Make the executable file executable (set proper permissions)
-chmod +x "dist/auto_resection_mask_linux"
+chmod +x "dist/auto_resection_mask_core"
 
 # Additional verification step
 echo "Verifying ICBM files are bundled correctly..."
@@ -374,6 +374,16 @@ if [ -f "pyi_rth_matplotlib_headless.py" ]; then
     echo "Removed temporary runtime hook file"
 fi
 
+# Copy wrapper script to dist directory
+echo "Copying wrapper script..."
+if [ -f "auto_resection_mask_linux.sh" ]; then
+    cp "auto_resection_mask_linux.sh" "dist/auto_resection_mask_linux"
+    chmod +x "dist/auto_resection_mask_linux"
+    echo "Wrapper script copied to dist/auto_resection_mask_linux"
+else
+    echo "Warning: Could not copy wrapper script - auto_resection_mask_linux.sh not found"
+fi
+
 # =============================================================================
 # BUILD COMPLETION SUMMARY
 # =============================================================================
@@ -381,14 +391,24 @@ echo
 echo "=========================================="
 echo "Build completed successfully!"
 echo "=========================================="
-echo "The executable is available at: dist/auto_resection_mask_linux"
 echo
-echo "Usage:"
-echo "  ./auto_resection_mask_linux preop_mri postop_mri"
+echo "Files created in dist/:"
+echo "  1. Core executable: auto_resection_mask_core"
+echo "  2. Main launcher:   auto_resection_mask_linux"
 echo
-echo "Parameters:"
+echo "Usage: ./auto_resection_mask_linux preop_mri postop_mri [temp_dir]"
 echo "  - preop_mri: Path to pre-operative MRI file"
 echo "  - postop_mri: Path to post-operative MRI file"
+echo "  - temp_dir: (Optional) Directory for PyInstaller _MEIxxxx extraction"
+echo "             If not specified, uses system temporary directory"
+echo
+echo "Examples:"
+echo "  ./auto_resection_mask_linux input1.nii.gz input2.nii.gz"
+echo "  ./auto_resection_mask_linux input1.nii.gz input2.nii.gz \"/tmp/mytempfolder\""
+echo "  ./auto_resection_mask_linux input1.nii.gz input2.nii.gz \"./data\""
+echo
+echo "Important: Use the launcher script to control extraction directory!"
+echo "Direct use of auto_resection_mask_core will use default temp location."
 echo
 echo "=========================================="
 echo "Build process completed successfully!"
@@ -397,6 +417,7 @@ echo "- CUDA GPU acceleration (when available)"
 echo "- All dependencies statically linked"
 echo "- ICBM brain atlas files"
 echo "- BrainSuite binaries for Linux"
+echo "- Custom temp directory control for PyInstaller extraction"
 echo "- Headless operation (no GUI/X11 required)"
 echo "- Non-interactive matplotlib plotting"
 echo "- Optimized for Linux distributions"

@@ -240,6 +240,23 @@ echo.
 echo # No encryption for the executable
 echo block_cipher = None
 echo.
+echo # Create runtime hook to display extraction information
+echo runtime_hook_content = '''
+echo import os
+echo import sys
+echo.
+echo # Display PyInstaller extraction information
+echo if hasattr(sys, "_MEIPASS"^):
+echo     extraction_dir = sys._MEIPASS
+echo     temp_env = os.environ.get("TEMP", "Unknown"^)
+echo     print(f"Runtime: Extracted to {extraction_dir}"^)
+echo     print(f"Runtime: Using temp environment {temp_env}"^)
+echo '''
+echo.
+echo # Write runtime hook to temporary file
+echo with open('pyi_rth_custom_temp.py', 'w'^) as f:
+echo     f.write(runtime_hook_content^)
+echo.
 echo # Main Analysis configuration
 echo a = Analysis(
 echo     ['standalone_wrapper.py'],          # Entry point script
@@ -253,7 +270,7 @@ echo     ] + all_datas,                     # Plus automatically collected data
 echo     hiddenimports=all_hiddenimports,    # Modules to import at runtime
 echo     hookspath=[],                       # No custom hooks directory
 echo     hooksconfig={},                     # No hook configuration
-echo     runtime_hooks=[],                   # No runtime hooks
+echo     runtime_hooks=['pyi_rth_custom_temp.py'],  # Custom temp directory hook
 echo     excludes=[],                        # No modules to exclude
 echo     win_no_prefer_redirects=False,      # Windows-specific option
 echo     win_private_assemblies=False,       # Windows-specific option
@@ -272,7 +289,7 @@ echo     a.binaries,                         # Binary dependencies
 echo     a.zipfiles,                         # ZIP files
 echo     a.datas,                            # Data files
 echo     [],                                 # Additional files
-echo     name='auto_resection_mask_win',     # Executable name
+echo     name='auto_resection_mask_core',   # Core executable name
 echo     debug=False,                        # No debug mode
 echo     bootloader_ignore_signals=False,    # Handle signals normally
 echo     strip=False,                        # Don't strip symbols
@@ -313,26 +330,51 @@ if errorlevel 1 (
 :: BUILD VERIFICATION AND COMPLETION
 :: =============================================================================
 REM Verify the executable was successfully created
-if not exist "dist\auto_resection_mask_win.exe" (
-    echo Error: Executable was not created!
+if not exist "dist\auto_resection_mask_core.exe" (
+    echo Error: Core executable was not created!
     exit /b 1
 )
 
 REM Additional verification step
 echo Verifying ICBM files are bundled correctly...
 
+REM Clean up temporary files
+echo Cleaning up temporary files...
+if exist "pyi_rth_custom_temp.py" del /f /q "pyi_rth_custom_temp.py"
+
+REM Copy wrapper script to dist directory
+echo Copying wrapper script...
+copy "auto_resection_mask_win.bat" "dist\auto_resection_mask_win.bat" > nul
+if errorlevel 1 (
+    echo Warning: Could not copy wrapper script
+) else (
+    echo Wrapper script copied to dist\auto_resection_mask_win.bat
+)
+
 :: =============================================================================
 :: BUILD COMPLETION SUMMARY
 :: =============================================================================
 echo.
 echo Build completed successfully!
-echo The executable is available at: dist\auto_resection_mask_win.exe
 echo.
-echo Usage: auto_resection_mask_win.exe preop_mri postop_mri
+echo Files created in dist/:
+echo   1. Core executable: auto_resection_mask_core.exe
+echo   2. Main launcher:   auto_resection_mask_win.bat
+echo.
+echo Usage: auto_resection_mask_win.bat preop_mri postop_mri [temp_dir]
 echo - preop_mri: Path to pre-operative MRI file
 echo - postop_mri: Path to post-operative MRI file
+echo - temp_dir: ^(Optional^) Directory for PyInstaller _MEIxxxx extraction
+echo           If not specified, uses system temporary directory
 echo.
-echo Note: ICBM files are bundled with the executable
+echo Examples:
+echo   auto_resection_mask_win.bat input1.nii.gz input2.nii.gz
+echo   auto_resection_mask_win.bat input1.nii.gz input2.nii.gz "D:\MyTempFolder"
+echo.
+echo Important: Use the .bat launcher to control extraction directory!
+echo Direct use of .exe will always extract to default temp location.
+echo.
+echo Note: ICBM files and BrainSuite binaries are bundled with the executable
 echo.
 echo =============================================================================
 echo Build process completed. The executable includes:

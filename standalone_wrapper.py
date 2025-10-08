@@ -4,9 +4,12 @@ from auto_resection_mask import auto_resection_mask
 
 def main():
     if len(sys.argv) != 3:
-        print("Usage: auto_resection_mask preop_mri postop_mri")
+        print("Usage: auto_resection_mask_core.exe preop_mri postop_mri")
         print("  preop_mri: Path to pre-operative MRI file")
         print("  postop_mri: Path to post-operative MRI file")
+        print("")
+        print("Note: This is the core executable. Use auto_resection_mask_win.bat")
+        print("      for custom temp directory support.")
         sys.exit(1)
 
     preop_mri = sys.argv[1]
@@ -16,6 +19,11 @@ def main():
     if getattr(sys, 'frozen', False):
         # Running as compiled executable
         application_path = sys._MEIPASS
+        
+        # Show extraction directory info
+        print(f"PyInstaller extracted to: {application_path}")
+        current_temp = os.environ.get('TEMP', 'Unknown')
+        print(f"Current temp directory: {current_temp}")
     else:
         # Running as script
         application_path = os.path.dirname(os.path.abspath(__file__))

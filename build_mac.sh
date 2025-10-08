@@ -2,7 +2,35 @@
 # Auto Resection Mask macOS Build Script
 # =============================================================================
 # This script creates a macOS executable for the auto resection mask tool
-# using PyInstaller. It handles conda environment setup, dependency management,
+# using PyInstaller. It handecho "=========================================="
+echo "Build completed successfully!"
+echo "=========================================="
+echo
+echo "Files created in dist/:"
+echo "  1. Core executable: auto_resection_mask_core"
+echo "  2. Main launcher:   auto_resection_mask_mac"
+echo
+echo "Usage: ./auto_resection_mask_mac preop_mri postop_mri [temp_dir]"
+echo "  - preop_mri: Path to pre-operative MRI file"
+echo "  - postop_mri: Path to post-operative MRI file"
+echo "  - temp_dir: (Optional) Directory for PyInstaller _MEIxxxx extraction"
+echo "             If not specified, uses system temporary directory"
+echo
+echo "Examples:"
+echo "  ./auto_resection_mask_mac input1.nii.gz input2.nii.gz"
+echo "  ./auto_resection_mask_mac input1.nii.gz input2.nii.gz \"/tmp/mytempfolder\""
+echo "  ./auto_resection_mask_mac input1.nii.gz input2.nii.gz \"./data\""
+echo
+echo "Important: Use the launcher script to control extraction directory!"
+echo "Direct use of auto_resection_mask_core will use default temp location."
+echo
+echo "Features included in this build:"
+echo "  - All required Python dependencies bundled"
+echo "  - ICBM brain atlas files embedded"
+echo "  - BrainSuite binaries included (if available)"
+echo "  - Custom temp directory control for PyInstaller extraction"
+echo "  - PyTorch for deep learning capabilities"
+echo "  - Comprehensive error handling"ent setup, dependency management,
 # and creates a portable executable with all required libraries bundled.
 # =============================================================================
 # Created with Claude Sonnet 4 in Visual Studio Code
@@ -235,7 +263,7 @@ exe = EXE(
     a.binaries,                         # Binary dependencies
     a.zipfiles,                         # ZIP files
     a.datas,                            # Data files
-    name='auto_resection_mask_mac',     # Executable name
+    name='auto_resection_mask_core',    # Core executable name
     debug=False,                        # No debug mode
     bootloader_ignore_signals=False,    # Handle signals normally
     strip=False,                        # Don't strip symbols for better debugging
@@ -282,14 +310,24 @@ pyinstaller auto_resection_mask_mac.spec --clean
 # BUILD VERIFICATION AND COMPLETION
 # =============================================================================
 # Verify the executable was successfully created
-if [ ! -f "dist/auto_resection_mask_mac" ]; then
-    echo "Error: Executable was not created!"
+if [ ! -f "dist/auto_resection_mask_core" ]; then
+    echo "Error: Core executable was not created!"
     echo "Please check the build output above for errors."
     exit 1
 fi
 
 # Make the executable file executable (set proper permissions)
-chmod +x "dist/auto_resection_mask_mac"
+chmod +x "dist/auto_resection_mask_core"
+
+# Copy wrapper script to dist directory
+echo "Copying wrapper script..."
+if [ -f "auto_resection_mask_mac.sh" ]; then
+    cp "auto_resection_mask_mac.sh" "dist/auto_resection_mask_mac"
+    chmod +x "dist/auto_resection_mask_mac"
+    echo "Wrapper script copied to dist/auto_resection_mask_mac"
+else
+    echo "Warning: Could not copy wrapper script - auto_resection_mask_mac.sh not found"
+fi
 
 # =============================================================================
 # BUILD COMPLETION SUMMARY
