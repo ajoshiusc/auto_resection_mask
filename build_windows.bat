@@ -1,12 +1,12 @@
 :: =============================================================================
-:: Auto Resection Mask Windows Build Script
+:: Resection Identification Windows Build Script
 :: =============================================================================
-:: This script creates a Windows executable for the auto resection mask tool
+:: This script creates a Windows executable for the resection identification tool
 :: using PyInstaller. It handles conda environment setup, dependency management,
 :: and PyTorch CUDA installation for optimal performance.
 :: =============================================================================
 :: Created with Claude Sonnet 4 in Visual Studio Code
-:: Modified by Chinmay Chinara, 2025
+:: Supervised by Chinmay Chinara, 2025
 :: =============================================================================
 
 @echo off
@@ -135,7 +135,7 @@ REM Create PyInstaller spec file with comprehensive dependency collection
 echo Creating PyInstaller spec file...
 (
 echo # =============================================================================
-echo # PyInstaller Spec File for Auto Resection Mask
+echo # PyInstaller Spec File for Resection Identification
 echo # =============================================================================
 echo # This spec file defines how PyInstaller should bundle the application
 echo # including all dependencies, data files, and configuration options.
@@ -289,7 +289,7 @@ echo     a.binaries,                         # Binary dependencies
 echo     a.zipfiles,                         # ZIP files
 echo     a.datas,                            # Data files
 echo     [],                                 # Additional files
-echo     name='auto_resection_mask_core',   # Core executable name
+echo     name='resection_identification_core',   # Core executable name
 echo     debug=False,                        # No debug mode
 echo     bootloader_ignore_signals=False,    # Handle signals normally
 echo     strip=False,                        # Don't strip symbols
@@ -302,7 +302,7 @@ echo     target_arch=None,                   # Auto-detect architecture
 echo     codesign_identity=None,             # No code signing
 echo     entitlements_file=None              # No entitlements
 echo ^)
-) > auto_resection_mask_win.spec
+) > resection_identification_win.spec
 
 :: =============================================================================
 :: PYINSTALLER INSTALLATION AND EXECUTION
@@ -320,7 +320,7 @@ if errorlevel 1 (
 
 REM Build the executable using the generated spec file
 echo Building executable with PyInstaller...
-pyinstaller auto_resection_mask_win.spec --clean
+pyinstaller resection_identification_win.spec --clean
 if errorlevel 1 (
     echo Build failed! Check the error messages above.
     exit /b 1
@@ -330,7 +330,7 @@ if errorlevel 1 (
 :: BUILD VERIFICATION AND COMPLETION
 :: =============================================================================
 REM Verify the executable was successfully created
-if not exist "dist\auto_resection_mask_core.exe" (
+if not exist "dist\resection_identification_core.exe" (
     echo Error: Core executable was not created!
     exit /b 1
 )
@@ -344,11 +344,11 @@ if exist "pyi_rth_custom_temp.py" del /f /q "pyi_rth_custom_temp.py"
 
 REM Copy wrapper script to dist directory
 echo Copying wrapper script...
-copy "auto_resection_mask_win.bat" "dist\auto_resection_mask_win.bat" > nul
+copy "resection_identification.bat" "dist\resection_identification.bat" > nul
 if errorlevel 1 (
     echo Warning: Could not copy wrapper script
 ) else (
-    echo Wrapper script copied to dist\auto_resection_mask_win.bat
+    echo Wrapper script copied to dist\resection_identification.bat
 )
 
 :: =============================================================================
@@ -358,18 +358,34 @@ echo.
 echo Build completed successfully!
 echo.
 echo Files created in dist/:
-echo   1. Core executable: auto_resection_mask_core.exe
-echo   2. Main launcher:   auto_resection_mask_win.bat
+echo   1. Core executable: resection_identification_core.exe
+echo   2. Main launcher:   resection_identification.bat
 echo.
-echo Usage: auto_resection_mask_win.bat preop_mri postop_mri [temp_dir]
+echo Usage: resection_identification.bat preop_mri postop_mri [temp_dir]
 echo - preop_mri: Path to pre-operative MRI file
 echo - postop_mri: Path to post-operative MRI file
 echo - temp_dir: ^(Optional^) Directory for PyInstaller _MEIxxxx extraction
-echo           If not specified, uses system temporary directory
+echo           Supports automatic path resolution:
+echo           * Relative paths: "temp", "data", ".", "..", "./folder"
+echo           * Absolute paths: "C:\MyTemp", "D:\MyFolder" 
+echo           * Non-existent directories created automatically
+echo           * Write permissions validated automatically
+echo.
+echo Examples with Automatic Path Resolution:
+echo   resection_identification.bat input1.nii.gz input2.nii.gz
+echo   resection_identification.bat input1.nii.gz input2.nii.gz "temp"
+echo   resection_identification.bat input1.nii.gz input2.nii.gz "data/processing"
+echo   resection_identification.bat input1.nii.gz input2.nii.gz "D:\MyTempFolder"
 echo.
 echo Examples:
-echo   auto_resection_mask_win.bat input1.nii.gz input2.nii.gz
-echo   auto_resection_mask_win.bat input1.nii.gz input2.nii.gz "D:\MyTempFolder"
+echo   resection_identification.bat input1.nii.gz input2.nii.gz
+echo   resection_identification.bat input1.nii.gz input2.nii.gz "temp"
+echo   resection_identification.bat input1.nii.gz input2.nii.gz "D:\MyTempFolder"
+echo.
+echo Features:
+echo - Automatic relative-to-absolute path conversion
+echo - Directory creation if needed  
+echo - Write permission validation
 echo.
 echo Important: Use the .bat launcher to control extraction directory!
 echo Direct use of .exe will always extract to default temp location.
