@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Auto Resection Mask - PyInstaller Extraction Controller (Linux)
+# Resection Identification - PyInstaller Extraction Controller (Linux)
 # This script controls where PyInstaller extracts the _MEIxxxx folder
 
 show_usage() {
@@ -29,7 +29,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # If no custom temp directory specified, run normally
 if [ $# -eq 2 ]; then
     echo "Using default system temp directory"
-    exec "$SCRIPT_DIR/auto_resection_mask_core" "$1" "$2"
+    exec "$SCRIPT_DIR/resection_identification_core" "$1" "$2"
 fi
 
 # Custom temp directory specified
@@ -37,35 +37,44 @@ CUSTOM_TEMP="$3"
 
 # Convert relative path to absolute path
 if [[ "$CUSTOM_TEMP" != /* ]]; then
-    CUSTOM_TEMP="$(cd "$CUSTOM_TEMP" 2>/dev/null && pwd)"
-    if [ $? -ne 0 ]; then
-        echo "Error: Cannot access directory '$3'"
-        echo "Please ensure the directory exists and you have access to it."
-        exit 1
+    # Handle relative paths
+    if [ "$CUSTOM_TEMP" = "." ]; then
+        CUSTOM_TEMP="$(pwd)"
+    elif [[ "$CUSTOM_TEMP" == ./* ]]; then
+        CUSTOM_TEMP="$(pwd)/${CUSTOM_TEMP#./}"
+    elif [[ "$CUSTOM_TEMP" == ../* ]]; then
+        CUSTOM_TEMP="$(cd "$CUSTOM_TEMP" 2>/dev/null && pwd)"
+        if [ $? -ne 0 ]; then
+            echo "Error: Cannot resolve relative path '$3'"
+            exit 1
+        fi
+    else
+        CUSTOM_TEMP="$(pwd)/$CUSTOM_TEMP"
     fi
     echo "Resolved relative path to: $CUSTOM_TEMP"
 fi
 
-# Validate custom temp directory exists
+# Create directory if it doesn't exist
 if [ ! -d "$CUSTOM_TEMP" ]; then
-    echo "Error: Custom temp directory '$CUSTOM_TEMP' does not exist"
-    exit 1
-fi
-
-# Test write access
-if [ ! -w "$CUSTOM_TEMP" ]; then
-    echo "Error: Custom temp directory '$CUSTOM_TEMP' is not writable"
-    exit 1
+    echo "Creating temp directory: $CUSTOM_TEMP"
+    if ! mkdir -p "$CUSTOM_TEMP" 2>/dev/null; then
+        echo "Error: Could not create directory '$CUSTOM_TEMP'"
+        echo "Using default temp directory"
+        exec "$SCRIPT_DIR/resection_identification_core" "$1" "$2"
+    fi
+    echo "Successfully created: $CUSTOM_TEMP"
+else
+    echo "Using existing temp directory: $CUSTOM_TEMP"
 fi
 
 # Test write access by creating a temporary file
 if ! touch "$CUSTOM_TEMP/test_write.tmp" 2>/dev/null; then
-    echo "Error: Cannot write to custom temp directory '$CUSTOM_TEMP'"
-    exit 1
+    echo "Warning: Cannot write to custom temp directory '$CUSTOM_TEMP'"
+    echo "Using default temp directory"
+    exec "$SCRIPT_DIR/resection_identification_core" "$1" "$2"
 fi
 rm -f "$CUSTOM_TEMP/test_write.tmp"
-
-echo "Using absolute temp directory: $CUSTOM_TEMP"
+echo "Write permission confirmed for: $CUSTOM_TEMP"
 
 # Set environment variables BEFORE starting PyInstaller executable
 export TEMP="$CUSTOM_TEMP"
@@ -73,7 +82,7 @@ export TMP="$CUSTOM_TEMP"
 export TMPDIR="$CUSTOM_TEMP"
 
 echo "PyInstaller will extract to: $CUSTOM_TEMP/_MEIxxxxxx"
-echo "Starting application..."
+echo "Starting resection identification analysis..."
 
 # Run the PyInstaller executable with environment set
-exec "$SCRIPT_DIR/auto_resection_mask_core" "$1" "$2"
+exec "$SCRIPT_DIR/resection_identification_core" "$1" "$2"

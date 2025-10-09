@@ -1,12 +1,12 @@
 # =============================================================================
-# Auto Resection Mask Linux Build Script
+# Resection Identification Linux Build Script
 # =============================================================================
-# This script creates a Linux executable for the auto resection mask tool
+# This script creates a Linux executable for the resection identification tool
 # using PyInstaller. It handles conda environment setup, dependency management,
 # and PyTorch CUDA installation for optimal GPU performance on Linux.
 # =============================================================================
 # Created with Claude Sonnet 4 in Visual Studio Code
-# Modified by Chinmay Chinara, 2025
+# Supervised by Chinmay Chinara, 2025
 # =============================================================================
 
 #!/bin/bash
@@ -142,9 +142,9 @@ fi
 # =============================================================================
 # Create PyInstaller spec file with comprehensive dependency collection
 echo "Creating PyInstaller spec file..."
-cat << 'EOF' > auto_resection_mask_linux.spec
+cat << 'EOF' > resection_identification_linux.spec
 # =============================================================================
-# PyInstaller Spec File for Auto Resection Mask (Linux)
+# PyInstaller Spec File for Resection Identification (Linux)
 # =============================================================================
 # This spec file defines how PyInstaller should bundle the application for Linux
 # including all dependencies, data files, and configuration options.
@@ -303,7 +303,7 @@ exe = EXE(
     a.zipfiles,                         # ZIP files
     a.datas,                            # Data files
     [],                                 # Additional files
-    name='auto_resection_mask_core',    # Core executable name
+    name='resection_identification_core',    # Core executable name
     debug=False,                        # No debug mode
     bootloader_ignore_signals=False,    # Handle signals normally
     strip=False,                        # Don't strip symbols for better debugging
@@ -345,7 +345,7 @@ done
 
 # Build the executable using the generated spec file
 echo "Building executable with PyInstaller..."
-pyinstaller auto_resection_mask_linux.spec --clean
+pyinstaller resection_identification_linux.spec --clean
 if [ $? -ne 0 ]; then
     echo "Build failed! Check the error messages above."
     exit 1
@@ -355,14 +355,14 @@ fi
 # BUILD VERIFICATION AND COMPLETION
 # =============================================================================
 # Verify the executable was successfully created
-if [ ! -f "dist/auto_resection_mask_core" ]; then
+if [ ! -f "dist/resection_identification_core" ]; then
     echo "Error: Core executable was not created!"
     echo "Please check the build output above for errors."
     exit 1
 fi
 
 # Make the executable file executable (set proper permissions)
-chmod +x "dist/auto_resection_mask_core"
+chmod +x "dist/resection_identification_core"
 
 # Additional verification step
 echo "Verifying ICBM files are bundled correctly..."
@@ -376,12 +376,104 @@ fi
 
 # Copy wrapper script to dist directory
 echo "Copying wrapper script..."
-if [ -f "auto_resection_mask_linux.sh" ]; then
-    cp "auto_resection_mask_linux.sh" "dist/auto_resection_mask_linux"
-    chmod +x "dist/auto_resection_mask_linux"
-    echo "Wrapper script copied to dist/auto_resection_mask_linux"
+if [ -f "resection_identification.sh" ]; then
+    cp "resection_identification.sh" "dist/resection_identification"
+    chmod +x "dist/resection_identification"
+    echo "Wrapper script copied to dist/resection_identification"
 else
-    echo "Warning: Could not copy wrapper script - auto_resection_mask_linux.sh not found"
+    echo "Creating wrapper script in dist directory..."
+    cat << 'WRAPPER_EOF' > "dist/resection_identification"
+#!/bin/bash
+
+# Resection Identification - PyInstaller Extraction Controller (Linux)
+# This script controls where PyInstaller extracts the _MEIxxxx folder
+
+show_usage() {
+    echo "Usage: $0 preop_mri postop_mri [temp_dir]"
+    echo "  preop_mri: Path to pre-operative MRI file"
+    echo "  postop_mri: Path to post-operative MRI file"
+    echo "  temp_dir: (Optional) Directory for PyInstaller _MEIxxxx extraction"
+    echo "           Can be absolute (/tmp/mytemp) or relative (./data)"
+    echo "           Will be converted to absolute path automatically"
+    echo ""
+    echo "Examples:"
+    echo "  $0 input1.nii.gz input2.nii.gz"
+    echo "  $0 input1.nii.gz input2.nii.gz \"/tmp/mytempfolder\""
+    echo "  $0 input1.nii.gz input2.nii.gz \"./data\""
+    exit 1
+}
+
+# Check number of arguments
+if [ $# -lt 2 ] || [ $# -gt 3 ]; then
+    show_usage
+fi
+
+# Get script directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# If no custom temp directory specified, run normally
+if [ $# -eq 2 ]; then
+    echo "Using default system temp directory"
+    exec "$SCRIPT_DIR/resection_identification_core" "$1" "$2"
+fi
+
+# Custom temp directory specified
+CUSTOM_TEMP="$3"
+
+# Convert relative path to absolute path
+if [[ "$CUSTOM_TEMP" != /* ]]; then
+    # Handle relative paths
+    if [ "$CUSTOM_TEMP" = "." ]; then
+        CUSTOM_TEMP="$(pwd)"
+    elif [[ "$CUSTOM_TEMP" == ./* ]]; then
+        CUSTOM_TEMP="$(pwd)/${CUSTOM_TEMP#./}"
+    elif [[ "$CUSTOM_TEMP" == ../* ]]; then
+        CUSTOM_TEMP="$(cd "$CUSTOM_TEMP" 2>/dev/null && pwd)"
+        if [ $? -ne 0 ]; then
+            echo "Error: Cannot resolve relative path '$3'"
+            exit 1
+        fi
+    else
+        CUSTOM_TEMP="$(pwd)/$CUSTOM_TEMP"
+    fi
+    echo "Resolved relative path to: $CUSTOM_TEMP"
+fi
+
+# Create directory if it doesn't exist
+if [ ! -d "$CUSTOM_TEMP" ]; then
+    echo "Creating temp directory: $CUSTOM_TEMP"
+    if ! mkdir -p "$CUSTOM_TEMP" 2>/dev/null; then
+        echo "Error: Could not create directory '$CUSTOM_TEMP'"
+        echo "Using default temp directory"
+        exec "$SCRIPT_DIR/resection_identification_core" "$1" "$2"
+    fi
+    echo "Successfully created: $CUSTOM_TEMP"
+else
+    echo "Using existing temp directory: $CUSTOM_TEMP"
+fi
+
+# Test write access by creating a temporary file
+if ! touch "$CUSTOM_TEMP/test_write.tmp" 2>/dev/null; then
+    echo "Warning: Cannot write to custom temp directory '$CUSTOM_TEMP'"
+    echo "Using default temp directory"
+    exec "$SCRIPT_DIR/resection_identification_core" "$1" "$2"
+fi
+rm -f "$CUSTOM_TEMP/test_write.tmp"
+echo "Write permission confirmed for: $CUSTOM_TEMP"
+
+# Set environment variables BEFORE starting PyInstaller executable
+export TEMP="$CUSTOM_TEMP"
+export TMP="$CUSTOM_TEMP"
+export TMPDIR="$CUSTOM_TEMP"
+
+echo "PyInstaller will extract to: $CUSTOM_TEMP/_MEIxxxxxx"
+echo "Starting resection identification analysis..."
+
+# Run the PyInstaller executable with environment set
+exec "$SCRIPT_DIR/resection_identification_core" "$1" "$2"
+WRAPPER_EOF
+    chmod +x "dist/resection_identification"
+    echo "Wrapper script created in dist/resection_identification"
 fi
 
 # =============================================================================
@@ -393,22 +485,22 @@ echo "Build completed successfully!"
 echo "=========================================="
 echo
 echo "Files created in dist/:"
-echo "  1. Core executable: auto_resection_mask_core"
-echo "  2. Main launcher:   auto_resection_mask_linux"
+echo "  1. Core executable: resection_identification_core"
+echo "  2. Main launcher:   resection_identification"
 echo
-echo "Usage: ./auto_resection_mask_linux preop_mri postop_mri [temp_dir]"
+echo "Usage: ./resection_identification preop_mri postop_mri [temp_dir]"
 echo "  - preop_mri: Path to pre-operative MRI file"
 echo "  - postop_mri: Path to post-operative MRI file"
 echo "  - temp_dir: (Optional) Directory for PyInstaller _MEIxxxx extraction"
 echo "             If not specified, uses system temporary directory"
 echo
 echo "Examples:"
-echo "  ./auto_resection_mask_linux input1.nii.gz input2.nii.gz"
-echo "  ./auto_resection_mask_linux input1.nii.gz input2.nii.gz \"/tmp/mytempfolder\""
-echo "  ./auto_resection_mask_linux input1.nii.gz input2.nii.gz \"./data\""
+echo "  ./resection_identification input1.nii.gz input2.nii.gz"
+echo "  ./resection_identification input1.nii.gz input2.nii.gz \"/tmp/mytempfolder\""
+echo "  ./resection_identification input1.nii.gz input2.nii.gz \"./data\""
 echo
 echo "Important: Use the launcher script to control extraction directory!"
-echo "Direct use of auto_resection_mask_core will use default temp location."
+echo "Direct use of resection_identification_core will use default temp location."
 echo
 echo "=========================================="
 echo "Build process completed successfully!"
