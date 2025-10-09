@@ -1,40 +1,12 @@
 # =============================================================================
-# Auto Resection Mask macOS Build Script
+# Resection Identification macOS Build Script
 # =============================================================================
-# This script creates a macOS executable for the auto resection mask tool
-# using PyInstaller. It handecho "=========================================="
-echo "Build completed successfully!"
-echo "=========================================="
-echo
-echo "Files created in dist/:"
-echo "  1. Core executable: auto_resection_mask_core"
-echo "  2. Main launcher:   auto_resection_mask_mac"
-echo
-echo "Usage: ./auto_resection_mask_mac preop_mri postop_mri [temp_dir]"
-echo "  - preop_mri: Path to pre-operative MRI file"
-echo "  - postop_mri: Path to post-operative MRI file"
-echo "  - temp_dir: (Optional) Directory for PyInstaller _MEIxxxx extraction"
-echo "             If not specified, uses system temporary directory"
-echo
-echo "Examples:"
-echo "  ./auto_resection_mask_mac input1.nii.gz input2.nii.gz"
-echo "  ./auto_resection_mask_mac input1.nii.gz input2.nii.gz \"/tmp/mytempfolder\""
-echo "  ./auto_resection_mask_mac input1.nii.gz input2.nii.gz \"./data\""
-echo
-echo "Important: Use the launcher script to control extraction directory!"
-echo "Direct use of auto_resection_mask_core will use default temp location."
-echo
-echo "Features included in this build:"
-echo "  - All required Python dependencies bundled"
-echo "  - ICBM brain atlas files embedded"
-echo "  - BrainSuite binaries included (if available)"
-echo "  - Custom temp directory control for PyInstaller extraction"
-echo "  - PyTorch for deep learning capabilities"
-echo "  - Comprehensive error handling"ent setup, dependency management,
+# This script creates a macOS executable for the resection identification tool
+# using PyInstaller. It handles environment setup, dependency management,
 # and creates a portable executable with all required libraries bundled.
 # =============================================================================
 # Created with Claude Sonnet 4 in Visual Studio Code
-# Modified by Chinmay Chinara, 2025
+# Supervised by Chinmay Chinara, 2025
 # =============================================================================
 # Note: Tested on Apple Silicon only
 # =============================================================================
@@ -118,7 +90,7 @@ echo "Build directories created."
 # =============================================================================
 # Create PyInstaller spec file with comprehensive dependency collection
 echo "Creating PyInstaller spec file..."
-cat << 'EOF' > auto_resection_mask_mac.spec
+cat << 'EOF' > resection_identification_mac.spec
 # =============================================================================
 # PyInstaller Spec File for Auto Resection Mask (macOS)
 # =============================================================================
@@ -263,7 +235,7 @@ exe = EXE(
     a.binaries,                         # Binary dependencies
     a.zipfiles,                         # ZIP files
     a.datas,                            # Data files
-    name='auto_resection_mask_core',    # Core executable name
+    name='resection_identification_core',    # Core executable name
     debug=False,                        # No debug mode
     bootloader_ignore_signals=False,    # Handle signals normally
     strip=False,                        # Don't strip symbols for better debugging
@@ -304,51 +276,61 @@ check_and_install_package "requests"        # HTTP library
 # =============================================================================
 # Build the executable using the generated spec file
 echo "Building executable with PyInstaller..."
-pyinstaller auto_resection_mask_mac.spec --clean
+pyinstaller resection_identification_mac.spec --clean
 
 # =============================================================================
 # BUILD VERIFICATION AND COMPLETION
 # =============================================================================
 # Verify the executable was successfully created
-if [ ! -f "dist/auto_resection_mask_core" ]; then
+if [ ! -f "dist/resection_identification_core" ]; then
     echo "Error: Core executable was not created!"
     echo "Please check the build output above for errors."
     exit 1
 fi
 
 # Make the executable file executable (set proper permissions)
-chmod +x "dist/auto_resection_mask_core"
+chmod +x "dist/resection_identification_core"
 
 # Copy wrapper script to dist directory
 echo "Copying wrapper script..."
-if [ -f "auto_resection_mask_mac.sh" ]; then
-    cp "auto_resection_mask_mac.sh" "dist/auto_resection_mask_mac"
-    chmod +x "dist/auto_resection_mask_mac"
-    echo "Wrapper script copied to dist/auto_resection_mask_mac"
+if [ -f "resection_identification.sh" ]; then
+    cp "resection_identification.sh" "dist/resection_identification"
+    chmod +x "dist/resection_identification"
+    echo "Wrapper script copied to dist/resection_identification"
 else
-    echo "Warning: Could not copy wrapper script - auto_resection_mask_mac.sh not found"
+    echo "Warning: Could not copy wrapper script - resection_identification.sh not found"
 fi
 
 # =============================================================================
 # BUILD COMPLETION SUMMARY
 # =============================================================================
-echo
 echo "=========================================="
 echo "Build completed successfully!"
 echo "=========================================="
-echo "The executable is available at: dist/auto_resection_mask_mac"
 echo
-echo "Usage:"
-echo "  ./auto_resection_mask_mac preop_mri postop_mri"
+echo "Files created in dist/:"
+echo "  1. Core executable: resection_identification_core"
+echo "  2. Main launcher:   resection_identification"
 echo
-echo "Parameters:"
+echo "Usage: ./resection_identification preop_mri postop_mri [temp_dir]"
 echo "  - preop_mri: Path to pre-operative MRI file"
 echo "  - postop_mri: Path to post-operative MRI file"
+echo "  - temp_dir: (Optional) Directory for PyInstaller _MEIxxxx extraction"
+echo "             If not specified, uses system temporary directory"
+echo
+echo "Examples:"
+echo "  ./resection_identification input1.nii.gz input2.nii.gz"
+echo "  ./resection_identification input1.nii.gz input2.nii.gz \"/tmp/mytempfolder\""
+echo "  ./resection_identification input1.nii.gz input2.nii.gz \"./data\""
+echo
+echo "Important: Use the launcher script to control extraction directory!"
+echo "Direct use of resection_identification_core will use default temp location."
 echo
 echo "Features included in this build:"
 echo "  - All required Python dependencies bundled"
 echo "  - ICBM brain atlas files embedded"
-echo "  - BrainSuite binaries included"
+echo "  - BrainSuite binaries included (if available)"
+echo "  - Custom temp directory control for PyInstaller extraction"
 echo "  - PyTorch for deep learning capabilities"
 echo "  - Comprehensive error handling"
 echo
