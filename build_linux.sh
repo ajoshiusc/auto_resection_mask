@@ -1,12 +1,12 @@
 # =============================================================================
-# Auto Resection Mask Linux Build Script
+# Resection Identification Linux Build Script
 # =============================================================================
-# This script creates a Linux executable for the auto resection mask tool
+# This script creates a Linux executable for the resection identification tool
 # using PyInstaller. It handles conda environment setup, dependency management,
 # and PyTorch CUDA installation for optimal GPU performance on Linux.
 # =============================================================================
 # Created with Claude Sonnet 4 in Visual Studio Code
-# Modified by Chinmay Chinara, 2025
+# Supervised by Chinmay Chinara, 2025
 # =============================================================================
 
 #!/bin/bash
@@ -142,9 +142,9 @@ fi
 # =============================================================================
 # Create PyInstaller spec file with comprehensive dependency collection
 echo "Creating PyInstaller spec file..."
-cat << 'EOF' > auto_resection_mask_linux.spec
+cat << 'EOF' > resection_identification_linux.spec
 # =============================================================================
-# PyInstaller Spec File for Auto Resection Mask (Linux)
+# PyInstaller Spec File for Resection Identification (Linux)
 # =============================================================================
 # This spec file defines how PyInstaller should bundle the application for Linux
 # including all dependencies, data files, and configuration options.
@@ -249,6 +249,20 @@ for icbm_file in icbm_files:
 # No encryption for the executable
 block_cipher = None
 
+# Create runtime hook to configure matplotlib for headless operation
+runtime_hook_content = '''
+import os
+import matplotlib
+# Set matplotlib to use Agg backend (non-GUI) before any other matplotlib imports
+matplotlib.use('Agg')
+# Ensure headless operation 
+os.environ['MPLBACKEND'] = 'Agg'
+'''
+
+# Write runtime hook to temporary file
+with open('pyi_rth_matplotlib_headless.py', 'w') as f:
+    f.write(runtime_hook_content)
+
 # Main Analysis configuration
 a = Analysis(
     ['standalone_wrapper.py'],          # Entry point script
@@ -262,8 +276,16 @@ a = Analysis(
     hiddenimports=all_hiddenimports,    # Modules to import at runtime
     hookspath=[],                       # No custom hooks directory
     hooksconfig={},                     # No hook configuration
-    runtime_hooks=[],                   # No runtime hooks
-    excludes=[],                        # No modules to exclude
+    runtime_hooks=['pyi_rth_matplotlib_headless.py'],  # Configure matplotlib for headless operation
+    excludes=[                         # Exclude GUI components not needed for headless operation
+        'tkinter', 'tkinter.*',        # Tkinter GUI framework
+        'PyQt5', 'PyQt5.*',           # PyQt5 GUI framework  
+        'PyQt6', 'PyQt6.*',           # PyQt6 GUI framework
+        'PySide2', 'PySide2.*',       # PySide2 GUI framework
+        'PySide6', 'PySide6.*',       # PySide6 GUI framework
+        'matplotlib.backends.backend_qt*',  # Qt backends for matplotlib
+        'matplotlib.backends.backend_tk*',  # Tkinter backends
+    ],
     win_no_prefer_redirects=False,      # Windows-specific (ignored on Linux)
     win_private_assemblies=False,       # Windows-specific (ignored on Linux)
     cipher=block_cipher,                # No encryption
@@ -281,7 +303,7 @@ exe = EXE(
     a.zipfiles,                         # ZIP files
     a.datas,                            # Data files
     [],                                 # Additional files
-    name='auto_resection_mask_linux',   # Executable name
+    name='resection_identification_core',    # Core executable name
     debug=False,                        # No debug mode
     bootloader_ignore_signals=False,    # Handle signals normally
     strip=False,                        # Don't strip symbols for better debugging
@@ -323,7 +345,7 @@ done
 
 # Build the executable using the generated spec file
 echo "Building executable with PyInstaller..."
-pyinstaller auto_resection_mask_linux.spec --clean
+pyinstaller resection_identification_linux.spec --clean
 if [ $? -ne 0 ]; then
     echo "Build failed! Check the error messages above."
     exit 1
@@ -333,17 +355,126 @@ fi
 # BUILD VERIFICATION AND COMPLETION
 # =============================================================================
 # Verify the executable was successfully created
-if [ ! -f "dist/auto_resection_mask_linux" ]; then
-    echo "Error: Executable was not created!"
+if [ ! -f "dist/resection_identification_core" ]; then
+    echo "Error: Core executable was not created!"
     echo "Please check the build output above for errors."
     exit 1
 fi
 
 # Make the executable file executable (set proper permissions)
-chmod +x "dist/auto_resection_mask_linux"
+chmod +x "dist/resection_identification_core"
 
 # Additional verification step
 echo "Verifying ICBM files are bundled correctly..."
+
+# Cleanup temporary files
+echo "Cleaning up temporary files..."
+if [ -f "pyi_rth_matplotlib_headless.py" ]; then
+    rm -f "pyi_rth_matplotlib_headless.py"
+    echo "Removed temporary runtime hook file"
+fi
+
+# Copy wrapper script to dist directory
+echo "Copying wrapper script..."
+if [ -f "resection_identification.sh" ]; then
+    cp "resection_identification.sh" "dist/resection_identification"
+    chmod +x "dist/resection_identification"
+    echo "Wrapper script copied to dist/resection_identification"
+else
+    echo "Creating wrapper script in dist directory..."
+    cat << 'WRAPPER_EOF' > "dist/resection_identification"
+#!/bin/bash
+
+# Resection Identification - PyInstaller Extraction Controller (Linux)
+# This script controls where PyInstaller extracts the _MEIxxxx folder
+
+show_usage() {
+    echo "Usage: $0 preop_mri postop_mri [temp_dir]"
+    echo "  preop_mri: Path to pre-operative MRI file"
+    echo "  postop_mri: Path to post-operative MRI file"
+    echo "  temp_dir: (Optional) Directory for PyInstaller _MEIxxxx extraction"
+    echo "           Can be absolute (/tmp/mytemp) or relative (./data)"
+    echo "           Will be converted to absolute path automatically"
+    echo ""
+    echo "Examples:"
+    echo "  $0 input1.nii.gz input2.nii.gz"
+    echo "  $0 input1.nii.gz input2.nii.gz \"/tmp/mytempfolder\""
+    echo "  $0 input1.nii.gz input2.nii.gz \"./data\""
+    exit 1
+}
+
+# Check number of arguments
+if [ $# -lt 2 ] || [ $# -gt 3 ]; then
+    show_usage
+fi
+
+# Get script directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# If no custom temp directory specified, run normally
+if [ $# -eq 2 ]; then
+    echo "Using default system temp directory"
+    exec "$SCRIPT_DIR/resection_identification_core" "$1" "$2"
+fi
+
+# Custom temp directory specified
+CUSTOM_TEMP="$3"
+
+# Convert relative path to absolute path
+if [[ "$CUSTOM_TEMP" != /* ]]; then
+    # Handle relative paths
+    if [ "$CUSTOM_TEMP" = "." ]; then
+        CUSTOM_TEMP="$(pwd)"
+    elif [[ "$CUSTOM_TEMP" == ./* ]]; then
+        CUSTOM_TEMP="$(pwd)/${CUSTOM_TEMP#./}"
+    elif [[ "$CUSTOM_TEMP" == ../* ]]; then
+        CUSTOM_TEMP="$(cd "$CUSTOM_TEMP" 2>/dev/null && pwd)"
+        if [ $? -ne 0 ]; then
+            echo "Error: Cannot resolve relative path '$3'"
+            exit 1
+        fi
+    else
+        CUSTOM_TEMP="$(pwd)/$CUSTOM_TEMP"
+    fi
+    echo "Resolved relative path to: $CUSTOM_TEMP"
+fi
+
+# Create directory if it doesn't exist
+if [ ! -d "$CUSTOM_TEMP" ]; then
+    echo "Creating temp directory: $CUSTOM_TEMP"
+    if ! mkdir -p "$CUSTOM_TEMP" 2>/dev/null; then
+        echo "Error: Could not create directory '$CUSTOM_TEMP'"
+        echo "Using default temp directory"
+        exec "$SCRIPT_DIR/resection_identification_core" "$1" "$2"
+    fi
+    echo "Successfully created: $CUSTOM_TEMP"
+else
+    echo "Using existing temp directory: $CUSTOM_TEMP"
+fi
+
+# Test write access by creating a temporary file
+if ! touch "$CUSTOM_TEMP/test_write.tmp" 2>/dev/null; then
+    echo "Warning: Cannot write to custom temp directory '$CUSTOM_TEMP'"
+    echo "Using default temp directory"
+    exec "$SCRIPT_DIR/resection_identification_core" "$1" "$2"
+fi
+rm -f "$CUSTOM_TEMP/test_write.tmp"
+echo "Write permission confirmed for: $CUSTOM_TEMP"
+
+# Set environment variables BEFORE starting PyInstaller executable
+export TEMP="$CUSTOM_TEMP"
+export TMP="$CUSTOM_TEMP"
+export TMPDIR="$CUSTOM_TEMP"
+
+echo "PyInstaller will extract to: $CUSTOM_TEMP/_MEIxxxxxx"
+echo "Starting resection identification analysis..."
+
+# Run the PyInstaller executable with environment set
+exec "$SCRIPT_DIR/resection_identification_core" "$1" "$2"
+WRAPPER_EOF
+    chmod +x "dist/resection_identification"
+    echo "Wrapper script created in dist/resection_identification"
+fi
 
 # =============================================================================
 # BUILD COMPLETION SUMMARY
@@ -352,14 +483,24 @@ echo
 echo "=========================================="
 echo "Build completed successfully!"
 echo "=========================================="
-echo "The executable is available at: dist/auto_resection_mask_linux"
 echo
-echo "Usage:"
-echo "  ./auto_resection_mask_linux preop_mri postop_mri"
+echo "Files created in dist/:"
+echo "  1. Core executable: resection_identification_core"
+echo "  2. Main launcher:   resection_identification"
 echo
-echo "Parameters:"
+echo "Usage: ./resection_identification preop_mri postop_mri [temp_dir]"
 echo "  - preop_mri: Path to pre-operative MRI file"
 echo "  - postop_mri: Path to post-operative MRI file"
+echo "  - temp_dir: (Optional) Directory for PyInstaller _MEIxxxx extraction"
+echo "             If not specified, uses system temporary directory"
+echo
+echo "Examples:"
+echo "  ./resection_identification input1.nii.gz input2.nii.gz"
+echo "  ./resection_identification input1.nii.gz input2.nii.gz \"/tmp/mytempfolder\""
+echo "  ./resection_identification input1.nii.gz input2.nii.gz \"./data\""
+echo
+echo "Important: Use the launcher script to control extraction directory!"
+echo "Direct use of resection_identification_core will use default temp location."
 echo
 echo "=========================================="
 echo "Build process completed successfully!"
@@ -368,6 +509,9 @@ echo "- CUDA GPU acceleration (when available)"
 echo "- All dependencies statically linked"
 echo "- ICBM brain atlas files"
 echo "- BrainSuite binaries for Linux"
+echo "- Custom temp directory control for PyInstaller extraction"
+echo "- Headless operation (no GUI/X11 required)"
+echo "- Non-interactive matplotlib plotting"
 echo "- Optimized for Linux distributions"
 echo "- No external Python installation required"
 echo "=========================================="

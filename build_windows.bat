@@ -1,12 +1,12 @@
 :: =============================================================================
-:: Auto Resection Mask Windows Build Script
+:: Resection Identification Windows Build Script
 :: =============================================================================
-:: This script creates a Windows executable for the auto resection mask tool
+:: This script creates a Windows executable for the resection identification tool
 :: using PyInstaller. It handles conda environment setup, dependency management,
 :: and PyTorch CUDA installation for optimal performance.
 :: =============================================================================
 :: Created with Claude Sonnet 4 in Visual Studio Code
-:: Modified by Chinmay Chinara, 2025
+:: Supervised by Chinmay Chinara, 2025
 :: =============================================================================
 
 @echo off
@@ -135,7 +135,7 @@ REM Create PyInstaller spec file with comprehensive dependency collection
 echo Creating PyInstaller spec file...
 (
 echo # =============================================================================
-echo # PyInstaller Spec File for Auto Resection Mask
+echo # PyInstaller Spec File for Resection Identification
 echo # =============================================================================
 echo # This spec file defines how PyInstaller should bundle the application
 echo # including all dependencies, data files, and configuration options.
@@ -240,6 +240,23 @@ echo.
 echo # No encryption for the executable
 echo block_cipher = None
 echo.
+echo # Create runtime hook to display extraction information
+echo runtime_hook_content = '''
+echo import os
+echo import sys
+echo.
+echo # Display PyInstaller extraction information
+echo if hasattr(sys, "_MEIPASS"^):
+echo     extraction_dir = sys._MEIPASS
+echo     temp_env = os.environ.get("TEMP", "Unknown"^)
+echo     print(f"Runtime: Extracted to {extraction_dir}"^)
+echo     print(f"Runtime: Using temp environment {temp_env}"^)
+echo '''
+echo.
+echo # Write runtime hook to temporary file
+echo with open('pyi_rth_custom_temp.py', 'w'^) as f:
+echo     f.write(runtime_hook_content^)
+echo.
 echo # Main Analysis configuration
 echo a = Analysis(
 echo     ['standalone_wrapper.py'],          # Entry point script
@@ -253,7 +270,7 @@ echo     ] + all_datas,                     # Plus automatically collected data
 echo     hiddenimports=all_hiddenimports,    # Modules to import at runtime
 echo     hookspath=[],                       # No custom hooks directory
 echo     hooksconfig={},                     # No hook configuration
-echo     runtime_hooks=[],                   # No runtime hooks
+echo     runtime_hooks=['pyi_rth_custom_temp.py'],  # Custom temp directory hook
 echo     excludes=[],                        # No modules to exclude
 echo     win_no_prefer_redirects=False,      # Windows-specific option
 echo     win_private_assemblies=False,       # Windows-specific option
@@ -272,7 +289,7 @@ echo     a.binaries,                         # Binary dependencies
 echo     a.zipfiles,                         # ZIP files
 echo     a.datas,                            # Data files
 echo     [],                                 # Additional files
-echo     name='auto_resection_mask_win',     # Executable name
+echo     name='resection_identification_core',   # Core executable name
 echo     debug=False,                        # No debug mode
 echo     bootloader_ignore_signals=False,    # Handle signals normally
 echo     strip=False,                        # Don't strip symbols
@@ -285,7 +302,7 @@ echo     target_arch=None,                   # Auto-detect architecture
 echo     codesign_identity=None,             # No code signing
 echo     entitlements_file=None              # No entitlements
 echo ^)
-) > auto_resection_mask_win.spec
+) > resection_identification_win.spec
 
 :: =============================================================================
 :: PYINSTALLER INSTALLATION AND EXECUTION
@@ -303,7 +320,7 @@ if errorlevel 1 (
 
 REM Build the executable using the generated spec file
 echo Building executable with PyInstaller...
-pyinstaller auto_resection_mask_win.spec --clean
+pyinstaller resection_identification_win.spec --clean
 if errorlevel 1 (
     echo Build failed! Check the error messages above.
     exit /b 1
@@ -313,26 +330,67 @@ if errorlevel 1 (
 :: BUILD VERIFICATION AND COMPLETION
 :: =============================================================================
 REM Verify the executable was successfully created
-if not exist "dist\auto_resection_mask_win.exe" (
-    echo Error: Executable was not created!
+if not exist "dist\resection_identification_core.exe" (
+    echo Error: Core executable was not created!
     exit /b 1
 )
 
 REM Additional verification step
 echo Verifying ICBM files are bundled correctly...
 
+REM Clean up temporary files
+echo Cleaning up temporary files...
+if exist "pyi_rth_custom_temp.py" del /f /q "pyi_rth_custom_temp.py"
+
+REM Copy wrapper script to dist directory
+echo Copying wrapper script...
+copy "resection_identification.bat" "dist\resection_identification.bat" > nul
+if errorlevel 1 (
+    echo Warning: Could not copy wrapper script
+) else (
+    echo Wrapper script copied to dist\resection_identification.bat
+)
+
 :: =============================================================================
 :: BUILD COMPLETION SUMMARY
 :: =============================================================================
 echo.
 echo Build completed successfully!
-echo The executable is available at: dist\auto_resection_mask_win.exe
 echo.
-echo Usage: auto_resection_mask_win.exe preop_mri postop_mri
+echo Files created in dist/:
+echo   1. Core executable: resection_identification_core.exe
+echo   2. Main launcher:   resection_identification.bat
+echo.
+echo Usage: resection_identification.bat preop_mri postop_mri [temp_dir]
 echo - preop_mri: Path to pre-operative MRI file
 echo - postop_mri: Path to post-operative MRI file
+echo - temp_dir: ^(Optional^) Directory for PyInstaller _MEIxxxx extraction
+echo           Supports automatic path resolution:
+echo           * Relative paths: "temp", "data", ".", "..", "./folder"
+echo           * Absolute paths: "C:\MyTemp", "D:\MyFolder" 
+echo           * Non-existent directories created automatically
+echo           * Write permissions validated automatically
 echo.
-echo Note: ICBM files are bundled with the executable
+echo Examples with Automatic Path Resolution:
+echo   resection_identification.bat input1.nii.gz input2.nii.gz
+echo   resection_identification.bat input1.nii.gz input2.nii.gz "temp"
+echo   resection_identification.bat input1.nii.gz input2.nii.gz "data/processing"
+echo   resection_identification.bat input1.nii.gz input2.nii.gz "D:\MyTempFolder"
+echo.
+echo Examples:
+echo   resection_identification.bat input1.nii.gz input2.nii.gz
+echo   resection_identification.bat input1.nii.gz input2.nii.gz "temp"
+echo   resection_identification.bat input1.nii.gz input2.nii.gz "D:\MyTempFolder"
+echo.
+echo Features:
+echo - Automatic relative-to-absolute path conversion
+echo - Directory creation if needed  
+echo - Write permission validation
+echo.
+echo Important: Use the .bat launcher to control extraction directory!
+echo Direct use of .exe will always extract to default temp location.
+echo.
+echo Note: ICBM files and BrainSuite binaries are bundled with the executable
 echo.
 echo =============================================================================
 echo Build process completed. The executable includes:
