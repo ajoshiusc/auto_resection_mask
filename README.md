@@ -22,7 +22,11 @@ This notebook shows an example workflow to delineate resection on MRI image.
 # Standalone binary (Windows, Linux and Mac)
  - Standalone binaries for this module are available: [Windows](https://neuroimage.usc.edu/bst/getupdate.php?d=bst_resection_labeling_win.zip), [Linux](https://neuroimage.usc.edu/bst/getupdate.php?d=bst_resection_labeling_linux.zip), [Mac](https://neuroimage.usc.edu/bst/getupdate.php?d=bst_resection_labeling_mac.zip).
  - Unzip the binary file and download data from the example dataset link above (or use your own data). <br>
-   Usage: `./resection_labeling "preop_mri" "postop_mri"`
+   Usage: resection_identification preop_mri postop_mri [temp_dir]
+     - preop_mri: Path to pre-operative MRI file
+     - postop_mri: Path to post-operative MRI file
+     - temp_dir: (Optional) Directory for bundled package extraction
+                 If not specified, uses system temporary directory (in Linux this space can be very limited)
  - You can also build the binaries in your system from scratch. Please refer to the `BUILD_INSTRUCTIONS.md` for the detailed process.
 
 
