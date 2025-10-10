@@ -1,4 +1,4 @@
-# Building on Windows, Linux and Mac (Apple Silicon)
+# Building on Windows, Linux and Mac
 
 To build the `auto_resection_mask` project, ensure the following files are present in your project directory. Also make sure you clone the `brainstorm-plugin` branch to work on.
 
@@ -29,7 +29,8 @@ auto_resection_mask-main/
 ### Core Files
 - `standalone_wrapper.py` — Entry point wrapper script
 - `auto_resection_mask.py` — Main application code
-- `requirements_autoresec.txt` — Package dependencies
+- `requirements_autoresec.txt` — Package dependencies for Linux and Windows
+- `requirements_autoresec_mac.txt` — Package dependencies for Mac
 
 ### Data Files
 - `icbm_bst.nii.gz` — ICBM template file
@@ -70,25 +71,29 @@ auto_resection_mask-main/
    chmod +x build_linux.sh
    ./build_linux.sh
    ```
-   This process will bundle all files and dependencies into a single executable under the folder ```dist``` in the same directory.
+   This process will bundle all files and dependencies into two file executable under the folder ```dist``` in the same directory.
+   - `resection_identification_core.exe` (Windows) / `resection_identification_core` (Linux and Mac) — The main script that has all the module bundled
+   - `resection_identification.bat` (Windows) / `resection_identification` (Linux and Mac) / — The launcher script that sets the environment variables (custom or user-defined directory) where the core script above will unpack the bundled modules
 
-4. **Test the build:**
+5. **Test the build:**
    Execute:
    ```bash
    # Windows
-   dist\auto_resection_mask_win.exe
+   dist\resection_identification.bat
 
    # Mac
-   ./dist/auto_resection_mask_mac
+   ./dist/resection_identification
 
    # Linux
-   ./dist/auto_resection_mask_linux
+   ./dist/resection_identification
    ```
    If you get the response as under then the binary was successsully built
    ```bash
-   Usage: auto_resection_mask_xxx preop_mri postop_mri
-     preop_mri: Path to pre-operative MRI file
-     postop_mri: Path to post-operative MRI file
+   Usage: resection_identification preop_mri postop_mri [temp_dir]
+     - preop_mri: Path to pre-operative MRI file"
+     - postop_mri: Path to post-operative MRI file"
+     - temp_dir: (Optional) Directory for PyInstaller _MEIxxxx extraction"
+                 If not specified, uses system temporary directory"
    ```
 ---
 **Note:**  
