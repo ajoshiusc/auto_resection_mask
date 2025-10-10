@@ -213,10 +213,10 @@ def delineate_resection_pre(
     pre_mri_base = os.path.join(temp_pth, base_pre + "_1mm")
     post_mri_base = os.path.join(temp_pth, base_post + "_1mm")
 
-    out_img = nibp.conform(nib.load(pre_mri_base_orig + ".nii.gz"))
+    out_img = nibp.conform(nib.load(pre_mri_path))
     out_img.to_filename(pre_mri_base + ".nii.gz")
 
-    out_img = nibp.conform(nib.load(post_mri_base_orig + ".nii.gz"))
+    out_img = nibp.conform(nib.load(post_mri_path))
     out_img.to_filename(post_mri_base + ".nii.gz")
 
     pre_mri_dir, _ = os.path.split(pre_mri_base)
@@ -687,10 +687,10 @@ def delineate_resection_post(
     pre_mri_base = os.path.join(temp_pth, base_pre + "_1mm")
     post_mri_base = os.path.join(temp_pth, base_post + "_1mm")
 
-    out_img = nibp.conform(nib.load(pre_mri_base_orig + ".nii.gz"))
+    out_img = nibp.conform(nib.load(pre_mri_path))
     out_img.to_filename(pre_mri_base + ".nii.gz")
 
-    out_img = nibp.conform(nib.load(post_mri_base_orig + ".nii.gz"))
+    out_img = nibp.conform(nib.load(post_mri_path))
     out_img.to_filename(post_mri_base + ".nii.gz")
 
     pre_mri_dir, _ = os.path.split(pre_mri_base)
