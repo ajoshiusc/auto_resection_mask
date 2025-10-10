@@ -90,10 +90,10 @@ auto_resection_mask-main/
    If you get the response as under then the binary was successsully built
    ```bash
    Usage: resection_identification preop_mri postop_mri [temp_dir]
-     - preop_mri: Path to pre-operative MRI file"
-     - postop_mri: Path to post-operative MRI file"
-     - temp_dir: (Optional) Directory for PyInstaller _MEIxxxx extraction"
-                 If not specified, uses system temporary directory"
+     - preop_mri: Path to pre-operative MRI file
+     - postop_mri: Path to post-operative MRI file
+     - temp_dir: (Optional) Directory for PyInstaller _MEIxxxx extraction
+                 If not specified, uses system temporary directory
    ```
 ---
 **Note:**  
