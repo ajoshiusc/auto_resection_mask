@@ -15,8 +15,10 @@ def auto_resection_mask(preop_mri, postop_mri,
     generate_resection_overlay_plots(preop_mri, postop_mri)
 
 if __name__ == "__main__":
-    preop_mri = "data/preop.nii.gz"
-    postop_mri = "data/postop.nii.gz"
+    # preop_mri = "data/preop.nii.gz"
+    # postop_mri = "data/postop.nii"
+    preop_mri = "data/preop.nii"
+    postop_mri = "data/postop.nii"
     bst_atlas_path="icbm_bst.nii.gz"
     bst_atlas_labels_path="icbm_bst.label.nii.gz"
     

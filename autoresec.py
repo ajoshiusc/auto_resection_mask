@@ -177,8 +177,21 @@ def delineate_resection_pre(
 
     affine_reg = Aligner()
 
-    pre_mri_base_orig = pre_mri_path[:-7]
-    post_mri_base_orig = post_mri_path[:-7]
+    # Get the base name and extension of the pre_mri file
+    root, extension = os.path.splitext(pre_mri_path)
+    # Check if the NIfTI file is gzipped
+    if extension == ".gz":
+        pre_mri_base_orig = pre_mri_path[:-7]
+    else:
+        pre_mri_base_orig = pre_mri_path[:-4]
+    
+    # Get the base name and extension of the post_mri file
+    root, extension = os.path.splitext(post_mri_path)
+    # Check if the NIfTI file is gzipped
+    if extension == ".gz":
+        post_mri_base_orig = post_mri_path[:-7]
+    else:
+        post_mri_base_orig = post_mri_path[:-4]
 
     pth_pre, base_pre = os.path.split(pre_mri_base_orig)
     pth_post, base_post = os.path.split(post_mri_base_orig)
@@ -638,8 +651,21 @@ def delineate_resection_post(
 
     affine_reg = Aligner()
 
-    pre_mri_base_orig = pre_mri_path[:-7]
-    post_mri_base_orig = post_mri_path[:-7]
+    # Get the base name and extension of the pre_mri file
+    root, extension = os.path.splitext(pre_mri_path)
+    # Check if the NIfTI file is gzipped
+    if extension == ".gz":
+        pre_mri_base_orig = pre_mri_path[:-7]
+    else:
+        pre_mri_base_orig = pre_mri_path[:-4]
+    
+    # Get the base name and extension of the post_mri file
+    root, extension = os.path.splitext(post_mri_path)
+    # Check if the NIfTI file is gzipped
+    if extension == ".gz":
+        post_mri_base_orig = post_mri_path[:-7]
+    else:
+        post_mri_base_orig = post_mri_path[:-4]
 
     _, base_pre = os.path.split(pre_mri_base_orig)
     pth_post, base_post = os.path.split(post_mri_base_orig)

@@ -10,8 +10,24 @@ def generate_postop_overlay(preop_mri, postop_mri):
     subid = os.path.basename(postop_mri).split("_")[0]
 
     if os.path.isfile(preop_mri) and os.path.isfile(postop_mri):
-        if os.path.isfile(postop_mri.replace(".nii.gz", ".resection.mask.nii.gz")):
-            resection_mask = postop_mri.replace(".nii.gz", ".resection.mask.nii.gz")
+        # Get the base name and extension of the preop_mri file
+        root, extension = os.path.splitext(preop_mri)
+        # Check if the NIfTI file is gzipped
+        if extension == ".gz":
+            preop_mri_base = preop_mri[:-7]
+        else:
+            preop_mri_base = preop_mri[:-4]
+        
+        # Get the base name and extension of the postop_mri file
+        root, extension = os.path.splitext(postop_mri)
+        # Check if the file is gzipped
+        if extension == ".gz":
+            postop_mri_base = postop_mri[:-7]
+        else:
+            postop_mri_base = postop_mri[:-4]
+            
+        if os.path.isfile(postop_mri_base + ".resection.mask.nii.gz"):
+            resection_mask = postop_mri_base + ".resection.mask.nii.gz"
 
             fig, axes = plt.subplots(nrows=3, ncols=1, figsize=(15, 15))
             cut_coords = find_xyz_cut_coords(resection_mask)
@@ -27,10 +43,8 @@ def generate_postop_overlay(preop_mri, postop_mri):
             )
             p.add_contours(resection_mask, levels=[0.5], colors="r")
 
-            pre2post_mri = preop_mri.replace(".nii.gz", ".affine.pre2post.nii.gz")
-            pre2post_mri_nonlin = preop_mri.replace(
-                ".nii.gz", ".nonlin.pre2post.nii.gz"
-            )
+            pre2post_mri = preop_mri_base + ".affine.pre2post.nii.gz"
+            pre2post_mri_nonlin = preop_mri_base + ".nonlin.pre2post.nii.gz"
 
             img = nb.load(pre2post_mri).get_fdata()
             pctl = np.percentile(img, 99)
@@ -52,7 +66,7 @@ def generate_postop_overlay(preop_mri, postop_mri):
                 vmax=pctl,
             )
 
-            pngfile = postop_mri.replace(".nii.gz", ".resection.png")
+            pngfile = postop_mri_base + ".resection.png"
             fig.savefig(pngfile)
             print(f"Plotted postop MRI with resection mask for {subid}")
             plt.close()
@@ -83,8 +97,24 @@ def generate_preop_overlay(preop_mri, postop_mri):
     subid = os.path.basename(preop_mri).split("_")[0]
 
     if os.path.isfile(preop_mri) and os.path.isfile(postop_mri):
-        if os.path.isfile(preop_mri.replace(".nii.gz", ".resection.mask.nii.gz")):
-            resection_mask = preop_mri.replace(".nii.gz", ".resection.mask.nii.gz")
+        # Get the base name and extension of the preop_mri file
+        root, extension = os.path.splitext(preop_mri)
+        # Check if the NIfTI file is gzipped
+        if extension == ".gz":
+            preop_mri_base = preop_mri[:-7]
+        else:
+            preop_mri_base = preop_mri[:-4]
+        
+        # Get the base name and extension of the postop_mri file
+        root, extension = os.path.splitext(postop_mri)
+        # Check if the NIfTI file is gzipped
+        if extension == ".gz":
+            postop_mri_base = postop_mri[:-7]
+        else:
+            postop_mri_base = postop_mri[:-4]
+
+        if os.path.isfile(preop_mri_base + ".resection.mask.nii.gz"):
+            resection_mask = preop_mri_base + ".resection.mask.nii.gz"
 
             fig, axes = plt.subplots(nrows=3, ncols=1, figsize=(15, 15))
             cut_coords = find_xyz_cut_coords(resection_mask)
@@ -100,10 +130,8 @@ def generate_preop_overlay(preop_mri, postop_mri):
             )
             p.add_contours(resection_mask, levels=[0.5], colors="r")
 
-            post2pre_mri = postop_mri.replace(".nii.gz", ".affine.post2pre.nii.gz")
-            post2pre_mri_nonlin = postop_mri.replace(
-                ".nii.gz", ".nonlin.post2pre.nii.gz"
-            )
+            post2pre_mri = postop_mri_base + ".affine.post2pre.nii.gz"
+            post2pre_mri_nonlin = postop_mri_base + ".nonlin.post2pre.nii.gz"
 
             img = nb.load(post2pre_mri).get_fdata()
             pctl = np.percentile(img, 99)
@@ -125,7 +153,7 @@ def generate_preop_overlay(preop_mri, postop_mri):
                 vmax=pctl,
             )
 
-            pngfile = preop_mri.replace(".nii.gz", ".resection.png")
+            pngfile = preop_mri_base + ".resection.png"
             fig.savefig(pngfile)
             print(f"Plotted preop MRI with resection mask for {subid}")
             plt.close()
