@@ -12,7 +12,7 @@ def auto_resection_mask(preop_mri, postop_mri,
                             bst_atlas_path=bst_atlas_path,bst_atlas_labels_path=bst_atlas_labels_path)
     delineate_resection_pre(preop_mri, postop_mri,
                            bst_atlas_path=bst_atlas_path,bst_atlas_labels_path=bst_atlas_labels_path)
-    generate_resection_overlay_plots(preop_mri, postop_mri)
+    # generate_resection_overlay_plots(preop_mri, postop_mri)
 
 if __name__ == "__main__":
     # preop_mri = "data/preop.nii.gz"
