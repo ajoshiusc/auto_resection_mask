@@ -20,7 +20,7 @@ This notebook shows an example workflow to delineate resection on MRI image.
 ![image](https://github.com/ajoshiusc/auto_resection_mask/assets/15238551/09d32830-3ae0-4eaa-935e-22e280905dc6)
 
 # Standalone binary (Windows, Linux and Mac)
- - Standalone binaries for this module are available: [Windows](https://neuroimage.usc.edu/bst/getupdate.php?d=bst_resection_identification_win.zip), [Linux](https://neuroimage.usc.edu/bst/getupdate.php?d=bst_resection_identification_linux.zip), [Mac](https://neuroimage.usc.edu/bst/getupdate.php?d=bst_resection_identification_mac.zip).
+ - Standalone binaries for this module are available: [Windows](https://neuroimage.usc.edu/bst/getupdate.php?d=bst_resection_identification_win64.zip), [Linux](https://neuroimage.usc.edu/bst/getupdate.php?d=bst_resection_identification_linux64.zip), Mac ([Intel](https://neuroimage.usc.edu/bst/getupdate.php?d=bst_resection_identification_mac64.zip) | [Apple Silicon](https://neuroimage.usc.edu/bst/getupdate.php?d=bst_resection_identification_mac64arm.zip)).
  - Unzip the binary file and download data from the example dataset link above (or use your own data). <br>
    Usage: resection_identification preop_mri postop_mri [temp_dir]
      - preop_mri: Path to pre-operative MRI file
