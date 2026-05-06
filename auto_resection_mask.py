@@ -1,6 +1,8 @@
 # Description: This script is used to generate the resection mask for the preoperative MRI using the postoperative MRI.
+import argparse
+
 from autoresec import delineate_resection_pre, delineate_resection_post
-from resection_overlay_plots import generate_resection_overlay_plots
+# from resection_overlay_plots import generate_resection_overlay_plots
 
 
 
@@ -15,14 +17,14 @@ def auto_resection_mask(preop_mri, postop_mri,
     # generate_resection_overlay_plots(preop_mri, postop_mri)
 
 if __name__ == "__main__":
-    # preop_mri = "data/preop.nii.gz"
-    # postop_mri = "data/postop.nii"
-    preop_mri = "data/preop.nii"
-    postop_mri = "data/postop.nii"
-    bst_atlas_path="icbm_bst.nii.gz"
-    bst_atlas_labels_path="icbm_bst.label.nii.gz"
+    parser = argparse.ArgumentParser(description="Generate resection mask from pre/post-op MRI.")
+    parser.add_argument("preop_mri", help="Path to pre-operative MRI file (e.g. preop.nii.gz)")
+    parser.add_argument("postop_mri", help="Path to post-operative MRI file (e.g. postop.nii.gz)")
+
+    bst_atlas_path="bst_atlases/icbm_bst.nii.gz"
+    bst_atlas_labels_path="bst_atlases/icbm_bst.label.nii.gz"
     
-    auto_resection_mask(preop_mri, postop_mri,
-                        bst_atlas_path=bst_atlas_path,bst_atlas_labels_path=bst_atlas_labels_path)
+    args = parser.parse_args()
+    auto_resection_mask(args.preop_mri, args.postop_mri, bst_atlas_path, bst_atlas_labels_path)
 
     print('Done')
