@@ -1,8 +1,8 @@
-FROM nvidia/cuda:12.1.0-cudnn8-runtime-ubuntu22.04
+FROM nvidia/cuda:12.1.0-runtime-ubuntu22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     python3.10 python3-pip \
     libglib2.0-0 libsm6 libxrender1 libxext6 \
     && rm -rf /var/lib/apt/lists/*
@@ -11,12 +11,14 @@ WORKDIR /app
 
 # PyTorch with CUDA 12.1 — falls back to CPU automatically if no GPU present
 RUN pip install --no-cache-dir \
-    torch==2.5.1+cu121 torchvision==0.20.1+cu121 torchaudio==2.5.1+cu121 \
+    torch==2.5.1+cu121 torchvision==0.20.1+cu121 \
     --index-url https://download.pytorch.org/whl/cu121
 
 # Remaining dependencies
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt \
+    && find /usr/local/lib -name "*.pyc" -delete \
+    && find /usr/local/lib -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
 
 # Copy source code
 COPY *.py ./
