@@ -1,5 +1,6 @@
+import platform
 import nilearn.image as ni
-from aligner import Aligner, center_and_resample_images
+from aligner import Aligner, center_and_resample_images, get_best_device
 from monai.transforms import (
     LoadImage,
     EnsureChannelFirst,
@@ -18,6 +19,40 @@ from shutil import copyfile
 from warp_utils import apply_warp
 
 from nilearn import image
+
+def BrainSuiteBinPath():
+    """Get the path to BrainSuite binaries, handling both development and PyInstaller environments."""
+    import sys
+    
+    # Detect if running as PyInstaller executable
+    if hasattr(sys, '_MEIPASS'):
+        # Running as PyInstaller bundle - use bundled path
+        base_path = sys._MEIPASS
+        print(f"Running as PyInstaller bundle, using base path: {base_path}")
+    else:
+        # Running in development mode - use current directory
+        base_path = os.getcwd()
+        print(f"Running in development mode, using base path: {base_path}")
+    
+    os_name = platform.system()
+    if os_name == "Windows":
+        brainsuite_path = os.path.join(base_path, "BrainSuite", "bin", "windows")
+    elif os_name == "Linux":
+        brainsuite_path = os.path.join(base_path, "BrainSuite", "bin", "linux")
+    else:
+        brainsuite_path = os.path.join(base_path, "BrainSuite", "bin", "mac")
+    
+    # Verify the path exists
+    if os.path.exists(brainsuite_path):
+        print(f"BrainSuite binaries found at: {brainsuite_path}")
+    else:
+        print(f"Warning: BrainSuite binaries not found at: {brainsuite_path}")
+        # List what's actually available
+        parent_dir = os.path.dirname(brainsuite_path)
+        if os.path.exists(parent_dir):
+            print(f"Available directories in {parent_dir}: {os.listdir(parent_dir)}")
+    
+    return brainsuite_path
 
 def apply_mask(input_file, mask_file, output_file):
     # Load input image and mask
@@ -79,7 +114,7 @@ def get_possible_resect_mask(
             nn_input_size=64,
             lr=1e-6,
             max_epochs=3000,
-            device="cuda",
+            device=get_best_device(),
         )
 
         moving = LoadImage(image_only=True)(cent_bst_atlas_labels)
@@ -129,30 +164,34 @@ def get_possible_resect_mask(
 def delineate_resection_pre(
     pre_mri_path,
     post_mri_path,
-    BrainSuitePATH="/home/ajoshi/Software/BrainSuite23a",
     ERR_THR=80,
     bst_atlas_path="/deneb_disk/auto_resection/bst_atlases/icbm_bst.nii.gz",
     bst_atlas_labels_path="/deneb_disk/auto_resection/bst_atlases/icbm_bst.label.nii.gz",
-    ST=None,  # Structuring element size for morphological operations
 ):
     # pl.plot_anat(pre_mri,title='pre-mri')
     # pl.plot_anat(post_mri,title='post-mri')
 
     # pl.show()
 
-    # Determine ST parameter - default to 7 if not provided
-    if ST is None:
-        ST = 7
-        print(f"Using default ST={ST}")
-    else:
-        print(f"Using provided ST={ST}")
-
     # %%
 
     affine_reg = Aligner()
 
-    pre_mri_base_orig = pre_mri_path[:-7]
-    post_mri_base_orig = post_mri_path[:-7]
+    # Get the base name and extension of the pre_mri file
+    root, extension = os.path.splitext(pre_mri_path)
+    # Check if the NIfTI file is gzipped
+    if extension == ".gz":
+        pre_mri_base_orig = pre_mri_path[:-7]
+    else:
+        pre_mri_base_orig = pre_mri_path[:-4]
+    
+    # Get the base name and extension of the post_mri file
+    root, extension = os.path.splitext(post_mri_path)
+    # Check if the NIfTI file is gzipped
+    if extension == ".gz":
+        post_mri_base_orig = post_mri_path[:-7]
+    else:
+        post_mri_base_orig = post_mri_path[:-4]
 
     pth_pre, base_pre = os.path.split(pre_mri_base_orig)
     pth_post, base_post = os.path.split(post_mri_base_orig)
@@ -174,10 +213,10 @@ def delineate_resection_pre(
     pre_mri_base = os.path.join(temp_pth, base_pre + "_1mm")
     post_mri_base = os.path.join(temp_pth, base_post + "_1mm")
 
-    out_img = nibp.conform(nib.load(pre_mri_base_orig + ".nii.gz"))
+    out_img = nibp.conform(nib.load(pre_mri_path))
     out_img.to_filename(pre_mri_base + ".nii.gz")
 
-    out_img = nibp.conform(nib.load(post_mri_base_orig + ".nii.gz"))
+    out_img = nibp.conform(nib.load(post_mri_path))
     out_img.to_filename(post_mri_base + ".nii.gz")
 
     pre_mri_dir, _ = os.path.split(pre_mri_base)
@@ -192,7 +231,7 @@ def delineate_resection_pre(
     # %%
 
     cmd = (
-        os.path.join(BrainSuitePATH, "bin", "bse")
+        os.path.join(BrainSuiteBinPath(), "bse")
         + " -i "
         + pre_mri_base
         + ".nii.gz"
@@ -206,7 +245,7 @@ def delineate_resection_pre(
     os.system(cmd)
 
     cmd = (
-        os.path.join(BrainSuitePATH, "bin", "bfc")
+        os.path.join(BrainSuiteBinPath(), "bfc")
         + " -i "
         + pre_mri_base
         + ".bse.nii.gz"
@@ -220,7 +259,7 @@ def delineate_resection_pre(
     os.system(cmd)
 
     cmd = (
-        os.path.join(BrainSuitePATH, "bin", "pvc")
+        os.path.join(BrainSuiteBinPath(), "pvc")
         + " -i "
         + pre_mri_base
         + ".bfc.nii.gz"
@@ -236,7 +275,7 @@ def delineate_resection_pre(
     # Post MRI pre processing
 
     cmd = (
-        os.path.join(BrainSuitePATH, "bin", "bse")
+        os.path.join(BrainSuiteBinPath(), "bse")
         + " -i "
         + post_mri_base
         + ".nii.gz"
@@ -250,7 +289,7 @@ def delineate_resection_pre(
     os.system(cmd)
 
     cmd = (
-        os.path.join(BrainSuitePATH, "bin", "bfc")
+        os.path.join(BrainSuiteBinPath(), "bfc")
         + " -i "
         + post_mri_base
         + ".bse.nii.gz"
@@ -264,7 +303,7 @@ def delineate_resection_pre(
     os.system(cmd)
 
     cmd = (
-        os.path.join(BrainSuitePATH, "bin", "pvc")
+        os.path.join(BrainSuiteBinPath(), "pvc")
         + " -i "
         + post_mri_base
         + ".bfc.nii.gz"
@@ -315,7 +354,7 @@ def delineate_resection_pre(
         nn_input_size=64,
         lr=1e-6,
         max_epochs=1500,
-        device="cuda",
+        device=get_best_device(),
     )
 
     moving = LoadImage(image_only=True)(mov_img_orig)
@@ -347,7 +386,7 @@ def delineate_resection_pre(
     
 
     #cmd = (
-    #    os.path.join(BrainSuitePATH, "bin", "bse")
+    #    os.path.join(BrainSuiteBinPath(), "bse")
     #    + " -i "
     #    + affine_reg_img
     #    + " -o "
@@ -368,7 +407,7 @@ def delineate_resection_pre(
 
     # bfc processing
     cmd = (
-        os.path.join(BrainSuitePATH, "bin", "bfc")
+        os.path.join(BrainSuiteBinPath(), "bfc")
         + " -i "
         + affine_reg_img_bse
         + " -o "
@@ -379,7 +418,7 @@ def delineate_resection_pre(
     os.system(cmd)
 
     cmd = (
-        os.path.join(BrainSuitePATH, "bin", "pvc")
+        os.path.join(BrainSuiteBinPath(), "pvc")
         + " -i "
         + affine_reg_img_bfc
         + " -o "
@@ -399,7 +438,7 @@ def delineate_resection_pre(
     vwrp = LoadImage(image_only=True)(affine_reg_img_pvc_frac)
     msk = LoadImage(image_only=True)(ref_img_mask)
 
-    # msk = (msk>0) & (vwrp>0)
+    msk = (msk>0) & (vwrp>0)
     vwrp = (255.0 / np.max(vwrp[msk > 0])) * vwrp
     vref = (255.0 / np.max(vref[msk > 0])) * vref
 
@@ -473,7 +512,7 @@ def delineate_resection_pre(
         moving_file=affine_reg_img_pvc_frac,
         output_file=nonlin_reg_img_pvc_frac,
         ddf_file=ddf,
-        reg_penalty=3,
+        reg_penalty=.01,
         nn_input_size=64,
         lr=1e-3,
         max_epochs=1000,
@@ -488,9 +527,9 @@ def delineate_resection_pre(
     vwrp = LoadImage(image_only=True)(nonlin_reg_img_pvc_frac)
     msk = LoadImage(image_only=True)(ref_img_mask)
 
-    # print(ref_img_pvc_frac)
-    # print(nonlin_reg_img_pvc_frac)
-    # print(ref_img_mask)
+    print(ref_img_pvc_frac)
+    print(nonlin_reg_img_pvc_frac)
+    print(ref_img_mask)
 
     # %%
 
@@ -511,14 +550,14 @@ def delineate_resection_pre(
     )
     vwrp = vwrp * (msk > 0)
 
-    # ST is already determined at function start based on surrogate detection
+    ST = 3
     ERR_THR = 0.75 #(ERR_THR*3.0)/255.0 #0.99
     #error_mask = opening(opening(closing(dilation(np.array(vwrp)))) > ERR_THR, footprint=[(np.ones((ST, 1, 1)), 1), (np.ones((1, ST, 1)), 1), (np.ones((1, 1, ST)), 1),],)
     error_mask_core = opening(vwrp > ERR_THR, footprint=[(np.ones((ST, 1, 1)), 1), (np.ones((1, ST, 1)), 1), (np.ones((1, 1, ST)), 1)])
     
     error_mask_dilated = dilation(error_mask_core, np.ones((7, 7, 7)))
 
-    error_mask = opening(closing(dilation((vwrp) > ERR_THR))*(error_mask_dilated>0))
+    error_mask = opening(closing((dilation(vwrp) > ERR_THR))*(error_mask_dilated>0))
 
     nib.save(
         nib.Nifti1Image(255 * np.uint8(error_mask), nonlin_reg.target.affine),
@@ -599,30 +638,34 @@ def delineate_resection_pre(
 def delineate_resection_post(
     pre_mri_path,
     post_mri_path,
-    BrainSuitePATH="/home/ajoshi/Software/BrainSuite23a",
     ERR_THR=80,
     bst_atlas_path="bst_atlases/icbm_bst.nii.gz",
     bst_atlas_labels_path="bst_atlases/icbm_bst.label.nii.gz",
-    ST=None,  # Structuring element size for morphological operations
 ):
     # pl.plot_anat(pre_mri,title='pre-mri')
     # pl.plot_anat(post_mri,title='post-mri')
 
     # pl.show()
 
-    # Determine ST parameter - default to 7 if not provided
-    if ST is None:
-        ST = 7
-        print(f"Using default ST={ST}")
-    else:
-        print(f"Using provided ST={ST}")
-
     # %%
 
     affine_reg = Aligner()
 
-    pre_mri_base_orig = pre_mri_path[:-7]
-    post_mri_base_orig = post_mri_path[:-7]
+    # Get the base name and extension of the pre_mri file
+    root, extension = os.path.splitext(pre_mri_path)
+    # Check if the NIfTI file is gzipped
+    if extension == ".gz":
+        pre_mri_base_orig = pre_mri_path[:-7]
+    else:
+        pre_mri_base_orig = pre_mri_path[:-4]
+    
+    # Get the base name and extension of the post_mri file
+    root, extension = os.path.splitext(post_mri_path)
+    # Check if the NIfTI file is gzipped
+    if extension == ".gz":
+        post_mri_base_orig = post_mri_path[:-7]
+    else:
+        post_mri_base_orig = post_mri_path[:-4]
 
     _, base_pre = os.path.split(pre_mri_base_orig)
     pth_post, base_post = os.path.split(post_mri_base_orig)
@@ -644,10 +687,10 @@ def delineate_resection_post(
     pre_mri_base = os.path.join(temp_pth, base_pre + "_1mm")
     post_mri_base = os.path.join(temp_pth, base_post + "_1mm")
 
-    out_img = nibp.conform(nib.load(pre_mri_base_orig + ".nii.gz"))
+    out_img = nibp.conform(nib.load(pre_mri_path))
     out_img.to_filename(pre_mri_base + ".nii.gz")
 
-    out_img = nibp.conform(nib.load(post_mri_base_orig + ".nii.gz"))
+    out_img = nibp.conform(nib.load(post_mri_path))
     out_img.to_filename(post_mri_base + ".nii.gz")
 
     pre_mri_dir, _ = os.path.split(pre_mri_base)
@@ -663,7 +706,7 @@ def delineate_resection_post(
     # %%
 
     cmd = (
-        os.path.join(BrainSuitePATH, "bin", "bse")
+        os.path.join(BrainSuiteBinPath(), "bse")
         + " -i "
         + pre_mri_base
         + ".nii.gz"
@@ -677,7 +720,7 @@ def delineate_resection_post(
     os.system(cmd)
 
     cmd = (
-        os.path.join(BrainSuitePATH, "bin", "bfc")
+        os.path.join(BrainSuiteBinPath(), "bfc")
         + " -i "
         + pre_mri_base
         + ".bse.nii.gz"
@@ -691,7 +734,7 @@ def delineate_resection_post(
     os.system(cmd)
 
     cmd = (
-        os.path.join(BrainSuitePATH, "bin", "pvc")
+        os.path.join(BrainSuiteBinPath(), "pvc")
         + " -i "
         + pre_mri_base
         + ".bfc.nii.gz"
@@ -707,7 +750,7 @@ def delineate_resection_post(
     # Post MRI pre processing
 
     cmd = (
-        os.path.join(BrainSuitePATH, "bin", "bse")
+        os.path.join(BrainSuiteBinPath(), "bse")
         + " -i "
         + post_mri_base
         + ".nii.gz"
@@ -721,7 +764,7 @@ def delineate_resection_post(
     os.system(cmd)
 
     cmd = (
-        os.path.join(BrainSuitePATH, "bin", "bfc")
+        os.path.join(BrainSuiteBinPath(), "bfc")
         + " -i "
         + post_mri_base
         + ".bse.nii.gz"
@@ -735,7 +778,7 @@ def delineate_resection_post(
     os.system(cmd)
 
     cmd = (
-        os.path.join(BrainSuitePATH, "bin", "pvc")
+        os.path.join(BrainSuiteBinPath(), "pvc")
         + " -i "
         + post_mri_base
         + ".bfc.nii.gz"
@@ -784,7 +827,7 @@ def delineate_resection_post(
         nn_input_size=64,
         lr=1e-6,
         max_epochs=1500,
-        device="cuda",
+        device=get_best_device(),
     )
 
     moving = LoadImage(image_only=True)(mov_img_orig)
@@ -809,7 +852,7 @@ def delineate_resection_post(
     # %%
 
     # cmd = (
-    #     os.path.join(BrainSuitePATH, "bin", "bse")
+    #     os.path.join(BrainSuiteBinPath(), "bse")
     #     + " -i "
     #     + affine_reg_img
     #     + " -o "
@@ -819,29 +862,14 @@ def delineate_resection_post(
     # )
     # os.system(cmd)
 
-    # Apply affine transformation to the mask of preop MRI
-    moving_mask = LoadImage(image_only=True)(pre_mri_base + ".mask.nii.gz")
-    moving_mask = EnsureChannelFirst()(moving_mask)
-    
-    target = LoadImage(image_only=True)(ref_img)
-    target = EnsureChannelFirst()(target)
-    
-    mask_movedo = apply_warp(
-        affine_reg.ddf[None,], moving_mask[None,], target[None,], interp_mode="nearest"
-    )
-    
-    nib.save(
-        nib.Nifti1Image(
-            mask_movedo[0, 0].detach().cpu().numpy().astype(np.uint8), affine_reg.target.affine
-        ),
-        affine_reg_img_mask,
-    )
+    # copy mask
+    copyfile(ref_img_mask,affine_reg_img_mask)
 
     # apply affine_reg_img_mask to affine_reg_img using nilearn
     apply_mask(affine_reg_img, affine_reg_img_mask, affine_reg_img_bse)
 
     cmd = (
-        os.path.join(BrainSuitePATH, "bin", "bfc")
+        os.path.join(BrainSuiteBinPath(), "bfc")
         + " -i "
         + affine_reg_img_bse
         + " -o "
@@ -852,7 +880,7 @@ def delineate_resection_post(
     os.system(cmd)
 
     cmd = (
-        os.path.join(BrainSuitePATH, "bin", "pvc")
+        os.path.join(BrainSuiteBinPath(), "pvc")
         + " -i "
         + affine_reg_img_bfc
         + " -o "
@@ -871,9 +899,6 @@ def delineate_resection_post(
     vref = LoadImage(image_only=True)(ref_img_pvc_frac)
     vwrp = LoadImage(image_only=True)(affine_reg_img_pvc_frac)
     msk = LoadImage(image_only=True)(ref_img_mask)
-
-    # Use the transformed pre-op mask:
-    msk = LoadImage(image_only=True)(affine_reg_img_mask)  # Transformed PRE-op mask (CORRECT)
 
     vwrp = (255.0 / np.max(vwrp[msk > 0])) * vwrp
     vref = (255.0 / np.max(vref[msk > 0])) * vref
@@ -961,12 +986,11 @@ def delineate_resection_post(
 
     vref = LoadImage(image_only=True)(ref_img_pvc_frac)
     vwrp = LoadImage(image_only=True)(nonlin_reg_img_pvc_frac)
-    # Use the transformed pre-op mask for consistency
-    msk = LoadImage(image_only=True)(affine_reg_img_mask)
+    msk = LoadImage(image_only=True)(ref_img_mask)
 
-    # print(ref_img_pvc_frac)
-    # print(nonlin_reg_img_pvc_frac)
-    # print(ref_img_mask)
+    print(ref_img_pvc_frac)
+    print(nonlin_reg_img_pvc_frac)
+    print(ref_img_mask)
 
     # %%
 
@@ -985,25 +1009,12 @@ def delineate_resection_post(
 
     vwrp = -(vref - vwrp)
 
-
-    # ST is already determined at function start based on surrogate detection
-    ERR_THR = 0.75 #(ERR_THR*3.0)/255.0 #0.99
-    #error_mask = opening(opening(closing(dilation(np.array(vwrp)))) > ERR_THR, footprint=[(np.ones((ST, 1, 1)), 1), (np.ones((1, ST, 1)), 1), (np.ones((1, 1, ST)), 1),],)
-    error_mask_core = opening(vwrp > ERR_THR, footprint=[(np.ones((ST, 1, 1)), 1), (np.ones((1, ST, 1)), 1), (np.ones((1, 1, ST)), 1)])
-    
-    error_mask_dilated = dilation(error_mask_core, np.ones((7, 7, 7)))
-
-    error_mask = opening(closing(((vwrp) > ERR_THR))*(error_mask_dilated>0))
-
-
-
-
-    '''nib.save(
+    nib.save(
         nib.Nifti1Image(vwrp.detach().numpy(), nonlin_reg.target.affine), error_img
     )
     vwrp = vwrp * (msk > 0)
 
-    # ST is already determined at function start based on surrogate detection
+    ST = 3
     ERR_THR = (ERR_THR*3.0)/255.0 #0.99
     error_mask = opening(
         (vwrp > ERR_THR) | (vwrp < -ERR_THR),
@@ -1013,8 +1024,6 @@ def delineate_resection_post(
             (np.ones((1, 1, ST)), 1),
         ],
     )
-    '''
-    
     nib.save(
         nib.Nifti1Image(255 * np.uint8(error_mask), nonlin_reg.target.affine),
         error_init_mask_img,
