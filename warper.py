@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
+import torch
 from monai.utils import set_determinism
 from monai.networks.nets import GlobalNet, LocalNet, RegUNet, unet
 from monai.config import USE_COMPILED
 from monai.networks.blocks import Warp, DVF2DDF
-import torch
 from torch.nn import MSELoss
 from monai.transforms import (
     LoadImage,
@@ -28,6 +28,14 @@ from deform_losses import GradEnergyLoss
 from networks import LocalNet2
 import argparse
 import nibabel as nib
+
+
+def get_best_device():
+    """Get the best available device for computation."""
+    if torch.cuda.is_available():
+        return 'cuda'
+    else:
+        return 'cpu'
 
 
 class dscolors:
@@ -111,8 +119,12 @@ class Warper:
         nn_input_size=64,
         lr=1e-6,
         max_epochs=1000,
-        device="cuda",
+        device=None,
     ):
+        # Auto-detect device if not provided
+        if device is None:
+            device = get_best_device()
+            
         if loss == "mse":
             image_loss = MSELoss()
         elif loss == "cc":
@@ -315,7 +327,7 @@ def main():
         "-e", "--max-epochs", type=int, default=3000, help="maximum interations"
     )
     parser.add_argument(
-        "-d", "--device", type=str, default="cuda", help="device: cuda, cpu, etc."
+        "-d", "--device", type=str, default=None, help="device: cuda, cpu, etc. (auto-detect if not specified)"
     )
     parser.add_argument(
         "-l", "--loss", type=str, default="cc", help="loss function: mse, cc or mi"
