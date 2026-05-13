@@ -9,10 +9,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-# PyTorch with CUDA 12.1 — falls back to CPU automatically if no GPU present
-RUN pip install --no-cache-dir \
-    torch==2.5.1+cu121 torchvision==0.20.1+cu121 \
-    --index-url https://download.pytorch.org/whl/cu121
+# TARGETARCH is set automatically by buildx: "amd64" or "arm64"
+ARG TARGETARCH
+
+# amd64: CUDA-enabled PyTorch | arm64: CPU-only PyTorch (no CUDA wheels exist for arm64)
+RUN if [ "$TARGETARCH" = "amd64" ]; then \
+        pip install --no-cache-dir \
+            torch==2.5.1+cu121 torchvision==0.20.1+cu121 \
+            --index-url https://download.pytorch.org/whl/cu121; \
+    else \
+        pip install --no-cache-dir \
+            torch torchvision \
+            --index-url https://download.pytorch.org/whl/cpu; \
+    fi
 
 # Remaining dependencies
 COPY requirements.txt .

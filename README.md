@@ -11,14 +11,12 @@ https://hub.docker.com/r/chinmaychinara/auto-resection-mask
 1. Make sure you have Docker Desktop installed and running in your machine. For more details check: https://hub.docker.com/
 
 2. <ins>Pull the image</ins>
-- For Windows, Linux, Apple intel:<br>`docker pull chinmaychinara/auto-resection-mask:latest`
-- For Apple Slicon:<br>`docker pull --platform linux/amd64 chinmaychinara/auto-resection-mask:latest`
+- For Windows, Linux, Apple Intel/Silicon:<br>`docker pull chinmaychinara/auto-resection-mask:latest`
 
 3. <ins>Run the image</ins>
-- For Windows, Linux (with NVIDIA GPU):<br>`docker run --gpus all /path/to/your/data:/data chinmaychinara/auto-resection-mask:latest /data/preop.nii.gz /data/postop.nii.gz`<br>
+- For Windows, Linux (with NVIDIA GPU):<br>`docker run --gpus all -v /path/to/your/data:/data chinmaychinara/auto-resection-mask:latest /data/preop.nii.gz /data/postop.nii.gz`<br>
   <ins>NOTE1:</ins> For GPU usage i.e. for the flag `gpus –all` to work configure [nvidia-container-toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html) in your machine.<br>
   <ins>NOTE2:</ins> The image expects that your machine machine has CUDA 12.1 i.e. the NVIDIA driver >= 525.60 (for Linux) and >= 527.41 (for Windows).<br>
-- For Windows, Linux, Apple Intel (without NVIDIA GPU):<br>`docker run /path/to/your/data:/data chinmaychinara/auto-resection-mask:latest /data/preop.nii.gz /data/postop.nii.gz`
-- For Apple Silicon:<br>`docker run --platform linux/amd64 /path/to/your/data:/data chinmaychinara/auto-resection-mask:latest /data/preop.nii.gz /data/postop.nii.gz`
+- For Windows, Linux, Apple Intel/Silicon (without NVIDIA GPU):<br>`docker run -v /path/to/your/data:/data chinmaychinara/auto-resection-mask:latest /data/preop.nii.gz /data/postop.nii.gz`
 
 4. The outputs will be saved in the same folder as the input data if everything runs successfully. For details on how to interpret the results please refer to the [main repo](https://github.com/ajoshiusc/auto_resection_mask).
