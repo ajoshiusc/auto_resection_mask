@@ -11,7 +11,7 @@ https://hub.docker.com/r/chinmaychinara/auto-resection-mask
 1. Make sure you have Docker Desktop installed and running in your machine. For more details check: https://hub.docker.com/
 
 2. <ins>Pull the image</ins>
-- For Windows, Linux, Apple intel/Silicon:<br>`docker pull chinmaychinara/auto-resection-mask:latest`
+- `docker pull chinmaychinara/auto-resection-mask:latest`
 
 3. <ins>Run the image</ins>
 - For Windows, Linux (with NVIDIA GPU):<br>`docker run --gpus all /path/to/your/data:/data chinmaychinara/auto-resection-mask:latest /data/preop.nii.gz /data/postop.nii.gz`<br>
