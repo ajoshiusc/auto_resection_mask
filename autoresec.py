@@ -38,7 +38,11 @@ def BrainSuiteBinPath():
     if os_name == "Windows":
         brainsuite_path = os.path.join(base_path, "BrainSuite", "bin", "windows")
     elif os_name == "Linux":
-        brainsuite_path = os.path.join(base_path, "BrainSuite", "bin", "linux")
+        arch = platform.machine()
+        if arch == "aarch64":
+            brainsuite_path = os.path.join(base_path, "BrainSuite", "bin", "linux_arm64")
+        else:
+            brainsuite_path = os.path.join(base_path, "BrainSuite", "bin", "linux_amd64")
     else:
         brainsuite_path = os.path.join(base_path, "BrainSuite", "bin", "mac")
     
