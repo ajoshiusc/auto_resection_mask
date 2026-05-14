@@ -33,16 +33,9 @@ RUN pip install --no-cache-dir -r requirements.txt \
 COPY *.py ./
 COPY bst_atlases/ bst_atlases/
 
-# Copy both BrainSuite binary sets
+# Copy both BrainSuite binary sets and make them executable 
 COPY BrainSuite/bin/linux_amd64/ BrainSuite/bin/linux_amd64/
 COPY BrainSuite/bin/linux_arm64/ BrainSuite/bin/linux_arm64/
-
-# Symlink correct binaries to BrainSuite/bin/linux/ (what autoresec.py expects)
-RUN if [ "$TARGETARCH" = "amd64" ]; then \
-        ln -s /app/BrainSuite/bin/linux_amd64 /app/BrainSuite/bin/linux; \
-    else \
-        ln -s /app/BrainSuite/bin/linux_arm64 /app/BrainSuite/bin/linux; \
-    fi \
-    && chmod +x /app/BrainSuite/bin/linux/*
+RUN chmod +x /app/BrainSuite/bin/linux_amd64/* /app/BrainSuite/bin/linux_arm64/*
 
 ENTRYPOINT ["python3", "auto_resection_mask.py"]
