@@ -16,7 +16,7 @@ https://hub.docker.com/r/chinmaychinara/auto-resection-mask
 - `docker pull chinmaychinara/auto-resection-mask:latest`
 
 3. <ins>Run the image</ins>
-- For Windows, Linux (with NVIDIA GPU):<br>`docker run --gpus all /path/to/your/data:/data chinmaychinara/auto-resection-mask:latest /data/preop.nii.gz /data/postop.nii.gz`<br>
+- For Windows, Linux (with NVIDIA GPU):<br>`docker run --gpus all -v /path/to/your/data:/data chinmaychinara/auto-resection-mask:latest /data/preop.nii.gz /data/postop.nii.gz`<br>
   <ins>NOTE1:</ins> For GPU usage i.e. for the flag `gpus –all` to work configure [nvidia-container-toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html) in your machine.<br>
   <ins>NOTE2:</ins> The image expects that your machine machine has CUDA 13.0 i.e. the NVIDIA driver >= 580.<br>
 - For Windows, Linux, Apple Intel/Silicon (without NVIDIA GPU):<br>`docker run -v /path/to/your/data:/data chinmaychinara/auto-resection-mask:latest /data/preop.nii.gz /data/postop.nii.gz`
