@@ -7,12 +7,15 @@ Here is an [example dataset](https://drive.google.com/drive/folders/1vuI-YwELv8Z
 The dockerized package:
 https://hub.docker.com/r/chinmaychinara/auto-resection-mask
 
+## Steps to build
+`docker buildx build --platform linux/amd64,linux/arm64 -t <dockeruserid>/<imagename>:latest  --push .`
+
 ## Steps to run
 1. Make sure you have Docker Desktop installed and running in your machine. For more details check: https://hub.docker.com/
 - For Apple Silicon, under `Settings > General > Virtual Machine Options > Choose Virtual Machine Manager (VMM)` set it to `Docker VMM` (available for  Docker Desktop >= 4.35) for better performance.
 - If `Docker VMM` is not available then set the VMM as `Apple Virtualization framework` and check the `Use Rosetta for x86_64/amd64 emulation for Apple Silicon` and `VirtioFS` options.
 
-3. <ins>Pull the image</ins>
+2. <ins>Pull the image</ins>
 - `docker pull chinmaychinara/auto-resection-mask:latest`
 
 3. <ins>Run the image</ins>
